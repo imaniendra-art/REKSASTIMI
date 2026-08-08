@@ -1,0 +1,182 @@
+{
+  "klaster": [
+    {
+      "id": 1,
+      "nama_klaster": "Fundamental & Character Building"
+    },
+    {
+      "id": 2,
+      "nama_klaster": "Business Communication & Languages"
+    },
+    {
+      "id": 3,
+      "nama_klaster": "Digital Business & Technology"
+    },
+    {
+      "id": 4,
+      "nama_klaster": "Entrepreneurship & Innovation"
+    },
+    {
+      "id": 5,
+      "nama_klaster": "Economic & Business Foundations"
+    },
+    {
+      "id": 6,
+      "nama_klaster": "Human Capital & Leadership"
+    },
+    {
+      "id": 7,
+      "nama_klaster": "Accounting & Financial Management"
+    },
+    {
+      "id": 8,
+      "nama_klaster": "Strategic & Operational Management"
+    }
+  ],
+  "klaster_matkul": [
+    {
+      "klaster_id": 1,
+      "kode": "STY.101"
+    },
+    {
+      "klaster_id": 1,
+      "kode": "STY.102"
+    },
+    {
+      "klaster_id": 1,
+      "kode": "STY.201"
+    },
+    {
+      "klaster_id": 1,
+      "kode": "STY.702"
+    },
+    {
+      "klaster_id": 2,
+      "kode": "STY.104"
+    },
+    {
+      "klaster_id": 2,
+      "kode": "STY.202"
+    },
+    {
+      "klaster_id": 2,
+      "kode": "STY.302"
+    },
+    {
+      "klaster_id": 3,
+      "kode": "STY.105"
+    },
+    {
+      "klaster_id": 3,
+      "kode": "MNJ.705"
+    },
+    {
+      "klaster_id": 3,
+      "kode": "MNJ.201"
+    },
+    {
+      "klaster_id": 4,
+      "kode": "STY.103"
+    },
+    {
+      "klaster_id": 4,
+      "kode": "STY.301"
+    },
+    {
+      "klaster_id": 4,
+      "kode": "MNJ.404"
+    },
+    {
+      "klaster_id": 5,
+      "kode": "MNJ.101"
+    },
+    {
+      "klaster_id": 5,
+      "kode": "MNJ.203"
+    },
+    {
+      "klaster_id": 5,
+      "kode": "MNJ.302"
+    },
+    {
+      "klaster_id": 5,
+      "kode": "MNJ.408"
+    },
+    {
+      "klaster_id": 6,
+      "kode": "MNJ.202"
+    },
+    {
+      "klaster_id": 6,
+      "kode": "MNJ.307"
+    },
+    {
+      "klaster_id": 6,
+      "kode": "MNJ.402"
+    },
+    {
+      "klaster_id": 6,
+      "kode": "MNJ.602"
+    },
+    {
+      "klaster_id": 6,
+      "kode": "MNJ.304"
+    },
+    {
+      "klaster_id": 7,
+      "kode": "MNJ.103"
+    },
+    {
+      "klaster_id": 7,
+      "kode": "MNJ.204"
+    },
+    {
+      "klaster_id": 7,
+      "kode": "MNJ.303"
+    },
+    {
+      "klaster_id": 7,
+      "kode": "MNJ.305"
+    },
+    {
+      "klaster_id": 7,
+      "kode": "MNJ.403"
+    },
+    {
+      "klaster_id": 8,
+      "kode": "MNJ.205"
+    },
+    {
+      "klaster_id": 8,
+      "kode": "MNJ.401"
+    },
+    {
+      "klaster_id": 8,
+      "kode": "MNJ.405"
+    },
+    {
+      "klaster_id": 8,
+      "kode": "MNJ.406"
+    },
+    {
+      "klaster_id": 8,
+      "kode": "MNJ.503"
+    },
+    {
+      "klaster_id": 2,
+      "kode": "MNJ.301"
+    },
+    {
+      "klaster_id": 2,
+      "kode": "MNJ.407"
+    },
+    {
+      "klaster_id": 6,
+      "kode": "MNJ.501"
+    },
+    {
+      "klaster_id": 4,
+      "kode": "MNJ.601"
+    }
+  ]
+}

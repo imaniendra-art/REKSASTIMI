@@ -1,0 +1,822 @@
+[
+  {
+    "kode": "STY.104",
+    "nama_matkul": "Bahasa Inggris Bisnis I",
+    "sks": 2,
+    "semester": 1,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini mengembangkan kemampuan berkomunikasi efektif dalam Bahasa Inggris sesuai topik bisnis, baik lisan maupun tulisan. Mahasiswa dibekali kemampuan dasar tata bahasa, penggunaan kata, dan pengucapan yang tepat."
+  },
+  {
+    "kode": "STY.103",
+    "nama_matkul": "Entrepreneurship and Business Ideation",
+    "sks": 3,
+    "semester": 1,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini memberi pengalaman praktek kewirausahaan untuk menemukan ide inovatif dalam memecahkan masalah. Fokusnya adalah membangun ide bisnis, mendesain model bisnis kompetitif, menyusun rencana strategis untuk perusahaan rintisan , serta membuat format rencana bisnis dengan solusi yang paling efektif."
+  },
+  {
+    "kode": "STY.105",
+    "nama_matkul": "Literasi Teknologi Komputer",
+    "sks": 2,
+    "semester": 1,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini mempelajari teknis operasional aplikasi Microsoft Office (Word, Excel, dan Powerpoint) untuk mempermudah pekerjaan administrasi, pengolahan data, laporan keuangan, dan presentasi. Selain itu, diberikan pengetahuan tentang penggunaan aplikasi Mendeley untuk sitasi."
+  },
+  {
+    "kode": "MNJ.705",
+    "nama_matkul": "Manajemen dan Bisnis Digital",
+    "sks": 3,
+    "semester": 1,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini bertujuan untuk membekali mahasiswa dengan pengetahuan untuk membantu menavigasi organisasi menuju bisnis digital. Mata kuliah ini mengidentifikasi keputusan manajemen menggunakan pendekatan integratif yang mencakup sistem informasi, strategi, pemasaran, keuangan, manajemen rantai pasokan, operasi, dan manajemen sumber daya manusia."
+  },
+  {
+    "kode": "STY.101",
+    "nama_matkul": "Pembangunan Karakter (Agama)",
+    "sks": 2,
+    "semester": 1,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini mempelajari adab dan keutamaan tilawah al-Qur’an dan cara membaca al-Qur’an sesuai ilmu tajwid."
+  },
+  {
+    "kode": "STY.102",
+    "nama_matkul": "Pendidikan Pancasila",
+    "sks": 2,
+    "semester": 1,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini membahas konsep dan hakikat Pancasila sebagai dasar negara, ideologi negara, dan pandangan hidup bangsa secara historis, yuridis, dan filosofis. Pancasila dikaji sebagai landasan etika politik dan paradigma pembangunan serta implementasinya dalam kehidupan melalui diskusi dan studi kasus."
+  },
+  {
+    "kode": "MNJ.103",
+    "nama_matkul": "Pengantar Akuntansi",
+    "sks": 3,
+    "semester": 1,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah Pengantar Akuntansi merupakan mata kuliah dasar keahlian. Mata kuliah ini merupakan aplikasi materi dan praktek tentang dasar-dasar akuntansi dan penyusunan laporan keuangan untuk perusahaan jasa dan dagang. Pembahasan materi kuliah ini meliputi pemahaman mendasar terkait akuntansi perusahaan jasa dan dagang serta bagaimana teknis pencatatan hingga penyusunan laporan keuangan. pemahaman mengenai proses pencatatan meliputi analisa transaksi, jurnal umum, buku besar, daftar saldo sebelum penyesuaian, jurnal penyesuaian, daftar saldo setelah penyesuaian, kertas kerja, laporan keuangan, jurnal penutup, daftar saldo penutup, dan jurnal balik."
+  },
+  {
+    "kode": "MNJ.101",
+    "nama_matkul": "Pengantar Ilmu Ekonomi",
+    "sks": 3,
+    "semester": 1,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Pengantar Ekonomi adalah mata kuliah yang memperkenalkan konsep-konsep dasar ekonomi, baik ekonomi mikro maupun ekonomi makro. Mata kuliah ini bertujuan untuk memberikan pemahaman tentang bagaimana keputusan ekonomi diambil oleh individu, perusahaan, serta pemerintah."
+  },
+  {
+    "kode": "STY.202",
+    "nama_matkul": "Bahasa Inggris Bisnis Lanjutan",
+    "sks": 3,
+    "semester": 2,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Memberikan pemahaman tata bahasa Inggris yang benar dan penerapannya dalam bisnis melalui keterampilan berbicara, mendengarkan, membaca, dan menulis."
+  },
+  {
+    "kode": "MNJ.204",
+    "nama_matkul": "Manajemen Keuangan",
+    "sks": 3,
+    "semester": 2,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini menghantarkan mahasiswa pada penguasaan kemampuan mengidentifikasi masalah keuangan dan memberikan alternatif pemecahannya, khususnya pada institusi keuangan. Mahasiswa dibimbing untuk merencanakan, merealisasikan, dan mengevaluasi manajemen keuangan."
+  },
+  {
+    "kode": "MNJ.205",
+    "nama_matkul": "Manajemen Pemasaran",
+    "sks": 3,
+    "semester": 2,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Memberikan pengetahuan komprehensif mengenai peranan, proses, dan ruang lingkup manajemen pemasaran. Materi meliputi perkembangan persaingan, perencanaan strategis berorientasi pasar, sistem informasi pasar, serta penciptaan nilai dan pertumbuhan jangka panjang."
+  },
+  {
+    "kode": "MNJ.202",
+    "nama_matkul": "Manajemen SDM dan Organisasi",
+    "sks": 3,
+    "semester": 2,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini mempelajari fungsi pengelolaan SDM meliputi perencanaan, pengorganisasian, hingga pengendalian dalam organisasi. Materi mencakup analisis jabatan, rekrutmen, pelatihan, hingga proses pasca kerja , menggunakan pendekatan diskusi dan Project Based Learning. Tujuannya agar mahasiswa dapat melakukan semua tahapan pengadaan SDM hingga pemutusan hubungan kerja."
+  },
+  {
+    "kode": "MNJ.203",
+    "nama_matkul": "Matematika Ekonomi dan Bisnis",
+    "sks": 3,
+    "semester": 2,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini berisi konsep dasar matematika yang dikaitkan dengan teori ekonomi mikro dan makro, meliputi baris dan deret, fungsi linier/non-linier, diferensial, dan integral. Pembelajaran menggunakan metode ceramah, tanya jawab, dan pendekatan inkuiri untuk pemecahan masalah."
+  },
+  {
+    "kode": "STY.201",
+    "nama_matkul": "Pendidikan Kewarganegaraan",
+    "sks": 2,
+    "semester": 2,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Membahas tentang ke-Indonesiaan untuk menjadi warga negara yang berkepribadian Indonesia, mencintai tanah air, serta menjadi warga negara yang baik dan terdidik (Smart and good citizen) dalam negara yang demokratis."
+  },
+  {
+    "kode": "MNJ.201",
+    "nama_matkul": "Sistem Informasi Manajemen",
+    "sks": 3,
+    "semester": 2,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini membekali mahasiswa dengan pemahaman tentang bagaimana sistem informasi digunakan untuk mendukung proses bisnis dan pengambilan keputusan dalam organisasi."
+  },
+  {
+    "kode": "MNJ.303",
+    "nama_matkul": "Akuntansi Biaya",
+    "sks": 3,
+    "semester": 3,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Memberikan pemahaman terhadap informasi akuntansi dasar dan standar dengan kinerja mandiri agar dapat digunakan untuk pembuatan keputusan ekonomi."
+  },
+  {
+    "kode": "STY.302",
+    "nama_matkul": "Bahasa Inggris Terapan",
+    "sks": 3,
+    "semester": 3,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Dirancang agar mahasiswa mampu menyesuaikan diri dengan dunia kerja, menganalisis dan menyajikan data, serta berkomunikasi lisan dalam bahasa Inggris bisnis."
+  },
+  {
+    "kode": "STY.301",
+    "nama_matkul": "Entrepreneurship Business Creation",
+    "sks": 3,
+    "semester": 3,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Membahas proses merancang, meluncurkan, dan mengelola bisnis baru. Mahasiswa belajar mengidentifikasi peluang pasar, menyusun rencana bisnis komprehensif , perencanaan keuangan, strategi pemasaran, operasional, dan manajemen tim. Menggunakan studi kasus dan simulasi bisnis."
+  },
+  {
+    "kode": "MNJ.301",
+    "nama_matkul": "Manajemen Bisnis Internasional",
+    "sks": 3,
+    "semester": 3,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mempelajari kegiatan bisnis yang melewati batas negara (International Trade). Membahas transaksi antar perusahaan/individu di negara berbeda yang disebut Pemasaran Internasional atau Bisnis Internasional."
+  },
+  {
+    "kode": "MNJ.304",
+    "nama_matkul": "Manajemen Konflik dan Negosiasi",
+    "sks": 3,
+    "semester": 3,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Membekali mahasiswa pengetahuan untuk memahami konflik organisasi, mengidentifikasi sumbernya, dan menanganinya menjadi kekuatan produktif. Manajemen konflik dianggap sebagai kerangka strategis untuk mendukung tujuan bisnis jangka pendek dan panjang."
+  },
+  {
+    "kode": "MNJ.307",
+    "nama_matkul": "Perilaku Organisasi",
+    "sks": 3,
+    "semester": 3,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Menjelaskan konsep dasar dan sejarah perilaku organisasi , perilaku individu/kelompok, persepsi, sikap, dan kepuasan kerja. Bagian akhir membahas konsep konflik, stres, dan penanganannya dalam organisasi."
+  },
+  {
+    "kode": "MNJ.305",
+    "nama_matkul": "Perpajakan",
+    "sks": 3,
+    "semester": 3,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Membekali pengetahuan perpajakan di Indonesia sesuai peraturan berlaku, mulai dari konsep dasar, subjek/objek pajak, hingga perhitungan dan pelaporan pajak."
+  },
+  {
+    "kode": "MNJ.302",
+    "nama_matkul": "Statistik Bisnis",
+    "sks": 2,
+    "semester": 3,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Berisi konsep dasar statistika bisnis meliputi populasi, sampel, probabilitas, penyajian data deskriptif, analisis inferensial, dan pengujian hipotesa penelitian bisnis. Metode pembelajaran menggunakan ceramah, diskusi, dan case based learning."
+  },
+  {
+    "kode": "MNJ.401",
+    "nama_matkul": "Manajemen BUMDES",
+    "sks": 3,
+    "semester": 4,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Memberikan pemahaman tentang pentingnya tata kelola Badan Usaha Milik Desa. Mahasiswa diharapkan menguasai konsep pembentukan dan dinamika BUMDES , serta mempelajari studi kasus dari rintisan hingga best practice."
+  },
+  {
+    "kode": "MNJ.406",
+    "nama_matkul": "Manajemen Mutu Industri Halal",
+    "sks": 3,
+    "semester": 4,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini membekali mahasiswa dengan pemahaman tentang standar mutu dan sistem jaminan produk halal di industri global."
+  },
+  {
+    "kode": "MNJ.403",
+    "nama_matkul": "Manajemen Perbankan",
+    "sks": 3,
+    "semester": 4,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Menjelaskan konsep dasar manajemen perbankan, peran bank dalam pembangunan, manajemen dana, likuiditas, permodalan, investasi, kredit, pemasaran, dan strategi menghadapi tantangan global."
+  },
+  {
+    "kode": "MNJ.405",
+    "nama_matkul": "Manajemen Resiko",
+    "sks": 3,
+    "semester": 4,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Berkaitan dengan pengelolaan kondisi deviasi yang menyebabkan kerugian dalam dunia usaha. Inti pembahasan meliputi identifikasi, pengukuran beratnya risiko, dan penanganan dengan strategi tertentu."
+  },
+  {
+    "kode": "MNJ.402",
+    "nama_matkul": "Manajemen SDM Internasional",
+    "sks": 3,
+    "semester": 4,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Memfasilitasi analisis MSDM global, manajemen pengetahuan internasional, dan mobilitas internasional. Mahasiswa mengkaji berbagai perspektif, mengukur kontribusi fungsi SDM, dan menyelesaikan kasus MSDM internasional. Pokok bahasan meliputi globalisasi, teknologi, branding pemberi kerja, dan manajemen bakat."
+  },
+  {
+    "kode": "MNJ.404",
+    "nama_matkul": "Manajemen Talent: Kreativitas dan Inovasi",
+    "sks": 2,
+    "semester": 4,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Menggabungkan konsep pengelolaan SDM tingkat lanjut (Talent Management) dengan penciptaan nilai tambah perusahaan (Creativity & Innovation)."
+  },
+  {
+    "kode": "MNJ.408",
+    "nama_matkul": "Metode Riset Bisnis dan Organisasi",
+    "sks": 3,
+    "semester": 4,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Bertujuan membekali mahasiswa dengan penerapan berbagai metode penelitian untuk penyusunan tugas akhir. Membahas langkah ilmiah mulai dari topik, tinjauan pustaka, variabel, hingga analisis data. Menggunakan metode diskusi, observasi lapangan, dan praktik pembuatan proposal."
+  },
+  {
+    "kode": "MNJ.407",
+    "nama_matkul": "Publik Relations Bisnis Internasional",
+    "sks": 3,
+    "semester": 4,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mempelajari aspek dasar PR internasional meliputi konsep, fungsi, peran, dan proses manajemen PR dari perencanaan hingga evaluasi."
+  },
+  {
+    "kode": "MNJ.507*",
+    "nama_matkul": "Analisis Informasi Keuangan",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.514**",
+    "nama_matkul": "Bank dan Lembaga Keuangan Non-Bank",
+    "sks": 2,
+    "semester": 5,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "STY.501",
+    "nama_matkul": "Entrepreneurship: Prototyping & Project",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.510*",
+    "nama_matkul": "Etika dan Hukum Bisnis Internasional",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.505*",
+    "nama_matkul": "Isu-Isu Kontemporer MSDM Lintas Negara",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.513**",
+    "nama_matkul": "Managing Industrial Relation",
+    "sks": 2,
+    "semester": 5,
+    "kelompok": "Pilihan",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.517**",
+    "nama_matkul": "Manajemen Ekspor & Impor",
+    "sks": 2,
+    "semester": 5,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.506*",
+    "nama_matkul": "Manajemen Keuangan Internasional",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.502",
+    "nama_matkul": "Manajemen Kinerja dan Kompensasi",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 0,
+    "deskripsi": "Mahasiswa belajar memahami pentingnya penilaian kinerja dan kompensasi, menguasai metode serta peraturan perundangan terkait, hingga mampu menghitung berbagai model kompensasi. Diharapkan mahasiswa mampu membuat analisis pekerjaan dan benchmarking untuk kompensasi SDM."
+  },
+  {
+    "kode": "MNJ.508*",
+    "nama_matkul": "Manajemen Pemasaran Strategik",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.503",
+    "nama_matkul": "Manajemen Strategi",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mempelajari proses manajemen strategik, penentuan visi/misi, analisis lingkungan internal/eksternal, CSR, serta strategi menghadapi krisis global dan menghindari PHK."
+  },
+  {
+    "kode": "MNJ.516**",
+    "nama_matkul": "Pemasaran Jasa Syariah",
+    "sks": 2,
+    "semester": 5,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.518**",
+    "nama_matkul": "Pengelolaan Bisnis Star-up",
+    "sks": 2,
+    "semester": 5,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.519**",
+    "nama_matkul": "Pengembangan Aplikasi Bisnis (Bisnis Online)",
+    "sks": 2,
+    "semester": 5,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.504*",
+    "nama_matkul": "Perencanaan SDM Global",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.511*",
+    "nama_matkul": "Perencanaan dan Pengembangan Bisnis Digital",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.509*",
+    "nama_matkul": "Perilaku Konsumen",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.512**",
+    "nama_matkul": "Sistem Informasi MSDM",
+    "sks": 2,
+    "semester": 5,
+    "kelompok": "Pilihan",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.515**",
+    "nama_matkul": "Small Business Financial Management",
+    "sks": 2,
+    "semester": 5,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.501",
+    "nama_matkul": "Teori Pengambilan Keputusan",
+    "sks": 3,
+    "semester": 5,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini memberikan pemahaman mendalam mengenai proses, teknik, dan model dalam pengambilan keputusan manajerial. Mahasiswa akan mempelajari berbagai pendekatan mulai dari pengambilan keputusan dalam kondisi pasti, risiko, hingga ketidakpastian, serta penggunaan alat analisis kuantitatif dan kualitatif untuk mendukung efektivitas organisasi."
+  },
+  {
+    "kode": "MNJ.604",
+    "nama_matkul": "Akuntansi Manajemen",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.606*",
+    "nama_matkul": "Budaya Organisasi Lintas Negara",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.623**",
+    "nama_matkul": "Business Intelligence",
+    "sks": 2,
+    "semester": 6,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.621**",
+    "nama_matkul": "Customer Relationship Management",
+    "sks": 2,
+    "semester": 6,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.615*",
+    "nama_matkul": "Digital Business Internasional",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.617**",
+    "nama_matkul": "E-HRM",
+    "sks": 2,
+    "semester": 6,
+    "kelompok": "Pilihan",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.624**",
+    "nama_matkul": "E-Project",
+    "sks": 2,
+    "semester": 6,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.612*",
+    "nama_matkul": "E-commerce",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.614*",
+    "nama_matkul": "Entrepreneurial and Industrial Business Development",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.601",
+    "nama_matkul": "Evaluasi Kinerja (E-Kinerja)",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini mempelajari sistem evaluasi kinerja berbasis teknologi informasi untuk meningkatkan efisiensi dan transparansi dalam manajemen SDM."
+  },
+  {
+    "kode": "MNJ.610*",
+    "nama_matkul": "Financial Market and FINTECH",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.605*",
+    "nama_matkul": "Human Capital Development",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.607*",
+    "nama_matkul": "Human Resource Management Practices",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.609*",
+    "nama_matkul": "Investment Theory & Portofolio",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.602",
+    "nama_matkul": "Manajemen Kepemimpinan Bisnis dan Organisasi",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini membekali mahasiswa dengan pemahaman mendalam tentang teori kepemimpinan, gaya kepemimpinan, dan strategi untuk memimpin tim dalam lingkungan bisnis yang dinamis."
+  },
+  {
+    "kode": "MNJ.608*",
+    "nama_matkul": "Manajemen Keuangan Lanjutan",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.619**",
+    "nama_matkul": "Manajemen Keuangan Syariah",
+    "sks": 2,
+    "semester": 6,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.603",
+    "nama_matkul": "Manajemen Koperasi dan UMKM",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.622**",
+    "nama_matkul": "Manajemen Produk dan Merek",
+    "sks": 2,
+    "semester": 6,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.613*",
+    "nama_matkul": "Pemasaran Business to Business (B2B-B2C)",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.611*",
+    "nama_matkul": "Pemasaran Internasional",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.618**",
+    "nama_matkul": "Psikologi Industri dan Organisasi",
+    "sks": 2,
+    "semester": 6,
+    "kelompok": "Pilihan",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.620**",
+    "nama_matkul": "Public Sector Financial Management",
+    "sks": 2,
+    "semester": 6,
+    "kelompok": "Pilihan",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.616*",
+    "nama_matkul": "Studi Kelayakan Bisnis",
+    "sks": 3,
+    "semester": 6,
+    "kelompok": "Konsentrasi",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "STY.702",
+    "nama_matkul": "Bahasa Indonesia Riset",
+    "sks": 2,
+    "semester": 7,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 1,
+    "deskripsi": "Mata kuliah ini membekali mahasiswa dengan keterampilan menulis karya ilmiah yang baik dan benar sesuai standar akademik nasional."
+  },
+  {
+    "kode": "STY.701",
+    "nama_matkul": "KKL/KKLP",
+    "sks": 4,
+    "semester": 7,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.703*",
+    "nama_matkul": "Seminar Manajemen Bisnis Digital",
+    "sks": 3,
+    "semester": 7,
+    "kelompok": "Seminar",
+    "konsentrasi": "Bisnis Digital",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.702*",
+    "nama_matkul": "Seminar Manajemen Keuangan",
+    "sks": 3,
+    "semester": 7,
+    "kelompok": "Seminar",
+    "konsentrasi": "Keuangan",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.704*",
+    "nama_matkul": "Seminar Manajemen Pemasaran",
+    "sks": 3,
+    "semester": 7,
+    "kelompok": "Seminar",
+    "konsentrasi": "Pemasaran",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.701*",
+    "nama_matkul": "Seminar Manajemen SDM",
+    "sks": 3,
+    "semester": 7,
+    "kelompok": "Seminar",
+    "konsentrasi": "SDM",
+    "is_rpl": 0,
+    "deskripsi": null
+  },
+  {
+    "kode": "MNJ.801",
+    "nama_matkul": "Skripsi & Prototipe",
+    "sks": 6,
+    "semester": 8,
+    "kelompok": "Wajib",
+    "konsentrasi": "-",
+    "is_rpl": 0,
+    "deskripsi": null
+  }
+]

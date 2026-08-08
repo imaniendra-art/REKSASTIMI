@@ -1,0 +1,767 @@
+[
+  {
+    "kode": "MNJ.101",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan secara mendalam tentang pengantar ilmu ekonomi."
+  },
+  {
+    "kode": "MNJ.101",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami tentang ekonomi mikro."
+  },
+  {
+    "kode": "MNJ.101",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami tentang perilaku konsumen"
+  },
+  {
+    "kode": "MNJ.101",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami tentang perilaku produsen"
+  },
+  {
+    "kode": "MNJ.101",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami tentang struktur pasar"
+  },
+  {
+    "kode": "MNJ.101",
+    "nomor_urut": 6,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami memahami tentang ekonomi makro."
+  },
+  {
+    "kode": "MNJ.101",
+    "nomor_urut": 7,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami masalah ekonomi global"
+  },
+  {
+    "kode": "MNJ.103",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan dan menyusun laporan keuangan di Perusahaan Jasa"
+  },
+  {
+    "kode": "MNJ.103",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan dan memahami dalam membuat laporan keuangan di Perusahaan Dagang Dengan Menggunakan Pendekatan Periodik dan Perfectual"
+  },
+  {
+    "kode": "MNJ.103",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan dan memahami dalam membuat laporan keuangan di Perusahaan Dagang"
+  },
+  {
+    "kode": "MNJ.705",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menelaah dengan baik teori-teori bisnis."
+  },
+  {
+    "kode": "MNJ.705",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu merumuskan rencana bisnis secara komprehensif untuk mengembangkan jiwa entrepreneurial leadership."
+  },
+  {
+    "kode": "STY.101",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa memahami etika dan nilai-nilai positif dalam proses pembelajaran sebagai bagian dari wujud ketakwaan kepada Tuhan yang Maha Esa."
+  },
+  {
+    "kode": "STY.101",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mampu menjelaskan adab dan keutamaan tilawah al-Qur’an."
+  },
+  {
+    "kode": "STY.101",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mampu menjelaskan hukum bacaan al-Qur’an."
+  },
+  {
+    "kode": "STY.101",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mampu mempraktikkan bacaan al-Qur’an secara tartil."
+  },
+  {
+    "kode": "STY.102",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa Mendeskripsikan pentingnya Pendidikan Pancasila."
+  },
+  {
+    "kode": "STY.102",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mendeskripsikan Pancasila dalam Sejarah Bangsa."
+  },
+  {
+    "kode": "STY.102",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mengidentifikasi unsur-unsur Pancasila sebagai sistem filsafat."
+  },
+  {
+    "kode": "STY.102",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Menjelaskan kedudukan UUD NRI Tahun 1945 sebagai konstitusi."
+  },
+  {
+    "kode": "STY.102",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mengidentifikasi nilai-nilai Pancasila sebagai sumber karakter bangsa."
+  },
+  {
+    "kode": "STY.104",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Menguasai konsep teoritis kebahasaan dan teknik berkomunikasi lisan dan tulisan Bahasa Inggris untuk tujuan tertentu (English for specific purposes) setara tingkat intermediate."
+  },
+  {
+    "kode": "STY.104",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa dapat mengidentifikasi jenis kebahasaan dalam situasi formal and informal dalam bahasa Inggris."
+  },
+  {
+    "kode": "STY.104",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu mengembangkan kemampuan berbicara, terampil menggunakan teknik-teknik berbicara dengan baik."
+  },
+  {
+    "kode": "STY.105",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa Mampu menjelaskan sejarah dan perkembangan komputer."
+  },
+  {
+    "kode": "STY.105",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa Mampu menjelaskan komponen dasar perangkat komputer."
+  },
+  {
+    "kode": "STY.105",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa Mengetahui Operating System pada komputer serta sejarah perkembangannya."
+  },
+  {
+    "kode": "STY.105",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa Mampu menggunakan aplikasi pengolah angka dalam mengolah informasi."
+  },
+  {
+    "kode": "STY.105",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mahasiwa Mampu menjelaskan proses pencarian informasi dengan efisien dan efektif."
+  },
+  {
+    "kode": "MNJ.201",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis peran strategis Sistem Informasi Manajemen dalam organisasi bisnis dan bagaimana teknologi informasi digunakan untuk mencapai keunggulan kompetitif."
+  },
+  {
+    "kode": "MNJ.201",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu merumuskan tahapan pengembangan sistem informasi secara metodologis, serta mengevaluasi isu-isu keamanan, privasi, dan etika sosial yang muncul dalam bisnis digital."
+  },
+  {
+    "kode": "MNJ.201",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu mengevaluasi berbagai infrastruktur teknologi informasi, pengelolaan basis data, serta sistem enterprise (seperti ERP, CRM, dan SCM)."
+  },
+  {
+    "kode": "MNJ.202",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menunjukkan sikap bertanggung jawab atas pekerjaannya sebagai pemimpin atau manajer."
+  },
+  {
+    "kode": "MNJ.202",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan teori dan substansi manajemen SDM secara tepat."
+  },
+  {
+    "kode": "MNJ.202",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu mengambil keputusan yang tepat dalam memecahkan masalah dalam pengelolaan."
+  },
+  {
+    "kode": "MNJ.202",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu mengoperasikan teknologi informasi bidang manajemen SDM dengan tepat."
+  },
+  {
+    "kode": "MNJ.203",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Menunjukkan sikap bertanggungjawab atas pekerjaan secara mandiri maupun kelompok."
+  },
+  {
+    "kode": "MNJ.203",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Memformulasikan dan mengoperasikan konsep dasar matematika dalam pemecahan masalah ekonomi."
+  },
+  {
+    "kode": "MNJ.203",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Memanfaatkan teknologi informasi dalam pemecahan masalah ekonomi secara secara prosedural."
+  },
+  {
+    "kode": "MNJ.203",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Memecahkan permasalahan ekonomi dengan menggunakan pendekatan matematika."
+  },
+  {
+    "kode": "MNJ.204",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mampu menyajikan laporan keuangan suatu perusahaan sesuai manajemen dalam perusahaan tersebut."
+  },
+  {
+    "kode": "MNJ.204",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Menguasai tata cara penyusunan laporan keuangan termasuk berbasis syariah secara utuh."
+  },
+  {
+    "kode": "MNJ.204",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Menguasai berbagai faktor yang terkait dengan sistem informasi keuangan."
+  },
+  {
+    "kode": "MNJ.204",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Menguasai perkembangan standar manajemen keuangan dan aplikasinya dalam kegiatan bisnis perusahaan."
+  },
+  {
+    "kode": "MNJ.204",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Menguasai tata cara pemeriksaan keuangan secara utuh."
+  },
+  {
+    "kode": "MNJ.205",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Menunjukkan sikap religius dalam memahami pemasaran dan perkembangannya."
+  },
+  {
+    "kode": "MNJ.205",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Menunjukkan semangat kemandirian dalam menjelaskan Konsep Pemasaran Pembahasan Produk."
+  },
+  {
+    "kode": "MNJ.205",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Menguasai konsep teoritis Pemasaran Jasa dan pengelolaan bisnis berskala global."
+  },
+  {
+    "kode": "MNJ.205",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mampu mengasai knowledge (hard skills) dalam mengembangkan Periklanan, Promosi Penjualan, dan Hubungan Masyarakat."
+  },
+  {
+    "kode": "MNJ.205",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mampu mengidentifikasi antara Konsep Harga dan Strategi Harga."
+  },
+  {
+    "kode": "MNJ.205",
+    "nomor_urut": 6,
+    "deskripsi_cpmk": "Mampu Mengelola Saluran Pemasaran dan Rantai Pasokan secara mandiri dan bekerjasama."
+  },
+  {
+    "kode": "STY.201",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami hakikat pendidikan kewarganegaraan dan mengaitkan nilai-nilai Pancasila dengan pokok bahasan."
+  },
+  {
+    "kode": "STY.201",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu memaknai konsep NKRI dan mengenali kekhasan Negara Hukum Indonesia berdasarkan nilai Pancasila."
+  },
+  {
+    "kode": "STY.201",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu membangun kesadaran pentingnya peran serta dalam praktik demokrasi Pancasila."
+  },
+  {
+    "kode": "STY.201",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu menunjukkan rasa cinta tanah air, nasionalisme, serta tanggung jawab pada negara."
+  },
+  {
+    "kode": "MNJ.301",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menerapkan pemikiran logis pentingnya bisnis dengan batas negara."
+  },
+  {
+    "kode": "MNJ.301",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menjabarkan Transaksi Bisnis."
+  },
+  {
+    "kode": "MNJ.301",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu menafsirkan faktor internal & eksternal."
+  },
+  {
+    "kode": "MNJ.301",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis transaksi bisnis internasional."
+  },
+  {
+    "kode": "MNJ.301",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis suatu perusahaan dalam satu Negara dengan perusahaan lain atau individu di Negara lain."
+  },
+  {
+    "kode": "MNJ.301",
+    "nomor_urut": 6,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis Pemasaran Internasional."
+  },
+  {
+    "kode": "MNJ.302",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis menggunakan metode statistika deskriptif dan inferensial untuk memecahkan masalah."
+  },
+  {
+    "kode": "STY.103",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Menjunjung nilai Islam, moral dan etika akademik."
+  },
+  {
+    "kode": "STY.103",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Menunjukkan semangat kemandirian dan kejuangan dalam pngimplementasian ilmu kewirausahaan."
+  },
+  {
+    "kode": "STY.103",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Menemukan passion, ide bisnis, kreativitas dan menghasilkan inovasi."
+  },
+  {
+    "kode": "STY.103",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mampu mengembangkan pemikiran logis, kritis, sistematis, dan kreatif untuk menyusun ide-ide inovatif dalam memecahkan tantangan atau memenuhi kebutuhan."
+  },
+  {
+    "kode": "STY.103",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mampu mengidentifikasi berbagai jenis promosi dan memposisikan manajemen pemasaran dalam suatu kegiatan tahap awal pengembangan perusahaan rintisan."
+  },
+  {
+    "kode": "STY.202",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa dapat Mengidentifikasi macam-macam tenses dan pola kalimat."
+  },
+  {
+    "kode": "STY.202",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami dan mengubah kalimat passive voice."
+  },
+  {
+    "kode": "STY.202",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan jenis-jenis kalimat lanjutan (compound & complex sentence) dan subject-verb agreement."
+  },
+  {
+    "kode": "STY.202",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu menghasilkan sebuah paragraph atau essay berbahasa inggris dengan baik."
+  },
+  {
+    "kode": "STY.202",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mahasiswa mampu menguraikan teks Bahasa inggris dengan benar."
+  },
+  {
+    "kode": "STY.202",
+    "nomor_urut": 6,
+    "deskripsi_cpmk": "Mahasiswa mampu mempresentasikan proposal bisnis dengan benar."
+  },
+  {
+    "kode": "MNJ.303",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mampu menjelaskan perbedaan sistem akuntansi biaya bisnis konvensional dan kontemporer."
+  },
+  {
+    "kode": "MNJ.303",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mampu menjelaskan konsep klasifikasi biaya untuk perencanaan dan pengambilan keputusan."
+  },
+  {
+    "kode": "MNJ.303",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mampu menjelaskan konsep estimasi biaya dan memisahkan biaya tetap serta variabel."
+  },
+  {
+    "kode": "MNJ.303",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mampu menjelaskan akuntansi biaya overhead pabrik (BOP) and alokasinya."
+  },
+  {
+    "kode": "MNJ.303",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mampu membandingkan tarif BOP pendekatan konvensional dan berbasis aktivitas."
+  },
+  {
+    "kode": "MNJ.303",
+    "nomor_urut": 6,
+    "deskripsi_cpmk": "Mampu menjelaskan akuntansi bahan baku dan pembebanannya."
+  },
+  {
+    "kode": "MNJ.303",
+    "nomor_urut": 7,
+    "deskripsi_cpmk": "Mampu menganalisis dan menghitung sistem harga pokok proses."
+  },
+  {
+    "kode": "MNJ.304",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mampu berpikir obyektif, kritis and sistematik."
+  },
+  {
+    "kode": "MNJ.304",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Memiliki pemahaman konsep-konsep teoritis dalam ilmu ekonomi, akuntansi, manajemen dan organisasi."
+  },
+  {
+    "kode": "MNJ.304",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mampu mengenali dan menganalisa permasalahan manajemen, organisasi, serta bisnis."
+  },
+  {
+    "kode": "MNJ.305",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa memiliki kemampuan menjelaskan konsep dasar dan ketentuan umum perpajakan di Indonesia."
+  },
+  {
+    "kode": "MNJ.305",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa memiliki kemampuan mengimplementasikan proses perpajakan sesuai perundangan."
+  },
+  {
+    "kode": "MNJ.305",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mampu menyusun laporan kewajiban perpajakan (SPT) individu maupun badan melalui perhitungan dan rekonsiliasi."
+  },
+  {
+    "kode": "MNJ.307",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan konsep perilaku individu/kelompok, teknik pemotivasian, serta mengatasi kepuasan kerja, konflik, dan stres."
+  },
+  {
+    "kode": "MNJ.307",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan dasar pembentuk perilaku individu."
+  },
+  {
+    "kode": "MNJ.307",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mampu menjelaskan persepsi individu dan dimensinya."
+  },
+  {
+    "kode": "MNJ.307",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mampu menjelaskan faktor yang memengaruhi sikap dan kepuasan kerja."
+  },
+  {
+    "kode": "STY.301",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Menunjukkan sikap religius dalam memahami Pengantar Kewirausahaan."
+  },
+  {
+    "kode": "STY.301",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Menunjukkan semangat kemandirian dalam menjelaskan Karakteristik dan Model Bisnis."
+  },
+  {
+    "kode": "STY.301",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Menguasai konsep teoritis Pemasaran Jasa dan pengelolaan bisnis berskala global."
+  },
+  {
+    "kode": "STY.301",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mampu menguasai knowledge (hard skills) dalam mengembangkan Strategi Pelaksanaan dan Operasional."
+  },
+  {
+    "kode": "STY.301",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mampu mengidentifikasi Peluang Bisnis."
+  },
+  {
+    "kode": "STY.302",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami dan berbicara tentang Professional introductions & formal business English."
+  },
+  {
+    "kode": "STY.302",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menyusun kosakata dan tata bahasa bisnis dalam konteks Business e-mail and letters."
+  },
+  {
+    "kode": "STY.302",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan core english business skills (sopan santun, penggunaan 'if')."
+  },
+  {
+    "kode": "STY.302",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu menerapkan Business English for Telephone Conversation."
+  },
+  {
+    "kode": "MNJ.401",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menerapkan pemikiran logis pentingnya BUMDES."
+  },
+  {
+    "kode": "MNJ.401",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menjabarkan usaha milik desa."
+  },
+  {
+    "kode": "MNJ.401",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu menafsirkan faktor internal & eksternal."
+  },
+  {
+    "kode": "MNJ.401",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu terampil dalam tata kelola BUMDES."
+  },
+  {
+    "kode": "MNJ.401",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis transaksi usaha desa."
+  },
+  {
+    "kode": "MNJ.401",
+    "nomor_urut": 6,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis pasar."
+  },
+  {
+    "kode": "MNJ.402",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan mendalam tentang lingkungan global, MSDM dan MSDM internasional."
+  },
+  {
+    "kode": "MNJ.402",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan globalisasi dan manajemen sumber daya manusia."
+  },
+  {
+    "kode": "MNJ.402",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan organisasi penggerak globalisasi."
+  },
+  {
+    "kode": "MNJ.402",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan dampak teknologi pada MSDM global."
+  },
+  {
+    "kode": "MNJ.402",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan manajemen pengetahuan dan jaringan keahlian global."
+  },
+  {
+    "kode": "MNJ.402",
+    "nomor_urut": 6,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan tema global (kemampuan, branding pemberi kerja, dan manajemen bakat)."
+  },
+  {
+    "kode": "MNJ.403",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan konsep dasar manajemen perbankan."
+  },
+  {
+    "kode": "MNJ.403",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan pola dasar kebijakan dan manajemen Bank."
+  },
+  {
+    "kode": "MNJ.403",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan manajemen Dana Bank."
+  },
+  {
+    "kode": "MNJ.403",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan tentang likuiditas Bank."
+  },
+  {
+    "kode": "MNJ.403",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan dan menghitung Bunga Bank."
+  },
+  {
+    "kode": "MNJ.403",
+    "nomor_urut": 6,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan manajemen permodalan Bank."
+  },
+  {
+    "kode": "MNJ.404",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis siklus manajemen talenta dan mengidentifikasi ekosistem yang mendorong kreativitas."
+  },
+  {
+    "kode": "MNJ.404",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu mengevaluasi strategi penarikan, pengembangan, dan kompensasi talenta kreatif."
+  },
+  {
+    "kode": "MNJ.404",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu merancang program manajemen talenta komprehensif dan mendemonstrasikan kepemimpinan inovatif."
+  },
+  {
+    "kode": "MNJ.405",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa dapat menjelaskan Konsep Resiko dan Manajemen Resiko."
+  },
+  {
+    "kode": "MNJ.405",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menelaah aktivitas SDM dan mengidentifikasi risiko dengan baik."
+  },
+  {
+    "kode": "MNJ.405",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu menunjukkan karakter cerdas, mandiri, jujur, peduli dan tanggung jawab."
+  },
+  {
+    "kode": "MNJ.405",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu mengidentifikasi, mengukur, dan mengendalikan Resiko."
+  },
+  {
+    "kode": "MNJ.406",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis konsep dasar Jaminan Produk Halal (JPH) dan keterkaitannya dengan manajemen mutu terpadu."
+  },
+  {
+    "kode": "MNJ.406",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu mengevaluasi penerapan kriteria Sistem Jaminan Halal (SJH) di sepanjang rantai pasok."
+  },
+  {
+    "kode": "MNJ.406",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu merancang rencana audit halal internal dan strategi perbaikan berkelanjutan."
+  },
+  {
+    "kode": "MNJ.407",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan Definisi, Tujuan Fungsi dan Kualifikasi dasar PR Bisnis Internasional."
+  },
+  {
+    "kode": "MNJ.407",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami sejarah, etika, dan khalayak PR internasional."
+  },
+  {
+    "kode": "MNJ.407",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami komunikasi eksternal/internal, citra, dan opini PR internasional."
+  },
+  {
+    "kode": "MNJ.407",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu memahami dasar teori, proses manajemen, dan praktek PR internasional."
+  },
+  {
+    "kode": "MNJ.408",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mempu memahami dan menerapankan metode penelitian untuk tugas akhir."
+  },
+  {
+    "kode": "MNJ.408",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menyusun satu proposal penelitian manajemen yang layak (skripsi)."
+  },
+  {
+    "kode": "MNJ.502",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mampu merinci sumber daya manusia yang global."
+  },
+  {
+    "kode": "MNJ.502",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Menjelaskan pelaksanaan HR Activities yang strategis."
+  },
+  {
+    "kode": "MNJ.502",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Melakukan pembuatan evaluasi jabatan kompetensi individu."
+  },
+  {
+    "kode": "MNJ.502",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Menjelaskan model struktur penggajian dan alternatif kompensasi."
+  },
+  {
+    "kode": "MNJ.502",
+    "nomor_urut": 5,
+    "deskripsi_cpmk": "Mampu menyusun struktur dan skala upah tingkat organisasi."
+  },
+  {
+    "kode": "MNJ.503",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menafsirkan tinjauan manajemen strategis melalui studi literatur."
+  },
+  {
+    "kode": "MNJ.503",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu merumuskan formulasi strategi melalui studi kasus."
+  },
+  {
+    "kode": "MNJ.503",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu merancang implementasi, pengendalian dan inovasi strategi melalui review jurnal."
+  },
+  {
+    "kode": "MNJ.601",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis manajemen kinerja, merumuskan IKU, dan memahami transformasi ke platform digital."
+  },
+  {
+    "kode": "MNJ.601",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu mengevaluasi efektivitas aplikasi E-Kinerja dan memitigasi bias psikologis dalam evaluasi."
+  },
+  {
+    "kode": "MNJ.601",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu merancang skema tindak lanjut manajerial berdasarkan data sistem E-Kinerja."
+  },
+  {
+    "kode": "MNJ.602",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis teori kepemimpinan dan membedakan peran pemimpin vs manajer."
+  },
+  {
+    "kode": "MNJ.602",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu mengevaluasi penggunaan kekuasaan dan strategi resolusi konflik untuk memotivasi tim."
+  },
+  {
+    "kode": "STY.702",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis kesalahan tata bahasa (EYD) dan menerapkan ragam bahasa ilmiah baku."
+  },
+  {
+    "kode": "STY.702",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu mengevaluasi anatomi karya ilmiah, teknik parafrase, dan penggunaan software manajemen referensi."
+  },
+  {
+    "kode": "STY.702",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu menyusun draf proposal penelitian atau artikel ilmiah serta mempresentasikannya secara argumentatif."
+  },
+  {
+    "kode": "MNJ.501",
+    "nomor_urut": 1,
+    "deskripsi_cpmk": "Mahasiswa mampu menjelaskan konsep dasar, tipe, dan proses sistematis dalam pengambilan keputusan organisasi."
+  },
+  {
+    "kode": "MNJ.501",
+    "nomor_urut": 2,
+    "deskripsi_cpmk": "Mahasiswa mampu menganalisis dan menerapkan model pengambilan keputusan dalam kondisi berisiko dan tidak pasti."
+  },
+  {
+    "kode": "MNJ.501",
+    "nomor_urut": 3,
+    "deskripsi_cpmk": "Mahasiswa mampu mengevaluasi pengaruh faktor psikologis dan etika dalam proses pengambilan keputusan."
+  },
+  {
+    "kode": "MNJ.501",
+    "nomor_urut": 4,
+    "deskripsi_cpmk": "Mahasiswa mampu menggunakan alat analisis kuantitatif untuk membantu perumusan strategi bisnis yang optimal."
+  }
+]
