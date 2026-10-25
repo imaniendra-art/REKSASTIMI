@@ -18,28 +18,31 @@ export default async function MahasiswaDashboardPage() {
   let periodName = "-";
   let isBiodataComplete = false;
 
+  let hasAcceptedPayment = false;
+  let hasPendingPayment = false;
+
   if (session?.id) {
     const profile = await ApplicantProfile.findOne({ userId: session.id }).lean();
-      if (profile) {
-        if (profile.statusRpl) {
-          currentStatus = profile.statusRpl;
-          registrationNumber = profile.registrationNumber || profile.noPendaftar || "Belum ada";
-          periodName = profile.periodName || profile.periode || "Belum ditentukan";
-        }
+    if (profile) {
+      if (profile.statusRpl) {
+        currentStatus = profile.statusRpl;
+        registrationNumber = profile.registrationNumber || profile.noPendaftar || "Belum ada";
+        periodName = profile.periodName || profile.periode || "Belum ditentukan";
+      }
 
-        if (["ASESMEN_KOMPETENSI", "ASESMEN_F02"].includes(currentStatus)) {
-          const advancedToF03 = await syncProfileToF03WhenAssessmentsComplete(session.id);
-          if (advancedToF03) {
-            currentStatus = "EVALUASI_F03";
-          }
+      if (["ASESMEN_KOMPETENSI", "ASESMEN_F02"].includes(currentStatus)) {
+        const advancedToF03 = await syncProfileToF03WhenAssessmentsComplete(session.id);
+        if (advancedToF03) {
+          currentStatus = "EVALUASI_F03";
         }
+      }
 
-        if (currentStatus === "EVALUASI_F03") {
-          const advancedToAsesor = await syncProfileToEvaluasiAsesorWhenF03Complete(session.id);
-          if (advancedToAsesor) {
-            currentStatus = "EVALUASI_ASESOR";
-          }
+      if (currentStatus === "EVALUASI_F03") {
+        const advancedToAsesor = await syncProfileToEvaluasiAsesorWhenF03Complete(session.id);
+        if (advancedToAsesor) {
+          currentStatus = "EVALUASI_ASESOR";
         }
+      }
 
       const acceptedRegistrationPayment = await Payment.exists({
         userId: session.id,
@@ -48,6 +51,7 @@ export default async function MahasiswaDashboardPage() {
       });
 
       if (acceptedRegistrationPayment) {
+        hasAcceptedPayment = true;
         const canAdvanceToF02 = ["PENDAFTARAN", "LENGKAPI_CV", "PEMBAYARAN"].includes(currentStatus);
         const profileUpdate: Record<string, string> = {
           "progress.paymentStatus": "DITERIMA",
@@ -78,6 +82,17 @@ export default async function MahasiswaDashboardPage() {
             { userId: session.id },
             { $set: profileUpdate }
           );
+        }
+      } else {
+        // Check if there is an uploaded payment in process
+        const pendingPayment = await Payment.findOne({
+          userId: session.id,
+          jenisPembayaran: /^Biaya Pendaftaran RPL$/i,
+          statusVerifikasi: "Proses",
+        }).lean();
+
+        if (pendingPayment) {
+          hasPendingPayment = true;
         }
       }
 
@@ -117,7 +132,7 @@ export default async function MahasiswaDashboardPage() {
     }
   }
 
-  // Normalize status string (e.g. "ASESMEN_F02" -> "ASESMEN F02")
+  // Normalize status string
   const normalizedStatus = currentStatus.replace(/_/g, " ").replace("ASESOR", "PENILAI");
   let currentIndex = workflowSteps.indexOf(normalizedStatus as any);
   
@@ -125,19 +140,20 @@ export default async function MahasiswaDashboardPage() {
     currentIndex = 0;
   }
 
-  // Jika status masih PENDAFTARAN (0), karena user sudah login, anggap tahap 0 selesai
-  // dan sekarang berada di tahap 1 (LENGKAPI CV).
-  if (currentIndex === 0) {
+  if (currentIndex === 0 && hasAcceptedPayment) {
     currentIndex = 1;
   }
 
+  // Locked status for service menus
+  const isPaymentLocked = !hasAcceptedPayment;
+
   const menu = [
-    { title: "Biodata",            desc: "Data diri, orang tua & alamat.",          tone: "#1a56db", bg: "#dbeafe", lock: false, href: "/dashboard/mahasiswa/biodata",     emoji: "👤" },
-    { title: "CV Riwayat",         desc: "Pengalaman kerja & organisasi.",           tone: "#d97706", bg: "#fef3c7", lock: currentIndex < 1, href: "/dashboard/mahasiswa/cv",          emoji: "📄" },
-    { title: "Keuangan",           desc: "Tagihan & bukti pembayaran.",              tone: "#dc2626", bg: "#fee2e2", lock: currentIndex < 2, href: "/dashboard/mahasiswa/keuangan",    emoji: "💳" },
-    { title: "Form F02",           desc: "Pemilihan mata kuliah RPL.",               tone: "#059669", bg: "#d1fae5", lock: currentIndex < 3,  href: "/dashboard/mahasiswa/f02",         emoji: "📝" },
-    { title: "Test Kompetensi",    desc: "Ujian & capaian pembelajaran.",            tone: "#0284c7", bg: "#e0f2fe", lock: currentIndex < 4,  href: "/dashboard/mahasiswa/asesmen", emoji: "🎯" },
-    { title: "Form F03",           desc: "Evaluasi diri & portofolio.",              tone: "#6366f1", bg: "#ede9fe", lock: currentIndex < 5,  href: "/dashboard/mahasiswa/f03",         emoji: "📋" },
+    { title: "Keuangan",           desc: "Tagihan & bukti pembayaran.",              tone: "#dc2626", bg: "#fee2e2", lock: false, href: "/dashboard/mahasiswa/keuangan",    emoji: "💳" },
+    { title: "Biodata",            desc: "Data diri, orang tua & alamat.",          tone: "#1a56db", bg: "#dbeafe", lock: isPaymentLocked, href: "/dashboard/mahasiswa/biodata",     emoji: "👤" },
+    { title: "CV Riwayat",         desc: "Pengalaman kerja & organisasi.",           tone: "#d97706", bg: "#fef3c7", lock: isPaymentLocked || currentIndex < 1, href: "/dashboard/mahasiswa/cv",          emoji: "📄" },
+    { title: "Form F02",           desc: "Pemilihan mata kuliah RPL.",               tone: "#059669", bg: "#d1fae5", lock: isPaymentLocked || currentIndex < 3,  href: "/dashboard/mahasiswa/f02",         emoji: "📝" },
+    { title: "Test Kompetensi",    desc: "Ujian & capaian pembelajaran.",            tone: "#0284c7", bg: "#e0f2fe", lock: isPaymentLocked || currentIndex < 4,  href: "/dashboard/mahasiswa/asesmen", emoji: "🎯" },
+    { title: "Form F03",           desc: "Evaluasi diri & portofolio.",              tone: "#6366f1", bg: "#ede9fe", lock: isPaymentLocked || currentIndex < 5,  href: "/dashboard/mahasiswa/f03",         emoji: "📋" },
   ];
 
   const doneCount = currentIndex;
@@ -186,6 +202,158 @@ export default async function MahasiswaDashboardPage() {
         }
       />
 
+      {/* ─── PAYMENT GATE / TEASER WAITING ROOM (JIKA BELUM DIVERIFIKASI KEUANGAN) ─── */}
+      {!hasAcceptedPayment && (
+        <div style={{ marginBottom: 24 }}>
+          {hasPendingPayment ? (
+            /* TEASER WAITING ROOM: SUDAH UPLOAD BUKTI BAYAR, MENUNGGU VERIFIKASI */
+            <div
+              style={{
+                borderRadius: 24,
+                backgroundColor: "var(--md-surface-1)",
+                border: "2px solid var(--md-warning)",
+                boxShadow: "0 8px 30px rgba(217, 119, 6, 0.15)",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ padding: "24px 28px", background: "var(--md-warning-container)", borderBottom: "1px solid rgba(217,119,6,0.2)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: 18 }}>⏳</span>
+                    <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-warning)" }}>
+                      Status Pembayaran
+                    </span>
+                  </div>
+                  <h3 style={{ fontSize: 20, fontWeight: 900, color: "var(--md-on-surface)" }}>
+                    Bukti Pembayaran Anda Sedang Diverifikasi
+                  </h3>
+                  <p style={{ fontSize: 13.5, color: "var(--md-on-surface-variant)", marginTop: 4 }}>
+                    Tim Keuangan STIMI YAPMI sedang memvalidasi bukti transfer pendaftaran Anda (Estimasi 1–24 jam kerja).
+                  </p>
+                </div>
+
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <a
+                    href="https://wa.me/6281234567890?text=Halo%20Admin%20Keuangan%20STIMI%20YAPMI,%20saya%20sudah%20mengunggah%20bukti%20bayar%20pendaftaran%20RPL%20mohon%20diverifikasi."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      padding: "10px 20px",
+                      borderRadius: 999,
+                      background: "#25D366",
+                      color: "#fff",
+                      fontSize: 13,
+                      fontWeight: 800,
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      boxShadow: "0 4px 12px rgba(37,211,102,0.3)",
+                    }}
+                  >
+                    💬 Konfirmasi via WhatsApp
+                  </a>
+                  <Link
+                    href="/dashboard/mahasiswa/keuangan"
+                    style={{
+                      padding: "10px 18px",
+                      borderRadius: 999,
+                      background: "var(--md-surface-1)",
+                      border: "1px solid var(--md-outline)",
+                      color: "var(--md-on-surface)",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      textDecoration: "none",
+                    }}
+                  >
+                    Histori Pembayaran
+                  </Link>
+                </div>
+              </div>
+
+              {/* Teaser Content (Opsi B: Pelajari Sambil Menunggu) */}
+              <div style={{ padding: "28px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <span style={{ fontSize: 20 }}>💡</span>
+                  <h4 style={{ fontSize: 16, fontWeight: 800, color: "var(--md-on-surface)" }}>
+                    Sambil Menunggu: Pelajari Pengantar RPL & Silabus Klaster
+                  </h4>
+                </div>
+                <p style={{ fontSize: 13.5, color: "var(--md-on-surface-variant)", lineHeight: 1.6, marginBottom: 20 }}>
+                  Fitur akademik (pengisian F02, LMS matrikulasi, dan F03) akan terbuka otomatis setelah verifikasi selesai. Anda dapat memanfaatkan waktu tunggu untuk memahami peta mata kuliah RPL STIMI berikut:
+                </p>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
+                  {[
+                    { title: "Manajemen SDM", matkul: "4 MK • 12 SKS", desc: "MSDM, Perilaku Organisasi, Pelatihan Karir, Hubungan Industrial" },
+                    { title: "Manajemen Pemasaran", matkul: "4 MK • 12 SKS", desc: "Manajemen Pemasaran, Riset Pasar, Digital Marketing, Manajemen Penjualan" },
+                    { title: "Manajemen Keuangan", matkul: "4 MK • 12 SKS", desc: "Keuangan Dasar, Analisis Lap. Keuangan, Pajak Bisnis, Investasi" },
+                    { title: "Kewirausahaan & Bisnis", matkul: "4 MK • 12 SKS", desc: "Kewirausahaan Mandiri, Business Plan, Pengantar Manajemen, Operasional" },
+                  ].map((teaser, idx) => (
+                    <div key={idx} style={{ padding: "16px", borderRadius: 16, background: "var(--md-surface-2)", border: "1px solid var(--md-outline-variant)" }}>
+                      <p style={{ fontSize: 11, fontWeight: 800, color: "var(--md-primary)", textTransform: "uppercase", marginBottom: 4 }}>{teaser.matkul}</p>
+                      <h5 style={{ fontSize: 14.5, fontWeight: 800, color: "var(--md-on-surface)", marginBottom: 6 }}>{teaser.title}</h5>
+                      <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", lineHeight: 1.4 }}>{teaser.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* BELUM UPLOAD BUKTI BAYAR SAMA SEKALI */
+            <div
+              style={{
+                borderRadius: 24,
+                backgroundColor: "var(--md-surface-1)",
+                border: "2px solid var(--md-error)",
+                boxShadow: "0 8px 30px rgba(220, 38, 38, 0.12)",
+                padding: "28px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 20,
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 280 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <span style={{ fontSize: 20 }}>⚠️</span>
+                  <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-error)" }}>
+                    Langkah Wajib Pertama
+                  </span>
+                </div>
+                <h3 style={{ fontSize: 20, fontWeight: 900, color: "var(--md-on-surface)" }}>
+                  Selesaikan Pembayaran Biaya Pendaftaran RPL
+                </h3>
+                <p style={{ fontSize: 14, color: "var(--md-on-surface-variant)", marginTop: 6, lineHeight: 1.6 }}>
+                  Untuk membuka seluruh akses layanan akademik (Biodata, CV, Form F02, Test Mandiri, dan Portofolio F03), silakan transfer biaya pendaftaran dan unggah bukti transfer.
+                </p>
+                <div style={{ marginTop: 12, fontSize: 13, color: "var(--md-on-surface)" }}>
+                  <strong>Biaya Pendaftaran:</strong> Rp 250.000 • <strong>Rekening:</strong> BSI 7123456789 a.n. STIMI YAPMI Makassar
+                </div>
+              </div>
+
+              <Link
+                href="/dashboard/mahasiswa/keuangan"
+                style={{
+                  padding: "14px 28px",
+                  borderRadius: 999,
+                  background: "var(--md-error)",
+                  color: "#fff",
+                  fontSize: 14.5,
+                  fontWeight: 800,
+                  textDecoration: "none",
+                  boxShadow: "0 4px 14px rgba(220,38,38,0.3)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                💳 Unggah Bukti Transfer Sekarang →
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── Progress Card ── */}
       <div
         className="md-card animate-fade-up stagger-2 student-progress-card"
@@ -229,14 +397,14 @@ export default async function MahasiswaDashboardPage() {
             style={{
               width: `${progressPct}%`,
               height: "100%",
-              background: "linear-gradient(90deg, #1a56db, #6366f1)",
+              background: "linear-gradient(90deg, var(--md-primary), var(--md-secondary))",
               borderRadius: 999,
               transition: "width 1s ease",
             }}
           />
         </div>
 
-        {/* Step indicators (Cards style - Grid wrapped) */}
+        {/* Step indicators */}
         <div style={{ marginTop: 10, paddingBottom: 16 }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
             {workflowSteps.map((step, idx) => {
@@ -245,9 +413,9 @@ export default async function MahasiswaDashboardPage() {
               const stepName = step === "PENDAFTARAN" ? "PENDAFTARAN AKUN" : step;
               
               const details: Record<string, { note: string; icon: string }> = {
-                "PENDAFTARAN": { note: "Mahasiswa sudah memiliki akun.", icon: "👤" },
+                "PENDAFTARAN": { note: "Pendaftaran akun awal selesai.", icon: "👤" },
                 "LENGKAPI CV": { note: "Wajib melengkapi Biodata & CV.", icon: "📄" },
-                "PEMBAYARAN": { note: "Selesaikan tagihan registrasi.", icon: "💳" },
+                "PEMBAYARAN": { note: "Verifikasi tagihan registrasi.", icon: "💳" },
                 "ASESMEN F02": { note: "Pilih mata kuliah untuk RPL.", icon: "📝" },
                 "ASESMEN KOMPETENSI": { note: "Ikuti tes capaian pembelajaran.", icon: "🎯" },
                 "EVALUASI F03": { note: "Unggah portofolio asesmen.", icon: "📋" },
@@ -259,10 +427,8 @@ export default async function MahasiswaDashboardPage() {
 
               const detail = details[step] || { note: "Tahapan proses RPL.", icon: "📌" };
 
-              // Styling colors based on state
-              const bg = done ? "#059669" : active ? "#1a56db" : "var(--md-surface-variant)";
+              const bg = done ? "var(--md-success)" : active ? "var(--md-primary)" : "var(--md-surface-2)";
               const color = done || active ? "#fff" : "var(--md-on-surface-variant)";
-              const accent = done ? "rgba(255,255,255,0.15)" : active ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.05)";
               
               return (
                 <div
@@ -277,30 +443,26 @@ export default async function MahasiswaDashboardPage() {
                     overflow: "hidden",
                     display: "flex",
                     flexDirection: "column",
-                    boxShadow: active ? "0 8px 16px rgba(26,86,219,0.25)" : done ? "0 4px 12px rgba(5,150,105,0.15)" : "none",
+                    boxShadow: active ? "0 8px 16px var(--theme-glow)" : "none",
                     border: (!done && !active) ? "1px solid var(--md-outline-variant)" : "none",
-                    opacity: (!done && !active) ? 0.8 : 1,
                     transition: "all 300ms",
                   }}
                 >
-                  <div style={{ position: "absolute", top: -14, right: -14, width: 60, height: 60, borderRadius: "50%", background: accent, pointerEvents: "none" }} />
-                  <div style={{ position: "relative", zIndex: 1, flex: 1, display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 8 }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.9, lineHeight: 1.3, flex: 1, paddingRight: 8 }}>
-                        {stepName}
-                      </p>
-                      <span style={{ fontSize: 24, filter: done ? "drop-shadow(0 2px 4px rgba(0,0,0,0.2))" : "none", alignSelf: "flex-start", lineHeight: 1 }}>
-                        {done ? "✅" : detail.icon}
-                      </span>
-                    </div>
-                    <div style={{ flex: 1 }} />
-                    <p style={{ fontSize: 28, fontWeight: 800, lineHeight: 1, letterSpacing: "-0.03em", marginBottom: 6 }}>
-                      {idx + 1}
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 8 }}>
+                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.9, lineHeight: 1.3, flex: 1, paddingRight: 8 }}>
+                      {stepName}
                     </p>
-                    <p style={{ fontSize: 10, fontWeight: 600, opacity: 0.8, lineHeight: 1.4 }}>
-                      {detail.note}
-                    </p>
+                    <span style={{ fontSize: 20 }}>
+                      {done ? "✅" : detail.icon}
+                    </span>
                   </div>
+                  <div style={{ flex: 1 }} />
+                  <p style={{ fontSize: 24, fontWeight: 800, lineHeight: 1, letterSpacing: "-0.03em", marginBottom: 4 }}>
+                    {idx + 1}
+                  </p>
+                  <p style={{ fontSize: 10, fontWeight: 600, opacity: 0.85, lineHeight: 1.4 }}>
+                    {detail.note}
+                  </p>
                 </div>
               );
             })}
@@ -310,6 +472,32 @@ export default async function MahasiswaDashboardPage() {
         {/* Dynamic CTA */}
         <div style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap" }}>
           {(() => {
+            if (!hasAcceptedPayment) {
+              return (
+                <Link
+                  href="/dashboard/mahasiswa/keuangan"
+                  style={{
+                    flex: 1,
+                    minWidth: 160,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    background: "var(--md-primary)",
+                    color: "var(--md-on-primary)",
+                    borderRadius: 999,
+                    padding: "12px 20px",
+                    fontWeight: 800,
+                    fontSize: 14,
+                    boxShadow: "0 4px 14px var(--theme-glow)",
+                    textDecoration: "none",
+                  }}
+                >
+                  💳 {hasPendingPayment ? "Cek Status Verifikasi Pembayaran" : "Kirim Bukti Pembayaran Pendaftaran"}
+                </Link>
+              );
+            }
+
             let ctaText = "📝 Isi Form F02 Sekarang";
             let ctaHref = "/dashboard/mahasiswa/f02";
 
@@ -346,14 +534,14 @@ export default async function MahasiswaDashboardPage() {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 8,
-                  background: "linear-gradient(90deg, #1a56db, #6366f1)",
-                  color: "#fff",
+                  background: "var(--md-primary)",
+                  color: "var(--md-on-primary)",
                   borderRadius: 999,
                   padding: "12px 20px",
                   fontWeight: 800,
                   fontSize: 14,
-                  boxShadow: "0 4px 12px rgba(26,86,219,0.30)",
-                  transition: "filter 200ms, transform 150ms",
+                  boxShadow: "0 4px 14px var(--theme-glow)",
+                  textDecoration: "none",
                 }}
               >
                 {ctaText}
@@ -387,8 +575,8 @@ export default async function MahasiswaDashboardPage() {
             }}
           >
             <Link
-              href={item.lock ? "#" : item.href}
-              style={{ display: "block", textDecoration: "none", height: "100%", pointerEvents: item.lock ? "none" : "auto" }}
+              href={item.lock ? "/dashboard/mahasiswa/keuangan" : item.href}
+              style={{ display: "block", textDecoration: "none", height: "100%" }}
             >
               <div style={{ position: "absolute", top: -20, right: -20, width: 100, height: 100, background: `radial-gradient(circle at center, ${item.bg} 0%, transparent 70%)`, opacity: 0.6, pointerEvents: "none", borderRadius: "50%" }} />
               <div
@@ -433,7 +621,7 @@ export default async function MahasiswaDashboardPage() {
                   zIndex: 1,
                 }}
               >
-                {item.lock ? "Fitur terkunci sistem." : item.desc}
+                {item.lock ? "Terkunci (Selesaikan Pembayaran)" : item.desc}
               </p>
 
               {!item.lock && (

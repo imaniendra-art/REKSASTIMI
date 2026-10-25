@@ -541,7 +541,7 @@ export function SertifikatClient({ klasterId }: { klasterId: string }) {
             <h1 className="kop-title">STIMI YAPMI MAKASSAR</h1>
             <div className="kop-subtitle">Sekolah Tinggi Ilmu Manajemen Informatika YAPMI</div>
             <div className="kop-separator"></div>
-            <div className="kop-reksa">REKSA – Rekognisi, Evaluasi, Konversi Akademik</div>
+            <div className="kop-reksa">REKSA – Rekognisi Evaluasi dan Konversi Akademik STIMI</div>
           </div>
 
           <h2 className="cert-main-title">SERTIFIKAT KOMPETENSI</h2>
@@ -553,7 +553,7 @@ export function SertifikatClient({ klasterId }: { klasterId: string }) {
           </div>
 
           <div className="cert-description">
-            yang telah mengikuti dan dinyatakan berhasil dalam proses Rekognisi, Evaluasi, dan Konversi Akademik (REKSA) serta memenuhi kompetensi sesuai klaster yang ditetapkan.<br />
+            yang telah mengikuti dan dinyatakan berhasil dalam proses Rekognisi Evaluasi dan Konversi Akademik STIMI (REKSA) serta memenuhi kompetensi sesuai klaster yang ditetapkan.<br />
             Sertifikat ini diberikan sebagai pengakuan atas capaian kompetensi yang telah diperoleh.
           </div>
 
@@ -625,7 +625,7 @@ export function SertifikatClient({ klasterId }: { klasterId: string }) {
             <h1 className="kop-title">STIMI YAPMI MAKASSAR</h1>
             <div className="kop-subtitle">Sekolah Tinggi Ilmu Manajemen Informatika YAPMI</div>
             <div className="kop-separator"></div>
-            <div className="kop-reksa">REKSA – Rekognisi, Evaluasi, Konversi Akademik</div>
+            <div className="kop-reksa">REKSA – Rekognisi Evaluasi dan Konversi Akademik STIMI</div>
           </div>
 
           <div className="transcript-title-container">

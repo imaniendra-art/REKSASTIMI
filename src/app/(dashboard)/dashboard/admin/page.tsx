@@ -54,7 +54,7 @@ export default async function AdminDashboardPage() {
       {/* ── Page Header ── */}
       <PageHero
         title={<>Selamat Datang, <span style={{ color: "#e0e7ff" }}>{userName}</span></>}
-        subtitle={<>Selamat bekerja sebagai <strong style={{ textTransform: "capitalize", color: "#fff" }}>{userRole}</strong>! Semoga harimu menyenangkan.<br/><span style={{ fontSize: 13, opacity: 0.8 }}>Rekognisi Evaluasi Keahlian dan Konversi Akademik (REKSA) — STIMI YAPMI Makassar</span></>}
+        subtitle={<>Selamat bekerja sebagai <strong style={{ textTransform: "capitalize", color: "#fff" }}>{userRole}</strong>! Semoga harimu menyenangkan.<br/><span style={{ fontSize: 13, opacity: 0.8 }}>Rekognisi Evaluasi dan Konversi Akademik STIMI (REKSA) — STIMI YAPMI Makassar</span></>}
         withSparkles
       />
 
