@@ -257,8 +257,52 @@ export function PublicLandingClient() {
               lineHeight: 1.65,
             }}
           >
-            Platform <strong>REKSA STIMI</strong> (<strong>Rekognisi Evaluasi dan Konversi Akademik STIMI</strong>) membantu pekerja, wirausahawan, dan lulusan diploma mengonversikan jam terbang kerja, portofolio proyek, serta sertifikasi keahlian menjadi <strong>hingga 100 SKS resmi</strong>. Kuliah lebih cepat, hemat, dan sah diakui PDDikti.
+            Platform <strong>REKSA STIMI</strong> (<strong>Rekognisi Evaluasi dan Konversi Akademik STIMI</strong>) membantu pekerja profesional, wirausahawan, ASN (Aparatur Sipil Negara), anggota POLRI, prajurit TNI, praktisi manajerial (supervisor, manajer operasional, kepala cabang/ruangan), hingga lulusan diploma mengonversikan jam terbang kerja, kepemimpinan tim, portofolio proyek, serta sertifikasi keahlian menjadi <strong>hingga 100 SKS resmi</strong>. Kuliah lebih cepat, hemat, dan sah diakui PDDikti.
           </p>
+
+          {/* Target Audience Badges */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 8,
+              flexWrap: "wrap",
+              maxWidth: 1000,
+              margin: "-16px auto 44px",
+            }}
+          >
+            {[
+              { icon: "🏛️", label: "Aparatur Sipil Negara (ASN/PNS)" },
+              { icon: "👮", label: "Anggota POLRI" },
+              { icon: "🎖️", label: "Prajurit TNI" },
+              { icon: "💼", label: "Pekerja & Karyawan Swasta" },
+              { icon: "🚀", label: "Wirausahawan & Pelaku UMKM" },
+              { icon: "🏢", label: "Supervisor & Manajer Operasional" },
+              { icon: "🏥", label: "Nakes & Admin Faskes / Rumah Sakit" },
+              { icon: "🏦", label: "Staf BUMN, BUMD & Perbankan" },
+              { icon: "🎓", label: "Lulusan Diploma (D1/D2/D3) & Pindahan" },
+            ].map((p, idx) => (
+              <span
+                key={idx}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "6px 14px",
+                  borderRadius: 999,
+                  backgroundColor: "var(--md-surface-1)",
+                  border: "1px solid var(--md-outline-variant)",
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  color: "var(--md-on-surface)",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                }}
+              >
+                <span>{p.icon}</span>
+                <span>{p.label}</span>
+              </span>
+            ))}
+          </div>
 
           {/* CTAs */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", marginBottom: 64 }}>
@@ -414,12 +458,13 @@ export function PublicLandingClient() {
               Jalur Perolehan SKS (Pengalaman Kerja)
             </h3>
             <p style={{ fontSize: 14.5, color: "var(--md-on-surface-variant)", lineHeight: 1.6, marginBottom: 16 }}>
-              Diperuntukkan bagi Anda yang telah bekerja minimal 2–3 tahun, memiliki usaha sendiri, atau aktif di organisasi. Jam terbang profesional Anda diajukan untuk dinilai asesor dan dikonversi menjadi mata kuliah yang relevan.
+              Diperuntukkan bagi pekerja profesional, wirausahawan, ASN/PNS, anggota POLRI, prajurit TNI, serta praktisi manajerial (supervisor, manajer operasional, kepala cabang/unit) dengan jam terbang kerja minimal 2–3 tahun. Pengalaman kepemimpinan, koordinasi tugas, pengelolaan anggaran, dan administrasi diajukan untuk dinilai asesor menjadi SKS resmi Sarjana Manajemen (S1).
             </p>
             <ul style={{ fontSize: 13.5, color: "var(--md-on-surface)", paddingLeft: 20, lineHeight: 1.8 }}>
-              <li>Surat keterangan kerja & portofolio proyek</li>
-              <li>Sertifikasi profesi & keikutsertaan pelatihan</li>
-              <li>Produk usaha, NIB, atau laporan manajerial</li>
+              <li>SK Jabatan / Pangkat / Penugasan (ASN, POLRI, TNI, Karyawan)</li>
+              <li>Surat keterangan kerja, portofolio proyek & laporan manajerial</li>
+              <li>Sertifikasi profesi, diklat kepemimpinan, atau pelatihan teknis</li>
+              <li>Legalitas usaha (NIB/CV/PT) bagi wirausahawan & pelaku UMKM</li>
             </ul>
           </div>
 

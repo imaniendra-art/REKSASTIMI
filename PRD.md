@@ -9,7 +9,7 @@
 ---
 
 ## 1. Latar Belakang & Tujuan
-REKSA STIMI adalah platform manajemen Rekognisi Pembelajaran Lampau (RPL Tipe A) untuk Program Studi S1 Manajemen STIMI YAPMI Makassar. 
+REKSA STIMI adalah platform manajemen Rekognisi Pembelajaran Lampau (RPL Tipe A) untuk Program Studi S1 Manajemen STIMI YAPMI Makassar, yang memfasilitasi konversi jam terbang profesional para pekerja swasta, wirausahawan UMKM, ASN/PNS, anggota POLRI, prajurit TNI, praktisi manajerial (supervisor, manajer operasional, kepala cabang/ruangan), staf BUMN/Perbankan, nakes faskes, dan lulusan diploma menjadi hingga 100 SKS resmi sarjana. 
 Versi Core MVP sebelumnya telah berhasil lolos 100% uji coba A-Z (22 skenario UAT). 
 
 Tahap ini berfokus pada **perombakan total antarmuka (UI/UX Overhaul)**, **penyediaan Portal Publik yang komprehensif & edukatif**, serta **penyederhanaan funnel pendaftaran (Onboarding Ringan + Payment Gate)** tanpa mengorbankan integritas fitur inti akademik yang telah selesai.
