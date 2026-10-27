@@ -7,21 +7,21 @@ import { saveCVData } from "./actions";
 /* ── Shared style helpers ── */
 const inputBase: React.CSSProperties = {
   width: "100%",
-  background: "#fff",
-  border: "2px solid #cbd5e1",
+  background: "var(--md-surface-1)",
+  border: "1px solid var(--md-outline)",
   borderRadius: 10,
-  padding: "8px 12px",
-  fontSize: 12,
-  fontWeight: 500,
+  padding: "9px 12px",
+  fontSize: 12.5,
+  fontWeight: 600,
   color: "var(--md-on-surface)",
   outline: "none",
-  transition: "border 200ms, box-shadow 200ms, background 200ms",
+  transition: "all 0.18s ease",
 };
 
 const labelBase: React.CSSProperties = {
   display: "block",
-  fontSize: 10,
-  fontWeight: 700,
+  fontSize: 10.5,
+  fontWeight: 800,
   color: "var(--md-on-surface-variant)",
   marginBottom: 4,
   textTransform: "uppercase",
@@ -29,10 +29,10 @@ const labelBase: React.CSSProperties = {
 };
 
 const sectionCard = (color: string): React.CSSProperties => ({
-  background: "var(--md-surface)",
-  borderRadius: 16,
-  padding: "20px 20px 24px",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+  background: "var(--md-surface-1)",
+  borderRadius: 18,
+  padding: "22px 24px",
+  boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
   border: "1px solid var(--md-outline-variant)",
   position: "relative",
   overflow: "hidden",
@@ -40,36 +40,39 @@ const sectionCard = (color: string): React.CSSProperties => ({
 });
 
 const entryCard: React.CSSProperties = {
-  background: "#f8fafc",
-  border: "1px solid #e2e8f0",
-  borderRadius: 12,
+  background: "var(--md-surface-2)",
+  border: "1px solid var(--md-outline-variant)",
+  borderRadius: 14,
   padding: 16,
   marginBottom: 12,
   position: "relative",
 };
 
 const addButton: React.CSSProperties = {
-  background: "#eff6ff",
-  color: "#1a56db",
-  border: "1.5px dashed #93c5fd",
+  background: "var(--md-primary-container)",
+  color: "var(--md-primary)",
+  border: "1px dashed var(--md-primary)",
   borderRadius: 10,
-  padding: "8px 12px",
-  fontSize: 11,
+  padding: "8px 14px",
+  fontSize: 11.5,
   fontWeight: 800,
   cursor: "pointer",
   marginTop: 4,
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 6,
 };
 
 const removeButton: React.CSSProperties = {
   position: "absolute",
   top: 10,
   right: 10,
-  background: "#fee2e2",
-  color: "#b91c1c",
+  background: "var(--md-error-container)",
+  color: "var(--md-error)",
   border: "none",
   borderRadius: 6,
-  padding: "4px 8px",
-  fontSize: 9,
+  padding: "3px 8px",
+  fontSize: 10,
   fontWeight: 900,
   cursor: "pointer",
 };
@@ -83,9 +86,23 @@ function Field({ label, value, onChange, required, type = "text", placeholder }:
     <div>
       <label style={labelBase}>
         {label}
-        {required ? <span style={{ color: "#ef4444", marginLeft: 2 }}>*</span> : null}
+        {required ? <span style={{ color: "var(--md-error)", marginLeft: 2 }}>*</span> : null}
       </label>
-      <input type={type} value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={inputBase} />
+      <input
+        type={type}
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={inputBase}
+        onFocus={(e) => {
+          e.currentTarget.style.borderColor = "var(--md-primary)";
+          e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = "var(--md-outline)";
+          e.currentTarget.style.boxShadow = "none";
+        }}
+      />
     </div>
   );
 }
@@ -95,11 +112,25 @@ function SelectField({ label, value, onChange, required, options }: any) {
     <div>
       <label style={labelBase}>
         {label}
-        {required ? <span style={{ color: "#ef4444", marginLeft: 2 }}>*</span> : null}
+        {required ? <span style={{ color: "var(--md-error)", marginLeft: 2 }}>*</span> : null}
       </label>
-      <select value={value || ""} onChange={(e) => onChange(e.target.value)} style={{ ...inputBase, cursor: "pointer" }}>
-        <option value="" disabled>Pilih</option>
-        {options.map((option: any) => <option key={option.value} value={option.value}>{option.label}</option>)}
+      <select
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+        style={{ ...inputBase, cursor: "pointer" }}
+        onFocus={(e) => {
+          e.currentTarget.style.borderColor = "var(--md-primary)";
+          e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = "var(--md-outline)";
+          e.currentTarget.style.boxShadow = "none";
+        }}
+      >
+        <option value="" disabled style={{ color: "var(--md-on-surface-variant)" }}>-- Pilih --</option>
+        {options.map((option: any) => (
+          <option key={option.value} value={option.value}>{option.label}</option>
+        ))}
       </select>
     </div>
   );
@@ -109,7 +140,21 @@ function TextArea({ label, value, onChange, placeholder }: any) {
   return (
     <div>
       <label style={labelBase}>{label}</label>
-      <textarea value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} rows={3} style={{ ...inputBase, resize: "vertical" }} />
+      <textarea
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={3}
+        style={{ ...inputBase, resize: "vertical" }}
+        onFocus={(e) => {
+          e.currentTarget.style.borderColor = "var(--md-primary)";
+          e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = "var(--md-outline)";
+          e.currentTarget.style.boxShadow = "none";
+        }}
+      />
     </div>
   );
 }
@@ -117,9 +162,9 @@ function TextArea({ label, value, onChange, placeholder }: any) {
 function SectionTitle({ n, title, subtitle, color }: any) {
   return (
     <div style={{ marginBottom: 16 }}>
-      <p style={{ fontSize: 10, fontWeight: 900, color, textTransform: "uppercase", letterSpacing: "0.1em" }}>Bagian {n}</p>
-      <h2 style={{ marginTop: 2, fontSize: 16, fontWeight: 900, color: "var(--md-on-surface)" }}>{title}</h2>
-      {subtitle ? <p style={{ marginTop: 2, fontSize: 11, color: "var(--md-on-surface-variant)", fontWeight: 700 }}>{subtitle}</p> : null}
+      <p style={{ fontSize: 10, fontWeight: 900, color, textTransform: "uppercase", letterSpacing: "0.08em" }}>Bagian {n}</p>
+      <h2 style={{ marginTop: 2, fontSize: 15.5, fontWeight: 900, color: "var(--md-on-surface)" }}>{title}</h2>
+      {subtitle ? <p style={{ marginTop: 2, fontSize: 11.5, color: "var(--md-on-surface-variant)", fontWeight: 600 }}>{subtitle}</p> : null}
     </div>
   );
 }
@@ -140,14 +185,14 @@ function ArraySection({ n, title, color, items, setter, addLabel, render }: any)
         <div key={index} style={entryCard}>
           {items.length > 1 ? (
             <button type="button" onClick={() => setter((prev: any[]) => prev.length > 1 ? prev.filter((_, i) => i !== index) : [{}])} style={removeButton}>
-              HAPUS
+              ✕ Hapus
             </button>
           ) : null}
           {render(item, index)}
         </div>
       ))}
       <button type="button" onClick={() => setter((prev: any[]) => [...prev, {}])} style={addButton}>
-        {addLabel}
+        <span>+</span> <span>{addLabel}</span>
       </button>
     </div>
   );
@@ -204,7 +249,7 @@ export default function CVForm({ initialData }: { initialData: any }) {
 
     const result = await saveCVData(payload);
     if (result.success) {
-      setMessage({ type: "success", text: "CV Riwayat Hidup berhasil disimpan. Mengalihkan ke dashboard..." });
+      setMessage({ type: "success", text: "CV Riwayat Hidup (F-07) berhasil disimpan. Mengalihkan ke dashboard..." });
       setTimeout(() => {
         router.push("/dashboard/mahasiswa");
         router.refresh();
@@ -216,25 +261,26 @@ export default function CVForm({ initialData }: { initialData: any }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18, marginTop: 24 }}>
       {message.text ? (
         <div
           style={{
-            padding: "12px 16px",
-            borderRadius: 10,
-            fontSize: 12,
+            padding: "14px 18px",
+            borderRadius: 12,
+            fontSize: 12.5,
             fontWeight: 800,
-            background: message.type === "success" ? "#d1fae5" : "#fee2e2",
-            color: message.type === "success" ? "#065f46" : "#991b1b",
-            border: `1.5px solid ${message.type === "success" ? "#34d399" : "#f87171"}`,
+            background: message.type === "success" ? "var(--md-success-container)" : "var(--md-error-container)",
+            color: message.type === "success" ? "var(--md-success)" : "var(--md-error)",
+            border: `1.5px solid ${message.type === "success" ? "var(--md-success)" : "var(--md-error)"}`,
           }}
         >
           {message.text}
         </div>
       ) : null}
 
-      <div style={sectionCard("#1a56db")}>
-        <SectionTitle n="I" title="Identitas Pekerjaan Saat Ini" subtitle="Mengikuti isian identitas F07 pada SIRESTI." color="#1a56db" />
+      {/* Bagian I: Pekerjaan Saat Ini */}
+      <div style={sectionCard("var(--md-primary)")}>
+        <SectionTitle n="I" title="Identitas Pekerjaan Saat Ini" subtitle="Data tempat kerja atau aktivitas usaha calon mahasiswa saat ini." color="var(--md-primary)" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 12 }}>
           <SelectField label="Status Pernikahan" value={currentWork.maritalStatus} onChange={(v: string) => setCurrentWork({ ...currentWork, maritalStatus: v })} options={[
             { value: "Lajang", label: "Lajang" },
@@ -243,77 +289,83 @@ export default function CVForm({ initialData }: { initialData: any }) {
           <SelectField label="Status Pekerjaan" value={currentWork.employmentStatus} onChange={(v: string) => setCurrentWork({ ...currentWork, employmentStatus: v })} options={[
             { value: "Pegawai Tetap", label: "Pegawai Tetap" },
             { value: "Pegawai Honorer", label: "Pegawai Honorer" },
-            { value: "PNS", label: "PNS" },
-            { value: "Wiraswasta", label: "Wiraswasta" },
+            { value: "PNS", label: "PNS / ASN" },
+            { value: "Wiraswasta", label: "Wiraswasta / Wirausaha" },
             { value: "Belum Bekerja", label: "Belum Bekerja" },
           ]} />
-          <Field label="Institusi / Perusahaan" value={currentWork.institution} onChange={(v: string) => setCurrentWork({ ...currentWork, institution: v })} />
-          <Field label="Jabatan Saat Ini" value={currentWork.position} onChange={(v: string) => setCurrentWork({ ...currentWork, position: v })} />
-          <Field label="Telepon Kantor" value={currentWork.officePhone} onChange={(v: string) => setCurrentWork({ ...currentWork, officePhone: v })} />
-          <Field label="Email Kantor" type="email" value={currentWork.officeEmail} onChange={(v: string) => setCurrentWork({ ...currentWork, officeEmail: v })} />
+          <Field label="Institusi / Perusahaan" value={currentWork.institution} onChange={(v: string) => setCurrentWork({ ...currentWork, institution: v })} placeholder="PT / CV / Lembaga" />
+          <Field label="Jabatan Saat Ini" value={currentWork.position} onChange={(v: string) => setCurrentWork({ ...currentWork, position: v })} placeholder="Staff / Supervisor / Manager" />
+          <Field label="Telepon Kantor" value={currentWork.officePhone} onChange={(v: string) => setCurrentWork({ ...currentWork, officePhone: v })} placeholder="0411-xxxx" />
+          <Field label="Email Kantor" type="email" value={currentWork.officeEmail} onChange={(v: string) => setCurrentWork({ ...currentWork, officeEmail: v })} placeholder="kantor@perusahaan.com" />
         </div>
-        <div style={{ marginTop: 16 }}>
+        <div style={{ marginTop: 14 }}>
           <Field label="Alamat Kantor" value={currentWork.officeAddress} onChange={(v: string) => setCurrentWork({ ...currentWork, officeAddress: v })} placeholder="Jl. ... Kota ..." />
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <ArraySection n="II" title="Riwayat Pendidikan" color="#059669" items={formalEducation} setter={setFormalEducation} addLabel="Tambah Pendidikan" render={(item: any, index: number) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+          {/* Bagian II: Pendidikan Formal */}
+          <ArraySection n="II" title="Riwayat Pendidikan Formal" color="var(--md-success)" items={formalEducation} setter={setFormalEducation} addLabel="Tambah Riwayat Pendidikan" render={(item: any, index: number) => (
             <CompactGrid>
-              <SelectField label="Jenjang" required value={item.level} onChange={(v: string) => updateArray(setFormalEducation, index, "level", v)} options={[{ value: "SMA/SMK", label: "SMA/SMK" }, { value: "D1", label: "D1" }, { value: "D2", label: "D2" }, { value: "D3", label: "D3" }, { value: "D4/S1", label: "D4/S1" }, { value: "S2", label: "S2" }]} />
-              <Field label="Nama Sekolah / Kampus" required value={item.institution} onChange={(v: string) => updateArray(setFormalEducation, index, "institution", v)} />
-              <Field label="Jurusan" required value={item.major} onChange={(v: string) => updateArray(setFormalEducation, index, "major", v)} />
-              <Field label="Tahun Lulus" required type="number" value={item.graduationYear} onChange={(v: string) => updateArray(setFormalEducation, index, "graduationYear", v)} />
+              <SelectField label="Jenjang" required value={item.level} onChange={(v: string) => updateArray(setFormalEducation, index, "level", v)} options={[{ value: "SMA/SMK", label: "SMA / SMK / MA" }, { value: "D1", label: "Diploma 1 (D1)" }, { value: "D2", label: "Diploma 2 (D2)" }, { value: "D3", label: "Diploma 3 (D3)" }, { value: "D4/S1", label: "D4 / S1 (Pindahan)" }, { value: "S2", label: "Magister (S2)" }]} />
+              <Field label="Nama Sekolah / Kampus" required value={item.institution} onChange={(v: string) => updateArray(setFormalEducation, index, "institution", v)} placeholder="Nama institusi" />
+              <Field label="Jurusan / Program Studi" required value={item.major} onChange={(v: string) => updateArray(setFormalEducation, index, "major", v)} placeholder="Jurusan" />
+              <Field label="Tahun Lulus" required type="number" value={item.graduationYear} onChange={(v: string) => updateArray(setFormalEducation, index, "graduationYear", v)} placeholder="YYYY" />
             </CompactGrid>
           )} />
 
-          <ArraySection n="III" title="Riwayat Pekerjaan" color="#d97706" items={workExperience} setter={setWorkExperience} addLabel="Tambah Pekerjaan" render={(item: any, index: number) => (
-            <div style={{ display: "grid", gap: 16 }}>
+          {/* Bagian III: Riwayat Pekerjaan */}
+          <ArraySection n="III" title="Riwayat Pengalaman Kerja" color="var(--md-warning)" items={workExperience} setter={setWorkExperience} addLabel="Tambah Pengalaman Kerja" render={(item: any, index: number) => (
+            <div style={{ display: "grid", gap: 12 }}>
               <CompactGrid>
                 <Field label="Nama Perusahaan / Institusi" required value={item.company} onChange={(v: string) => updateArray(setWorkExperience, index, "company", v)} />
                 <Field label="Alamat Perusahaan" required value={item.companyAddress} onChange={(v: string) => updateArray(setWorkExperience, index, "companyAddress", v)} />
                 <Field label="Jabatan" required value={item.position} onChange={(v: string) => updateArray(setWorkExperience, index, "position", v)} />
-                <Field label="Masuk (tgl/bln/th)" required value={item.startDate || item.startYear} onChange={(v: string) => updateArray(setWorkExperience, index, "startDate", v)} placeholder="01/05/2020" />
-                <Field label="Keluar (tgl/bln/th)" required value={item.endDate || item.endYear} onChange={(v: string) => updateArray(setWorkExperience, index, "endDate", v)} placeholder="01/12/2023 / Sekarang" />
+                <Field label="Mulai (Bln/Thn)" required value={item.startDate || item.startYear} onChange={(v: string) => updateArray(setWorkExperience, index, "startDate", v)} placeholder="01/2020" />
+                <Field label="Selesai (Bln/Thn)" required value={item.endDate || item.endYear} onChange={(v: string) => updateArray(setWorkExperience, index, "endDate", v)} placeholder="12/2023 / Sekarang" />
               </CompactGrid>
-              <TextArea label="Uraian Tugas Utama" value={item.description} onChange={(v: string) => updateArray(setWorkExperience, index, "description", v)} placeholder="Sebutkan tugas utama Anda..." />
+              <TextArea label="Uraian Tugas & Tanggung Jawab Utama" value={item.description} onChange={(v: string) => updateArray(setWorkExperience, index, "description", v)} placeholder="Jelaskan peran kerja dan kontribusi yang relevan dengan capaian pembelajaran mata kuliah..." />
             </div>
           )} />
 
-          <ArraySection n="IV" title="Pelatihan" color="#0284c7" items={trainings} setter={setTrainings} addLabel="Tambah Pelatihan" render={(item: any, index: number) => (
+          {/* Bagian IV: Pelatihan */}
+          <ArraySection n="IV" title="Pelatihan & Kursus Profesional" color="var(--md-info)" items={trainings} setter={setTrainings} addLabel="Tambah Pelatihan" render={(item: any, index: number) => (
             <CompactGrid>
-              <Field label="Nama Pelatihan" value={item.name} onChange={(v: string) => updateArray(setTrainings, index, "name", v)} />
-              <Field label="Penyelenggara" value={item.organizer} onChange={(v: string) => updateArray(setTrainings, index, "organizer", v)} />
-              <Field label="Tahun" type="number" value={item.year} onChange={(v: string) => updateArray(setTrainings, index, "year", v)} />
+              <Field label="Nama Pelatihan / Kursus" value={item.name} onChange={(v: string) => updateArray(setTrainings, index, "name", v)} placeholder="Nama sertifikasi/pelatihan" />
+              <Field label="Penyelenggara" value={item.organizer} onChange={(v: string) => updateArray(setTrainings, index, "organizer", v)} placeholder="Lembaga penerbit" />
+              <Field label="Tahun" type="number" value={item.year} onChange={(v: string) => updateArray(setTrainings, index, "year", v)} placeholder="YYYY" />
             </CompactGrid>
           )} />
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <ArraySection n="V" title="Konferensi / Seminar" color="#f59e0b" items={conferences} setter={setConferences} addLabel="Tambah Konferensi" render={(item: any, index: number) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+          {/* Bagian V: Konferensi */}
+          <ArraySection n="V" title="Konferensi, Seminar & Lokakarya" color="var(--md-secondary)" items={conferences} setter={setConferences} addLabel="Tambah Seminar" render={(item: any, index: number) => (
             <CompactGrid>
-              <Field label="Judul Kegiatan" value={item.title} onChange={(v: string) => updateArray(setConferences, index, "title", v)} />
-              <Field label="Penyelenggara" value={item.organizer} onChange={(v: string) => updateArray(setConferences, index, "organizer", v)} />
-              <Field label="Tahun" type="number" value={item.year} onChange={(v: string) => updateArray(setConferences, index, "year", v)} />
-              <SelectField label="Status" value={item.status} onChange={(v: string) => updateArray(setConferences, index, "status", v)} options={[{ value: "Peserta", label: "Peserta" }, { value: "Panitia", label: "Panitia" }, { value: "Pembicara", label: "Pembicara" }]} />
+              <Field label="Judul Kegiatan" value={item.title} onChange={(v: string) => updateArray(setConferences, index, "title", v)} placeholder="Tema seminar" />
+              <Field label="Penyelenggara" value={item.organizer} onChange={(v: string) => updateArray(setConferences, index, "organizer", v)} placeholder="Institusi" />
+              <Field label="Tahun" type="number" value={item.year} onChange={(v: string) => updateArray(setConferences, index, "year", v)} placeholder="YYYY" />
+              <SelectField label="Peran / Status" value={item.status} onChange={(v: string) => updateArray(setConferences, index, "status", v)} options={[{ value: "Peserta", label: "Peserta" }, { value: "Panitia", label: "Panitia" }, { value: "Pembicara", label: "Narasumber / Pembicara" }]} />
             </CompactGrid>
           )} />
 
-          <ArraySection n="VI" title="Penghargaan" color="#dc2626" items={achievements} setter={setAchievements} addLabel="Tambah Penghargaan" render={(item: any, index: number) => (
+          {/* Bagian VI: Penghargaan */}
+          <ArraySection n="VI" title="Prestasi & Penghargaan" color="var(--md-error)" items={achievements} setter={setAchievements} addLabel="Tambah Penghargaan" render={(item: any, index: number) => (
             <CompactGrid>
-              <Field label="Bentuk Penghargaan" value={item.name} onChange={(v: string) => updateArray(setAchievements, index, "name", v)} />
-              <Field label="Pemberi" value={item.issuer} onChange={(v: string) => updateArray(setAchievements, index, "issuer", v)} />
-              <Field label="Tahun" type="number" value={item.year} onChange={(v: string) => updateArray(setAchievements, index, "year", v)} />
+              <Field label="Bentuk Penghargaan" value={item.name} onChange={(v: string) => updateArray(setAchievements, index, "name", v)} placeholder="Juara / Best Employee" />
+              <Field label="Lembaga Pemberi" value={item.issuer} onChange={(v: string) => updateArray(setAchievements, index, "issuer", v)} placeholder="Perusahaan / Dinas" />
+              <Field label="Tahun" type="number" value={item.year} onChange={(v: string) => updateArray(setAchievements, index, "year", v)} placeholder="YYYY" />
             </CompactGrid>
           )} />
 
-          <ArraySection n="VII" title="Organisasi" color="#64748b" items={organizations} setter={setOrganizations} addLabel="Tambah Organisasi" render={(item: any, index: number) => (
+          {/* Bagian VII: Organisasi */}
+          <ArraySection n="VII" title="Pengalaman Organisasi" color="var(--md-on-surface-variant)" items={organizations} setter={setOrganizations} addLabel="Tambah Organisasi" render={(item: any, index: number) => (
             <CompactGrid>
-              <Field label="Nama Organisasi" value={item.name} onChange={(v: string) => updateArray(setOrganizations, index, "name", v)} />
-              <Field label="Jabatan" value={item.position} onChange={(v: string) => updateArray(setOrganizations, index, "position", v)} />
-              <Field label="Tahun Mulai" type="number" value={item.startYear} onChange={(v: string) => updateArray(setOrganizations, index, "startYear", v)} />
-              <Field label="Tahun Selesai" value={item.endYear} onChange={(v: string) => updateArray(setOrganizations, index, "endYear", v)} />
+              <Field label="Nama Organisasi / Komunitas" value={item.name} onChange={(v: string) => updateArray(setOrganizations, index, "name", v)} placeholder="Asosiasi / Komunitas" />
+              <Field label="Jabatan / Peran" value={item.position} onChange={(v: string) => updateArray(setOrganizations, index, "position", v)} placeholder="Ketua / Anggota" />
+              <Field label="Tahun Mulai" type="number" value={item.startYear} onChange={(v: string) => updateArray(setOrganizations, index, "startYear", v)} placeholder="YYYY" />
+              <Field label="Tahun Selesai" value={item.endYear} onChange={(v: string) => updateArray(setOrganizations, index, "endYear", v)} placeholder="YYYY / Sekarang" />
             </CompactGrid>
           )} />
         </div>
@@ -324,21 +376,22 @@ export default function CVForm({ initialData }: { initialData: any }) {
         disabled={loading}
         style={{
           width: "100%",
-          background: "linear-gradient(90deg, #1a56db, #6366f1)",
-          color: "#fff",
+          background: "var(--md-primary)",
+          color: "var(--md-on-primary)",
           border: "none",
-          borderRadius: 14,
-          padding: "16px 24px",
-          fontSize: 15,
-          fontWeight: 900,
+          borderRadius: 999,
+          padding: "15px 24px",
+          fontSize: 14,
+          fontWeight: 800,
           cursor: loading ? "wait" : "pointer",
           opacity: loading ? 0.7 : 1,
-          boxShadow: "0 6px 20px rgba(26,86,219,0.3)",
+          boxShadow: "0 4px 16px var(--theme-glow)",
+          transition: "all 0.18s ease",
+          marginTop: 10,
         }}
       >
-        {loading ? "Menyimpan..." : "SIMPAN CV & RIWAYAT"}
+        {loading ? "Menyimpan Data Riwayat Hidup..." : "Simpan CV & Riwayat Hidup (F-07) →"}
       </button>
     </form>
   );
-
 }

@@ -4,7 +4,7 @@ const documentSchema = new Schema(
   {
     type: {
       type: String,
-      enum: ["ktp", "kk", "ijazah", "pendukung", "ttd"],
+      enum: ["ktp", "kk", "ijazah", "akta", "pendukung", "ttd"],
       required: true
     },
     fileName: String,

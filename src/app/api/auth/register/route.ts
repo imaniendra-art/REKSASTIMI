@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     const email = String(body.email ?? "").trim().toLowerCase();
     const whatsapp = String(body.whatsapp ?? "").trim();
     const prodi = String(body.prodi ?? "S1 Manajemen").trim();
+    const concentration = String(body.concentration ?? "Manajemen SDM").trim();
     const pendidikanTerakhir = String(body.pendidikanTerakhir ?? "SMA/SMK/MA").trim();
 
     let username = String(body.username ?? "").trim().toLowerCase();
@@ -70,6 +71,7 @@ export async function POST(request: NextRequest) {
       periodId: activePeriod._id,
       periodName: activePeriod.namaPeriode,
       program: prodi,
+      concentration: concentration,
       statusRpl: "PENDAFTARAN",
       identity: {
         fullName: name,

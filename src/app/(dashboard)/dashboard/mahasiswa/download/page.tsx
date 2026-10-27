@@ -171,6 +171,24 @@ export default async function MahasiswaDownloadPage() {
 
   return (
     <div style={{ width: "100%", margin: "0 auto", paddingBottom: 36 }}>
+      {/* ── Breadcrumb Back ── */}
+      <div style={{ marginBottom: 14 }}>
+        <Link
+          href="/dashboard/mahasiswa"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            fontSize: 12.5,
+            fontWeight: 800,
+            color: "var(--md-primary)",
+            textDecoration: "none",
+          }}
+        >
+          <span>←</span>
+          <span>Kembali ke Beranda Mahasiswa</span>
+        </Link>
+      </div>
       <PageHero
         badgeText="Pusat Download"
         title="Pusat Unduhan Dokumen"
@@ -224,7 +242,7 @@ function DownloadCard({ item }: { item: DownloadItem }) {
         {item.meta && <p style={{ margin: "4px 0 0", fontSize: 10, fontWeight: 850, color: item.tone }}>{item.meta}</p>}
       </div>
       <div style={{ flexShrink: 0, alignSelf: "flex-start", marginTop: 2 }}>
-        <span style={{ borderRadius: 8, padding: "6px 10px", background: item.status === "locked" ? "#f1f5f9" : item.status === "pending" ? "#fef3c7" : "#fff", border: `1px solid ${item.status === "locked" ? "#e2e8f0" : item.status === "pending" ? "#fde68a" : item.tone}`, color: item.status === "locked" ? "#64748b" : item.status === "pending" ? "#92400e" : item.tone, fontSize: 10, fontWeight: 900, whiteSpace: "nowrap", display: "inline-block" }}>
+        <span style={{ borderRadius: 8, padding: "6px 10px", background: item.status === "locked" ? "var(--md-surface-2)" : item.status === "pending" ? "var(--md-warning-container)" : "var(--md-surface-1)", border: `1px solid ${item.status === "locked" ? "var(--md-outline-variant)" : item.status === "pending" ? "var(--md-warning)" : item.tone}`, color: item.status === "locked" ? "var(--md-on-surface-variant)" : item.status === "pending" ? "var(--md-warning)" : item.tone, fontSize: 10, fontWeight: 900, whiteSpace: "nowrap", display: "inline-block" }}>
           {item.actionLabel}
         </span>
       </div>

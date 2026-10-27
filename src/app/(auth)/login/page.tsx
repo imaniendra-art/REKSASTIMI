@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { dashboardByRole } from "@/lib/roles";
 import { getSession } from "@/lib/session";
 import { LoginForm } from "./LoginForm";
+import { ThemeSelector } from "@/components/theme/ThemeSelector";
 
 export default async function LoginPage() {
   const session = await getSession();
@@ -13,48 +14,84 @@ export default async function LoginPage() {
 
   return (
     <main className="auth-page">
-      <div className="auth-shell">
-        <section className="auth-intro">
-          <Link href="/" className="auth-brand" aria-label="REKSA STIMI">
-            <span className="auth-logo">R</span>
-            <span>
-              <strong>REKSA STIMI</strong>
-              <small>RPL STIMI YAPMI Makassar</small>
-            </span>
-          </Link>
+      {/* ─── Top Utility Navigation ─── */}
+      <nav className="auth-nav">
+        <Link href="/" className="auth-back-link" title="Kembali ke Halaman Utama">
+          <span>←</span>
+          <span>Kembali ke Beranda</span>
+        </Link>
+        <ThemeSelector />
+      </nav>
 
-          <div className="auth-intro-copy">
-            <p className="auth-eyebrow">Sistem Rekognisi Pembelajaran Lampau</p>
-            <h1>Masuk ke layanan REKSA STIMI</h1>
-            <p>
-              Gunakan akun REKSA untuk mengakses dashboard, mengelola proses RPL, dan memantau tahapan akademik sesuai peran pengguna.
-            </p>
+      {/* ─── Main Auth Shell ─── */}
+      <div className="auth-shell">
+        {/* Left Side: Brand & Ecosystem Brief */}
+        <section className="auth-intro" aria-label="Informasi REKSA STIMI">
+          <div>
+            <Link href="/" className="auth-brand" aria-label="Beranda REKSA STIMI">
+              <div className="auth-logo-box">
+                <img src="/icon-logo-reksa.png" alt="Logo REKSA" />
+              </div>
+              <div className="auth-brand-text">
+                <div className="auth-brand-title">
+                  <span>REKSA</span>
+                  <span>STIMI</span>
+                </div>
+                <span className="auth-brand-sub">RPL STIMI YAPMI Makassar</span>
+              </div>
+            </Link>
+
+            <div className="auth-intro-copy">
+              <div className="auth-eyebrow">Rekognisi Pembelajaran Lampau (RPL Tipe A)</div>
+              <h1>Masuk ke Portal REKSA STIMI</h1>
+              <p>
+                Akses dashboard terpadu untuk memantau proses evaluasi diri, konversi hingga 100 SKS Sarjana Manajemen, dan penerbitan SK resmi PDDikti.
+              </p>
+            </div>
           </div>
 
-          <div className="auth-points" aria-label="Fitur REKSA">
-            {["Pendaftaran RPL", "Dokumen dan portofolio", "Asesmen dan hasil konversi"].map((item) => (
-              <div key={item}>
-                <span />
-                <p>{item}</p>
+          <div>
+            <div className="auth-points" aria-label="Keunggulan REKSA">
+              <div className="auth-point-card">
+                <span className="auth-point-icon">⚡</span>
+                <span className="auth-point-title">Maks. 100 SKS</span>
+                <span className="auth-point-desc">Pengakuan jam terbang kerja profesional</span>
               </div>
-            ))}
+              <div className="auth-point-card">
+                <span className="auth-point-icon">📜</span>
+                <span className="auth-point-title">Ijazah Resmi S1</span>
+                <span className="auth-point-desc">Sah terdaftar PDDikti Kemendikbudristek</span>
+              </div>
+              <div className="auth-point-card">
+                <span className="auth-point-icon">🔒</span>
+                <span className="auth-point-title">Aman & Terpadu</span>
+                <span className="auth-point-desc">Akses multi-role sesuai penugasan</span>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="auth-card" aria-label="Form login">
+        {/* Right Side: Form Card */}
+        <section className="auth-card" aria-label="Form login akun">
           <div className="auth-card-heading">
-            <p>Login</p>
-            <h2>Selamat Datang</h2>
-            <span>Silakan masuk menggunakan username dan password akun Anda.</span>
+            <span className="auth-card-eyebrow">Portal Masuk</span>
+            <h2>Selamat Datang Kembali</h2>
+            <p>Silakan masukkan kredensial akun Anda untuk mengakses sistem.</p>
           </div>
 
           <LoginForm />
 
           <div className="auth-switch">
-            Belum memiliki akun? <Link href="/register">Daftar sekarang</Link>
+            Belum memiliki akun mahasiswa?{" "}
+            <Link href="/register">Daftar Akun RPL Sekarang →</Link>
           </div>
         </section>
       </div>
+
+      {/* ─── Footer ─── */}
+      <footer className="auth-footer">
+        <p>© 2026 STIMI YAPMI Makassar • Platform Rekognisi Pembelajaran Lampau (RPL Tipe A)</p>
+      </footer>
     </main>
   );
 }

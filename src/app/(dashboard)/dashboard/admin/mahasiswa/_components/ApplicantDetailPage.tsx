@@ -327,10 +327,11 @@ function CVTab({ applicant }: { applicant: Applicant }) {
 }
 
 function DocumentsTab({ applicant }: { applicant: Applicant }) {
-  const docTypes = ["ktp", "kk", "ijazah", "pendukung", "ttd"];
+  const docTypes = ["ktp", "kk", "akta", "ijazah", "pendukung", "ttd"];
   const docLabels: Record<string, string> = {
     ktp: "KTP Asli",
     kk: "Kartu Keluarga (KK)",
+    akta: "Akta Kelahiran",
     ijazah: "Ijazah SMA/Sederajat",
     pendukung: "Dok. Pendukung Lainnya",
     ttd: "Tanda Tangan Digital",

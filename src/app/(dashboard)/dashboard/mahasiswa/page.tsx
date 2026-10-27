@@ -5,7 +5,6 @@ import { Payment } from "@/models/Payment";
 import { Period } from "@/models/Period";
 import { workflowSteps } from "@/lib/dashboard-data";
 import Link from "next/link";
-import { PageHero } from "@/components/dashboard/UIComponents";
 import { formatRplRegistrationNumber, generateRplIdentityNumber } from "@/lib/rpl-registration";
 import { syncProfileToF03WhenAssessmentsComplete, syncProfileToEvaluasiAsesorWhenF03Complete } from "@/lib/assessment-progress";
 
@@ -14,8 +13,10 @@ export default async function MahasiswaDashboardPage() {
   const session = await getSession();
 
   let currentStatus = "PENDAFTARAN";
-  let registrationNumber = "-";
-  let periodName = "-";
+  let registrationNumber = "Belum Ada";
+  let periodName = "2025/2026 Ganjil";
+  let concentration = "Belum Dipilih";
+  let studentName = session?.name || session?.username || "Mahasiswa RPL";
   let isBiodataComplete = false;
 
   let hasAcceptedPayment = false;
@@ -24,10 +25,18 @@ export default async function MahasiswaDashboardPage() {
   if (session?.id) {
     const profile = await ApplicantProfile.findOne({ userId: session.id }).lean();
     if (profile) {
+      if ((profile as any).identity?.fullName) {
+        studentName = (profile as any).identity.fullName;
+      }
+
       if (profile.statusRpl) {
         currentStatus = profile.statusRpl;
-        registrationNumber = profile.registrationNumber || profile.noPendaftar || "Belum ada";
-        periodName = profile.periodName || profile.periode || "Belum ditentukan";
+        registrationNumber = profile.registrationNumber || profile.noPendaftar || "Belum Ada";
+        periodName = profile.periodName || profile.periode || "2025/2026 Ganjil";
+      }
+
+      if ((profile as any).concentration) {
+        concentration = (profile as any).concentration;
       }
 
       if (["ASESMEN_KOMPETENSI", "ASESMEN_F02"].includes(currentStatus)) {
@@ -84,7 +93,6 @@ export default async function MahasiswaDashboardPage() {
           );
         }
       } else {
-        // Check if there is an uploaded payment in process
         const pendingPayment = await Payment.findOne({
           userId: session.id,
           jenisPembayaran: /^Biaya Pendaftaran RPL$/i,
@@ -96,7 +104,6 @@ export default async function MahasiswaDashboardPage() {
         }
       }
 
-      // Check if biodata is complete
       const identity = (profile.identity || {}) as any;
       const contact = (profile.contact || {}) as any;
       const documents = (profile.documents || []) as any[];
@@ -127,108 +134,218 @@ export default async function MahasiswaDashboardPage() {
         .map((d: any) => d.type);
 
       const allDocsUploaded = requiredDocTypes.every((type) => uploadedDocTypes.includes(type));
-
       isBiodataComplete = requiredIdentityFilled && requiredContactFilled && allDocsUploaded;
     }
   }
 
-  // Normalize status string
   const normalizedStatus = currentStatus.replace(/_/g, " ").replace("ASESOR", "PENILAI");
   let currentIndex = workflowSteps.indexOf(normalizedStatus as any);
-  
-  if (currentIndex === -1) {
-    currentIndex = 0;
-  }
+  if (currentIndex === -1) currentIndex = 0;
+  if (currentIndex === 0 && hasAcceptedPayment) currentIndex = 1;
 
-  if (currentIndex === 0 && hasAcceptedPayment) {
-    currentIndex = 1;
-  }
-
-  // Locked status for service menus
   const isPaymentLocked = !hasAcceptedPayment;
-
-  const menu = [
-    { title: "Keuangan",           desc: "Tagihan & bukti pembayaran.",              tone: "#dc2626", bg: "#fee2e2", lock: false, href: "/dashboard/mahasiswa/keuangan",    emoji: "💳" },
-    { title: "Biodata",            desc: "Data diri, orang tua & alamat.",          tone: "#1a56db", bg: "#dbeafe", lock: isPaymentLocked, href: "/dashboard/mahasiswa/biodata",     emoji: "👤" },
-    { title: "CV Riwayat",         desc: "Pengalaman kerja & organisasi.",           tone: "#d97706", bg: "#fef3c7", lock: isPaymentLocked || currentIndex < 1, href: "/dashboard/mahasiswa/cv",          emoji: "📄" },
-    { title: "Form F02",           desc: "Pemilihan mata kuliah RPL.",               tone: "#059669", bg: "#d1fae5", lock: isPaymentLocked || currentIndex < 3,  href: "/dashboard/mahasiswa/f02",         emoji: "📝" },
-    { title: "Test Kompetensi",    desc: "Ujian & capaian pembelajaran.",            tone: "#0284c7", bg: "#e0f2fe", lock: isPaymentLocked || currentIndex < 4,  href: "/dashboard/mahasiswa/asesmen", emoji: "🎯" },
-    { title: "Form F03",           desc: "Evaluasi diri & portofolio.",              tone: "#6366f1", bg: "#ede9fe", lock: isPaymentLocked || currentIndex < 5,  href: "/dashboard/mahasiswa/f03",         emoji: "📋" },
-  ];
-
   const doneCount = currentIndex;
   const totalCount = workflowSteps.length;
   const progressPct = Math.round((doneCount / totalCount) * 100);
-  
-  const displayStatus = currentStatus === "PENDAFTARAN" ? "PENDAFTARAN AKUN" : currentStatus;
+  const displayStatus = currentStatus === "PENDAFTARAN" ? "PENDAFTARAN AKUN" : currentStatus.replace(/_/g, " ");
+
+  const menu = [
+    {
+      title: "Administrasi Keuangan",
+      desc: "Tagihan pendaftaran & bukti pembayaran 4 berkas.",
+      tone: "var(--md-primary)",
+      bg: "var(--md-primary-container)",
+      lock: false,
+      href: "/dashboard/mahasiswa/keuangan",
+      emoji: "💳",
+    },
+    {
+      title: "Biodata Pribadi",
+      desc: "Data diri, orang tua & sinkronisasi PDDIKTI.",
+      tone: "var(--md-info)",
+      bg: "var(--md-info-container)",
+      lock: isPaymentLocked,
+      href: "/dashboard/mahasiswa/biodata",
+      emoji: "👤",
+    },
+    {
+      title: "CV Riwayat Hidup (F-07)",
+      desc: "Pengalaman kerja, pendidikan & sertifikasi.",
+      tone: "var(--md-warning)",
+      bg: "var(--md-warning-container)",
+      lock: isPaymentLocked || currentIndex < 1,
+      href: "/dashboard/mahasiswa/cv",
+      emoji: "📄",
+    },
+    {
+      title: "Pemilihan Mata Kuliah (F-02)",
+      desc: "Pemilihan mata kuliah konversi & transfer SKS.",
+      tone: "var(--md-success)",
+      bg: "var(--md-success-container)",
+      lock: isPaymentLocked || currentIndex < 3,
+      href: "/dashboard/mahasiswa/f02",
+      emoji: "📝",
+    },
+    {
+      title: "Test Kompetensi Mandiri",
+      desc: "Ujian modul materi & capaian pembelajaran.",
+      tone: "var(--md-info)",
+      bg: "var(--md-info-container)",
+      lock: isPaymentLocked || currentIndex < 4,
+      href: "/dashboard/mahasiswa/asesmen",
+      emoji: "🎯",
+    },
+    {
+      title: "Evaluasi Diri Portofolio (F-03)",
+      desc: "Evaluasi diri & unggah portofolio bukti VATM.",
+      tone: "var(--md-primary)",
+      bg: "var(--md-primary-container)",
+      lock: isPaymentLocked || currentIndex < 5,
+      href: "/dashboard/mahasiswa/f03",
+      emoji: "📋",
+    },
+  ];
 
   return (
-    <div style={{ width: "100%", margin: "0 auto" }}>
+    <div style={{ width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+      {/* ── 1. Hero Identity Card ── */}
+      <section
+        style={{
+          borderRadius: 24,
+          padding: "32px 36px",
+          background: "linear-gradient(135deg, var(--md-surface-1) 0%, var(--md-surface-2) 100%)",
+          border: "1px solid var(--md-outline-variant)",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.03)",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 24, position: "relative", zIndex: 1 }}>
+          <div style={{ flex: 1, minWidth: 280 }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 12px", borderRadius: 999, background: "var(--md-primary-container)", color: "var(--md-primary)", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 14 }}>
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--md-primary)" }} />
+              Portal Calon Mahasiswa RPL
+            </div>
 
-      {/* ── Hero Identity Card ── */}
-      <PageHero
-        badgeIcon="👤"
-        badgeText="Identitas Asesi"
-        title="Mahasiswa RPL"
-        tone="secondary"
-        subtitle={
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
-            <Link href="/dashboard/mahasiswa/petunjuk" className="student-hero-button">
-              Petunjuk
-            </Link>
-            <Link href="/dashboard/mahasiswa/download" className="student-hero-button student-hero-button-strong">
-              Pusat Download
-            </Link>
+            <h1 style={{ fontSize: "clamp(22px, 3.2vw, 32px)", fontWeight: 900, color: "var(--md-on-surface)", lineHeight: 1.25, letterSpacing: "-0.02em", margin: 0 }}>
+              Selamat Datang, {studentName}
+            </h1>
+            <p style={{ fontSize: 13.5, color: "var(--md-on-surface-variant)", marginTop: 8, lineHeight: 1.6, maxWidth: 640 }}>
+              Sistem Rekognisi Pembelajaran Lampau (RPL) Tipe A STIMI YAPMI Makassar. Pantau tahapan pendaftaran, evaluasi capaian kompetensi, dan pengakuan konversi SKS Anda.
+            </p>
+
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 18 }}>
+              <Link
+                href="/dashboard/mahasiswa/petunjuk"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "9px 18px",
+                  borderRadius: 999,
+                  background: "var(--md-surface-1)",
+                  border: "1px solid var(--md-outline)",
+                  color: "var(--md-on-surface)",
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  transition: "all 0.18s ease",
+                }}
+              >
+                <span>📖</span>
+                <span>Panduan Prosedur RPL</span>
+              </Link>
+              <Link
+                href="/dashboard/mahasiswa/download"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "9px 18px",
+                  borderRadius: 999,
+                  background: "var(--md-primary)",
+                  color: "var(--md-on-primary)",
+                  fontSize: 12.5,
+                  fontWeight: 800,
+                  textDecoration: "none",
+                  boxShadow: "0 4px 14px var(--theme-glow)",
+                  transition: "all 0.18s ease",
+                }}
+              >
+                <span>📥</span>
+                <span>Pusat Download Berkas</span>
+              </Link>
+            </div>
           </div>
-        }
-        rightContent={
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+
+          {/* Matrix Detail Status */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, minWidth: 280 }}>
             {[
-              { label: "No. Registrasi",           value: registrationNumber,  mono: true  },
-              { label: "Periode Terdaftar",        value: periodName, mono: false },
-              { label: "Username Login",           value: session?.username || "-", mono: true  },
-              { label: "Status Saat Ini",          value: displayStatus, mono: false },
+              { label: "Nomor Registrasi", value: registrationNumber, mono: true, tone: "var(--md-primary)" },
+              { label: "Program & Peminatan", value: `S1 Manajemen (${concentration})`, mono: false },
+              { label: "Periode Akademik", value: periodName, mono: false },
+              { label: "Status Berjalan", value: displayStatus, mono: false, highlight: true },
             ].map((info) => (
-              <div key={info.label} style={{ background: "rgba(255,255,255,0.12)", borderRadius: 12, padding: "10px 12px", border: "1px solid rgba(255,255,255,0.2)", color: "#fff" }}>
-                <p style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.7, marginBottom: 3 }}>
+              <div
+                key={info.label}
+                style={{
+                  background: "var(--md-surface-1)",
+                  borderRadius: 14,
+                  padding: "12px 14px",
+                  border: info.highlight ? "1px solid var(--md-primary)" : "1px solid var(--md-outline-variant)",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
+                }}
+              >
+                <p style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--md-on-surface-variant)", marginBottom: 4 }}>
                   {info.label}
                 </p>
-                <p style={{ fontWeight: 800, fontSize: 13, fontFamily: info.mono ? "monospace" : "inherit" }}>
+                <p style={{ fontWeight: 800, fontSize: 13, color: info.tone || "var(--md-on-surface)", fontFamily: info.mono ? "monospace" : "inherit", lineHeight: 1.35, margin: 0 }}>
                   {info.value}
                 </p>
               </div>
             ))}
           </div>
-        }
-      />
+        </div>
+      </section>
 
-      {/* ─── PAYMENT GATE / TEASER WAITING ROOM (JIKA BELUM DIVERIFIKASI KEUANGAN) ─── */}
+      {/* ── 2. Payment Notification / Waiting Room ── */}
       {!hasAcceptedPayment && (
-        <div style={{ marginBottom: 24 }}>
+        <section>
           {hasPendingPayment ? (
-            /* TEASER WAITING ROOM: SUDAH UPLOAD BUKTI BAYAR, MENUNGGU VERIFIKASI */
+            /* Menunggu Verifikasi Keuangan */
             <div
               style={{
-                borderRadius: 24,
-                backgroundColor: "var(--md-surface-1)",
-                border: "2px solid var(--md-warning)",
-                boxShadow: "0 8px 30px rgba(217, 119, 6, 0.15)",
+                borderRadius: 20,
+                background: "var(--md-surface-1)",
+                border: "1.5px solid var(--md-warning)",
+                boxShadow: "0 6px 24px rgba(217, 119, 6, 0.12)",
                 overflow: "hidden",
               }}
             >
-              <div style={{ padding: "24px 28px", background: "var(--md-warning-container)", borderBottom: "1px solid rgba(217,119,6,0.2)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+              <div
+                style={{
+                  padding: "24px 28px",
+                  background: "var(--md-warning-container)",
+                  borderBottom: "1px solid rgba(217,119,6,0.18)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: 16,
+                }}
+              >
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                     <span style={{ fontSize: 18 }}>⏳</span>
-                    <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-warning)" }}>
-                      Status Pembayaran
+                    <span style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-warning)" }}>
+                      Status Pembayaran Sedang Diverifikasi
                     </span>
                   </div>
-                  <h3 style={{ fontSize: 20, fontWeight: 900, color: "var(--md-on-surface)" }}>
-                    Bukti Pembayaran Anda Sedang Diverifikasi
+                  <h3 style={{ fontSize: 19, fontWeight: 900, color: "var(--md-on-surface)", margin: 0 }}>
+                    Bukti Pembayaran & 4 Berkas Legalitas Anda Sedang Diperiksa
                   </h3>
-                  <p style={{ fontSize: 13.5, color: "var(--md-on-surface-variant)", marginTop: 4 }}>
-                    Tim Keuangan STIMI YAPMI sedang memvalidasi bukti transfer pendaftaran Anda (Estimasi 1–24 jam kerja).
+                  <p style={{ fontSize: 13, color: "var(--md-on-surface-variant)", marginTop: 6, lineHeight: 1.5 }}>
+                    Bagian Keuangan STIMI YAPMI Makassar sedang memvalidasi transfer pendaftaran dan berkas (KTP, KK, Akta Lahir, Ijazah SMA). Estimasi 1–24 jam kerja.
                   </p>
                 </div>
 
@@ -242,13 +359,13 @@ export default async function MahasiswaDashboardPage() {
                       borderRadius: 999,
                       background: "#25D366",
                       color: "#fff",
-                      fontSize: 13,
+                      fontSize: 12.5,
                       fontWeight: 800,
                       textDecoration: "none",
                       display: "inline-flex",
                       alignItems: "center",
                       gap: 8,
-                      boxShadow: "0 4px 12px rgba(37,211,102,0.3)",
+                      boxShadow: "0 4px 12px rgba(37,211,102,0.25)",
                     }}
                   >
                     💬 Konfirmasi via WhatsApp
@@ -261,53 +378,53 @@ export default async function MahasiswaDashboardPage() {
                       background: "var(--md-surface-1)",
                       border: "1px solid var(--md-outline)",
                       color: "var(--md-on-surface)",
-                      fontSize: 13,
+                      fontSize: 12.5,
                       fontWeight: 700,
                       textDecoration: "none",
                     }}
                   >
-                    Histori Pembayaran
+                    Histori Tagihan
                   </Link>
                 </div>
               </div>
 
-              {/* Teaser Content (Opsi B: Pelajari Sambil Menunggu) */}
-              <div style={{ padding: "28px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              {/* Teaser Content */}
+              <div style={{ padding: "24px 28px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                   <span style={{ fontSize: 20 }}>💡</span>
-                  <h4 style={{ fontSize: 16, fontWeight: 800, color: "var(--md-on-surface)" }}>
-                    Sambil Menunggu: Pelajari Pengantar RPL & Silabus Klaster
+                  <h4 style={{ fontSize: 15, fontWeight: 800, color: "var(--md-on-surface)", margin: 0 }}>
+                    Sambil Menunggu: Pelajari Silabus & Peta Konsentrasi RPL
                   </h4>
                 </div>
-                <p style={{ fontSize: 13.5, color: "var(--md-on-surface-variant)", lineHeight: 1.6, marginBottom: 20 }}>
-                  Fitur akademik (pengisian F02, LMS matrikulasi, dan F03) akan terbuka otomatis setelah verifikasi selesai. Anda dapat memanfaatkan waktu tunggu untuk memahami peta mata kuliah RPL STIMI berikut:
+                <p style={{ fontSize: 12.5, color: "var(--md-on-surface-variant)", lineHeight: 1.55, marginBottom: 18 }}>
+                  Fitur akademik (F02, LMS matrikulasi, dan F03) akan terbuka otomatis setelah verifikasi selesai. Anda dapat meninjau peta kurikulum peminatan:
                 </p>
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
                   {[
-                    { title: "Manajemen SDM", matkul: "4 MK • 12 SKS", desc: "MSDM, Perilaku Organisasi, Pelatihan Karir, Hubungan Industrial" },
-                    { title: "Manajemen Pemasaran", matkul: "4 MK • 12 SKS", desc: "Manajemen Pemasaran, Riset Pasar, Digital Marketing, Manajemen Penjualan" },
-                    { title: "Manajemen Keuangan", matkul: "4 MK • 12 SKS", desc: "Keuangan Dasar, Analisis Lap. Keuangan, Pajak Bisnis, Investasi" },
-                    { title: "Kewirausahaan & Bisnis", matkul: "4 MK • 12 SKS", desc: "Kewirausahaan Mandiri, Business Plan, Pengantar Manajemen, Operasional" },
+                    { title: "Manajemen SDM", matkul: "4 MK • 12 SKS", desc: "Manajemen SDM, Perilaku Organisasi, Pelatihan Karir & Hubungan Industrial." },
+                    { title: "Manajemen Pemasaran", matkul: "4 MK • 12 SKS", desc: "Manajemen Pemasaran, Riset Pasar, Digital Marketing & Manajemen Penjualan." },
+                    { title: "Manajemen Keuangan", matkul: "4 MK • 12 SKS", desc: "Dasar Keuangan, Analisis Laporan Keuangan, Pajak Bisnis & Investasi." },
+                    { title: "Pengembangan Bisnis", matkul: "4 MK • 12 SKS", desc: "Kewirausahaan Mandiri, Business Plan, Pengantar Manajemen & Operasional." },
                   ].map((teaser, idx) => (
                     <div key={idx} style={{ padding: "16px", borderRadius: 16, background: "var(--md-surface-2)", border: "1px solid var(--md-outline-variant)" }}>
-                      <p style={{ fontSize: 11, fontWeight: 800, color: "var(--md-primary)", textTransform: "uppercase", marginBottom: 4 }}>{teaser.matkul}</p>
-                      <h5 style={{ fontSize: 14.5, fontWeight: 800, color: "var(--md-on-surface)", marginBottom: 6 }}>{teaser.title}</h5>
-                      <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", lineHeight: 1.4 }}>{teaser.desc}</p>
+                      <p style={{ fontSize: 10.5, fontWeight: 800, color: "var(--md-primary)", textTransform: "uppercase", marginBottom: 4 }}>{teaser.matkul}</p>
+                      <h5 style={{ fontSize: 14, fontWeight: 800, color: "var(--md-on-surface)", margin: "0 0 6px 0" }}>{teaser.title}</h5>
+                      <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", lineHeight: 1.45, margin: 0 }}>{teaser.desc}</p>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
           ) : (
-            /* BELUM UPLOAD BUKTI BAYAR SAMA SEKALI */
+            /* Belum Upload Bukti Pembayaran */
             <div
               style={{
-                borderRadius: 24,
-                backgroundColor: "var(--md-surface-1)",
-                border: "2px solid var(--md-error)",
-                boxShadow: "0 8px 30px rgba(220, 38, 38, 0.12)",
-                padding: "28px",
+                borderRadius: 20,
+                background: "var(--md-surface-1)",
+                border: "1.5px solid var(--md-error)",
+                boxShadow: "0 6px 24px rgba(220, 38, 38, 0.1)",
+                padding: "24px 28px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -316,79 +433,95 @@ export default async function MahasiswaDashboardPage() {
               }}
             >
               <div style={{ flex: 1, minWidth: 280 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontSize: 20 }}>⚠️</span>
-                  <span style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-error)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                  <span style={{ fontSize: 16 }}>⚠️</span>
+                  <span style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-error)" }}>
                     Langkah Wajib Pertama
                   </span>
                 </div>
-                <h3 style={{ fontSize: 20, fontWeight: 900, color: "var(--md-on-surface)" }}>
-                  Selesaikan Pembayaran Biaya Pendaftaran RPL
+                <h3 style={{ fontSize: 19, fontWeight: 900, color: "var(--md-on-surface)", margin: 0 }}>
+                  Selesaikan Pembayaran Pendaftaran & Unggah Dokumen Legalitas
                 </h3>
-                <p style={{ fontSize: 14, color: "var(--md-on-surface-variant)", marginTop: 6, lineHeight: 1.6 }}>
-                  Untuk membuka seluruh akses layanan akademik (Biodata, CV, Form F02, Test Mandiri, dan Portofolio F03), silakan transfer biaya pendaftaran dan unggah bukti transfer.
+                <p style={{ fontSize: 13, color: "var(--md-on-surface-variant)", marginTop: 6, lineHeight: 1.55 }}>
+                  Untuk membuka seluruh akses akademik (Biodata, CV, Form F02, Tes Mandiri, dan Portofolio F03), silakan transfer biaya pendaftaran dan lengkapi foto KTP, KK, Akta Lahir, dan Ijazah SMA/Sederajat.
                 </p>
-                <div style={{ marginTop: 12, fontSize: 13, color: "var(--md-on-surface)" }}>
-                  <strong>Biaya Pendaftaran:</strong> Rp 250.000 • <strong>Rekening:</strong> BSI 7123456789 a.n. STIMI YAPMI Makassar
+                <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 12, fontSize: 12.5, color: "var(--md-on-surface)" }}>
+                  <div style={{ padding: "6px 12px", borderRadius: 8, background: "var(--md-surface-2)", border: "1px solid var(--md-outline-variant)" }}>
+                    Biaya Registrasi: <strong>Rp 250.000</strong>
+                  </div>
+                  <div style={{ padding: "6px 12px", borderRadius: 8, background: "var(--md-surface-2)", border: "1px solid var(--md-outline-variant)" }}>
+                    Bank Syariah Indonesia (BSI): <strong>7123456789</strong> a.n. STIMI YAPMI Makassar
+                  </div>
                 </div>
               </div>
 
               <Link
                 href="/dashboard/mahasiswa/keuangan"
                 style={{
-                  padding: "14px 28px",
+                  padding: "13px 26px",
                   borderRadius: 999,
-                  background: "var(--md-error)",
-                  color: "#fff",
-                  fontSize: 14.5,
+                  background: "var(--md-primary)",
+                  color: "var(--md-on-primary)",
+                  fontSize: 13.5,
                   fontWeight: 800,
                   textDecoration: "none",
-                  boxShadow: "0 4px 14px rgba(220,38,38,0.3)",
+                  boxShadow: "0 4px 16px var(--theme-glow)",
                   whiteSpace: "nowrap",
                 }}
               >
-                💳 Unggah Bukti Transfer Sekarang →
+                Unggah Bukti Bayar & Berkas →
               </Link>
             </div>
           )}
-        </div>
+        </section>
       )}
 
-      {/* ── Progress Card ── */}
-      <div
-        className="md-card animate-fade-up stagger-2 student-progress-card"
-        style={{ padding: "20px", marginBottom: 16 }}
+      {/* ── 3. RPL Journey Tracker (Informative 10 Steps) ── */}
+      <section
+        style={{
+          borderRadius: 24,
+          padding: "24px 28px",
+          background: "var(--md-surface-1)",
+          border: "1px solid var(--md-outline-variant)",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.02)",
+        }}
       >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
           <div>
-            <p style={{ fontWeight: 800, fontSize: 14, color: "var(--md-on-surface)" }}>Progress Perjalanan RPL</p>
-            <p style={{ fontSize: 11, color: "var(--md-on-surface-variant)", marginTop: 2 }}>
-              Tahap {currentIndex + 1} dari {totalCount} — {displayStatus}
+            <h2 style={{ fontSize: 16, fontWeight: 900, color: "var(--md-on-surface)", margin: 0 }}>
+              Perjalanan Tahapan RPL Tipe A
+            </h2>
+            <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", marginTop: 2 }}>
+              Tahap ke-{currentIndex + 1} dari {totalCount} tahapan — {displayStatus}
             </p>
           </div>
-          <div
-            style={{
-              width: 52,
-              height: 52,
-              borderRadius: "50%",
-              background: "var(--md-primary-container)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              flexShrink: 0,
-            }}
-          >
-            <span style={{ fontWeight: 800, fontSize: 16, color: "var(--md-primary)" }}>{progressPct}%</span>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: "var(--md-on-surface-variant)", textTransform: "uppercase" }}>
+              Total Capaian:
+            </span>
+            <div
+              style={{
+                padding: "6px 14px",
+                borderRadius: 999,
+                background: "var(--md-primary-container)",
+                color: "var(--md-primary)",
+                fontWeight: 900,
+                fontSize: 14,
+                border: "1px solid var(--md-outline-variant)",
+              }}
+            >
+              {progressPct}% Selesai
+            </div>
           </div>
         </div>
 
-        {/* Progress bar */}
+        {/* Linear Progress Bar */}
         <div
           style={{
             background: "var(--md-outline-variant)",
             borderRadius: 999,
-            height: 10,
+            height: 8,
             overflow: "hidden",
             marginBottom: 20,
           }}
@@ -399,251 +532,295 @@ export default async function MahasiswaDashboardPage() {
               height: "100%",
               background: "linear-gradient(90deg, var(--md-primary), var(--md-secondary))",
               borderRadius: 999,
-              transition: "width 1s ease",
+              transition: "width 0.8s ease",
             }}
           />
         </div>
 
-        {/* Step indicators */}
-        <div style={{ marginTop: 10, paddingBottom: 16 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
-            {workflowSteps.map((step, idx) => {
-              const done   = idx < currentIndex;
-              const active = idx === currentIndex;
-              const stepName = step === "PENDAFTARAN" ? "PENDAFTARAN AKUN" : step;
-              
-              const details: Record<string, { note: string; icon: string }> = {
-                "PENDAFTARAN": { note: "Pendaftaran akun awal selesai.", icon: "👤" },
-                "LENGKAPI CV": { note: "Wajib melengkapi Biodata & CV.", icon: "📄" },
-                "PEMBAYARAN": { note: "Verifikasi tagihan registrasi.", icon: "💳" },
-                "ASESMEN F02": { note: "Pilih mata kuliah untuk RPL.", icon: "📝" },
-                "ASESMEN KOMPETENSI": { note: "Ikuti tes capaian pembelajaran.", icon: "🎯" },
-                "EVALUASI F03": { note: "Unggah portofolio asesmen.", icon: "📋" },
-                "EVALUASI PENILAI": { note: "Proses penilaian oleh penilai.", icon: "⚖️" },
-                "KONFIRMASI HASIL": { note: "Review hasil asesmen penilai.", icon: "✅" },
-                "SIAP PLENO": { note: "Menunggu pengesahan akademik.", icon: "🎓" },
-                "LULUS": { note: "Proses RPL telah selesai.", icon: "🎉" }
-              };
+        {/* 10 Step Cards Grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12 }}>
+          {workflowSteps.map((step, idx) => {
+            const done = idx < currentIndex;
+            const active = idx === currentIndex;
+            const stepName = step === "PENDAFTARAN" ? "PENDAFTARAN AKUN" : step.replace(/_/g, " ");
 
-              const detail = details[step] || { note: "Tahapan proses RPL.", icon: "📌" };
+            const details: Record<string, { note: string; icon: string }> = {
+              "PENDAFTARAN": { note: "Pendaftaran akun awal selesai.", icon: "👤" },
+              "LENGKAPI CV": { note: "Wajib melengkapi Biodata & CV.", icon: "📄" },
+              "PEMBAYARAN": { note: "Verifikasi tagihan registrasi.", icon: "💳" },
+              "ASESMEN F02": { note: "Pilih mata kuliah untuk RPL.", icon: "📝" },
+              "ASESMEN KOMPETENSI": { note: "Ikuti tes capaian pembelajaran.", icon: "🎯" },
+              "EVALUASI F03": { note: "Unggah portofolio asesmen.", icon: "📋" },
+              "EVALUASI PENILAI": { note: "Proses penilaian oleh penilai.", icon: "⚖️" },
+              "KONFIRMASI HASIL": { note: "Review hasil asesmen penilai.", icon: "✅" },
+              "SIAP PLENO": { note: "Menunggu pengesahan akademik.", icon: "🎓" },
+              "LULUS": { note: "Proses RPL telah selesai.", icon: "🎉" },
+            };
 
-              const bg = done ? "var(--md-success)" : active ? "var(--md-primary)" : "var(--md-surface-2)";
-              const color = done || active ? "#fff" : "var(--md-on-surface-variant)";
-              
-              return (
-                <div
-                  key={step}
-                  className="student-step-card"
-                  style={{
-                    background: bg,
-                    borderRadius: 16,
-                    padding: "16px",
-                    color: color,
-                    position: "relative",
-                    overflow: "hidden",
-                    display: "flex",
-                    flexDirection: "column",
-                    boxShadow: active ? "0 8px 16px var(--theme-glow)" : "none",
-                    border: (!done && !active) ? "1px solid var(--md-outline-variant)" : "none",
-                    transition: "all 300ms",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 8 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.9, lineHeight: 1.3, flex: 1, paddingRight: 8 }}>
-                      {stepName}
-                    </p>
-                    <span style={{ fontSize: 20 }}>
-                      {done ? "✅" : detail.icon}
-                    </span>
-                  </div>
-                  <div style={{ flex: 1 }} />
-                  <p style={{ fontSize: 24, fontWeight: 800, lineHeight: 1, letterSpacing: "-0.03em", marginBottom: 4 }}>
-                    {idx + 1}
+            const detail = details[step] || { note: "Tahapan proses RPL.", icon: "📌" };
+
+            return (
+              <div
+                key={step}
+                style={{
+                  padding: "16px",
+                  borderRadius: 16,
+                  background: active
+                    ? "var(--md-primary)"
+                    : done
+                    ? "var(--md-success-container)"
+                    : "var(--md-surface-2)",
+                  color: active
+                    ? "var(--md-on-primary)"
+                    : done
+                    ? "var(--md-success)"
+                    : "var(--md-on-surface-variant)",
+                  border: active
+                    ? "1.5px solid var(--md-primary)"
+                    : done
+                    ? "1px solid var(--md-success)"
+                    : "1px solid var(--md-outline-variant)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  minHeight: 120,
+                  boxShadow: active ? "0 8px 18px var(--theme-glow)" : "none",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, fontWeight: 900 }}>
+                    #{idx + 1}
+                  </span>
+                  <span style={{ fontSize: 16 }}>
+                    {done ? "✓" : detail.icon}
+                  </span>
+                </div>
+
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em", lineHeight: 1.3, margin: "0 0 4px 0", color: active ? "#fff" : "var(--md-on-surface)" }}>
+                    {stepName}
                   </p>
-                  <p style={{ fontSize: 10, fontWeight: 600, opacity: 0.85, lineHeight: 1.4 }}>
+                  <p style={{ fontSize: 10.5, lineHeight: 1.4, margin: 0, opacity: active ? 0.9 : 0.8, color: active ? "#fff" : "var(--md-on-surface-variant)" }}>
                     {detail.note}
                   </p>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Dynamic CTA */}
-        <div style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap" }}>
-          {(() => {
-            if (!hasAcceptedPayment) {
-              return (
+        {/* Dynamic CTA Bar */}
+        <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--md-outline-variant)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <p style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--md-primary)", margin: 0 }}>
+              Tindak Lanjut Anda:
+            </p>
+            <p style={{ fontSize: 13, fontWeight: 700, color: "var(--md-on-surface)", marginTop: 2, margin: 0 }}>
+              {!hasAcceptedPayment
+                ? hasPendingPayment
+                  ? "Menunggu verifikasi bukti transfer & 4 berkas legalitas dari bagian keuangan."
+                  : "Unggah bukti pembayaran registrasi untuk membuka modul akademik."
+                : currentIndex === 1
+                ? isBiodataComplete
+                  ? "Biodata lengkap. Lanjutkan melengkapi CV Riwayat Hidup (F-07)."
+                  : "Silakan lengkapi Biodata Resmi dan unggah berkas pendukung."
+                : currentIndex === 3
+                ? "Pilih mata kuliah yang ingin dikonversi melalui Form F02."
+                : currentIndex === 4
+                ? "Ikuti modul pembelajaran & tes capaian kompetensi klaster."
+                : currentIndex === 5
+                ? "Isi evaluasi diri dan unggah berkas portofolio bukti pada Form F03."
+                : "Pantau perkembangan evaluasi asesor atau konfirmasi hasil."}
+            </p>
+          </div>
+
+          <div>
+            <Link
+              href={
+                !hasAcceptedPayment
+                  ? "/dashboard/mahasiswa/keuangan"
+                  : currentIndex === 1
+                  ? isBiodataComplete
+                    ? "/dashboard/mahasiswa/cv"
+                    : "/dashboard/mahasiswa/biodata"
+                  : currentIndex === 3
+                  ? "/dashboard/mahasiswa/f02"
+                  : currentIndex === 4
+                  ? "/dashboard/mahasiswa/asesmen"
+                  : currentIndex === 5
+                  ? "/dashboard/mahasiswa/f03"
+                  : "/dashboard/mahasiswa/hasil-rpl"
+              }
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 22px",
+                borderRadius: 999,
+                background: "var(--md-primary)",
+                color: "var(--md-on-primary)",
+                fontSize: 13,
+                fontWeight: 800,
+                textDecoration: "none",
+                boxShadow: "0 4px 14px var(--theme-glow)",
+              }}
+            >
+              <span>Buka Menu Terkait</span>
+              <span>→</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. Main Service Cards ── */}
+      <section>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+          <div style={{ width: 4, height: 18, borderRadius: 999, background: "var(--md-primary)" }} />
+          <h2 style={{ fontSize: 16, fontWeight: 900, color: "var(--md-on-surface)", margin: 0 }}>
+            Menu Layanan Mandiri Calon Mahasiswa
+          </h2>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
+          {menu.map((item) => (
+            <div
+              key={item.title}
+              style={{
+                borderRadius: 20,
+                background: "var(--md-surface-1)",
+                border: "1px solid var(--md-outline-variant)",
+                padding: "24px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                opacity: item.lock ? 0.6 : 1,
+                filter: item.lock ? "grayscale(0.4)" : "none",
+                transition: "all 0.22s ease",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
+              }}
+            >
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 14,
+                      background: item.bg,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 20,
+                    }}
+                  >
+                    {item.emoji}
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 10.5,
+                      fontWeight: 800,
+                      padding: "4px 10px",
+                      borderRadius: 999,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.04em",
+                      background: item.lock ? "var(--md-surface-2)" : item.bg,
+                      color: item.lock ? "var(--md-on-surface-variant)" : item.tone,
+                      border: "1px solid var(--md-outline-variant)",
+                    }}
+                  >
+                    {item.lock ? "Terkunci" : "Tersedia"}
+                  </span>
+                </div>
+
+                <h3 style={{ fontSize: 16, fontWeight: 900, color: "var(--md-on-surface)", marginBottom: 6, margin: "0 0 6px 0" }}>
+                  {item.title}
+                </h3>
+                <p style={{ fontSize: 12.5, color: "var(--md-on-surface-variant)", lineHeight: 1.5, margin: 0 }}>
+                  {item.lock ? "Terkunci. Selesaikan pembayaran pendaftaran terlebih dahulu." : item.desc}
+                </p>
+              </div>
+
+              <div style={{ marginTop: 20, paddingTop: 14, borderTop: "1px solid var(--md-outline-variant)" }}>
                 <Link
-                  href="/dashboard/mahasiswa/keuangan"
+                  href={item.lock ? "/dashboard/mahasiswa/keuangan" : item.href}
                   style={{
-                    flex: 1,
-                    minWidth: 160,
-                    display: "flex",
+                    display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    gap: 8,
-                    background: "var(--md-primary)",
-                    color: "var(--md-on-primary)",
-                    borderRadius: 999,
-                    padding: "12px 20px",
+                    gap: 6,
+                    fontSize: 12.5,
                     fontWeight: 800,
-                    fontSize: 14,
-                    boxShadow: "0 4px 14px var(--theme-glow)",
+                    color: item.lock ? "var(--md-on-surface-variant)" : item.tone,
                     textDecoration: "none",
                   }}
                 >
-                  💳 {hasPendingPayment ? "Cek Status Verifikasi Pembayaran" : "Kirim Bukti Pembayaran Pendaftaran"}
+                  <span>{item.lock ? "Buka Administrasi Keuangan" : "Akses Layanan"}</span>
+                  <span>→</span>
                 </Link>
-              );
-            }
-
-            let ctaText = "📝 Isi Form F02 Sekarang";
-            let ctaHref = "/dashboard/mahasiswa/f02";
-
-            if (currentIndex === 1) {
-              if (isBiodataComplete) {
-                ctaText = "📄 Lengkapi CV Riwayat Hidup Sekarang";
-                ctaHref = "/dashboard/mahasiswa/cv";
-              } else {
-                ctaText = "👤 Lengkapi Biodata Sekarang";
-                ctaHref = "/dashboard/mahasiswa/biodata";
-              }
-            } else if (currentIndex === 2) {
-              ctaText = "💳 Selesaikan Pembayaran";
-              ctaHref = "/dashboard/mahasiswa/keuangan";
-            } else if (currentIndex === 4) {
-              ctaText = "🎯 Mulai Test Kompetensi";
-              ctaHref = "/dashboard/mahasiswa/asesmen";
-            } else if (currentIndex === 5) {
-              ctaText = "📋 Isi Form F03 Sekarang";
-              ctaHref = "/dashboard/mahasiswa/f03";
-            } else if (currentIndex >= 6) {
-              ctaText = "📊 Pantau Hasil Asesmen";
-              ctaHref = "/dashboard/mahasiswa";
-            }
-
-            return (
-              <Link
-                href={ctaHref}
-                className="student-cta-button"
-                style={{
-                  flex: 1,
-                  minWidth: 160,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  background: "var(--md-primary)",
-                  color: "var(--md-on-primary)",
-                  borderRadius: 999,
-                  padding: "12px 20px",
-                  fontWeight: 800,
-                  fontSize: 14,
-                  boxShadow: "0 4px 14px var(--theme-glow)",
-                  textDecoration: "none",
-                }}
-              >
-                {ctaText}
-              </Link>
-            );
-          })()}
-        </div>
-      </div>
-
-      {/* ── Menu Cards ── */}
-      <div style={{ marginBottom: 4 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-          <div style={{ width: 4, height: 20, borderRadius: 99, background: "var(--md-primary)" }} />
-          <h2 style={{ fontWeight: 800, fontSize: 15, color: "var(--md-on-surface)" }}>Menu Layanan RPL</h2>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full mb-8">
-        {menu.map((item, i) => (
-          <div
-            key={item.title}
-            className={`md-card animate-fade-up stagger-${Math.min(i + 2, 8)} student-menu-card`}
-            style={{
-              padding: "24px 20px",
-              opacity: item.lock ? 0.6 : 1,
-              filter: item.lock ? "grayscale(0.6)" : "none",
-              cursor: item.lock ? "not-allowed" : "pointer",
-              transition: "all 300ms ease",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <Link
-              href={item.lock ? "/dashboard/mahasiswa/keuangan" : item.href}
-              style={{ display: "block", textDecoration: "none", height: "100%" }}
-            >
-              <div style={{ position: "absolute", top: -20, right: -20, width: 100, height: 100, background: `radial-gradient(circle at center, ${item.bg} 0%, transparent 70%)`, opacity: 0.6, pointerEvents: "none", borderRadius: "50%" }} />
-              <div
-                style={{
-                  width: 46,
-                  height: 46,
-                  borderRadius: 14,
-                  background: item.bg,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 20,
-                  marginBottom: 16,
-                  border: `1px solid ${item.tone}44`,
-                  position: "relative",
-                  zIndex: 1,
-                  boxShadow: `0 4px 12px ${item.bg}`,
-                }}
-              >
-                {item.emoji}
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-              <h3
-                style={{
-                  fontWeight: 800,
-                  fontSize: 15,
-                  color: "var(--md-on-surface)",
-                  lineHeight: 1.3,
-                  marginBottom: 8,
-                  position: "relative",
-                  zIndex: 1,
-                }}
-              >
-                {item.lock ? `🔒 ${item.title}` : item.title}
-              </h3>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: "var(--md-on-surface-variant)",
-                  lineHeight: 1.5,
-                  position: "relative",
-                  zIndex: 1,
-                }}
-              >
-                {item.lock ? "Terkunci (Selesaikan Pembayaran)" : item.desc}
-              </p>
-
-              {!item.lock && (
-                <div style={{ marginTop: 18, display: "flex", alignItems: "center", position: "relative", zIndex: 1 }}>
-                  <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: item.tone,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                  >
-                    Akses Fitur <span style={{ fontSize: 14 }}>→</span>
-                  </span>
-                </div>
-              )}
-            </Link>
+      {/* ── 5. Secondary Quick Cards: Hasil & Download ── */}
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, paddingBottom: 24 }}>
+        <Link
+          href="/dashboard/mahasiswa/hasil-rpl"
+          style={{
+            borderRadius: 18,
+            padding: "20px 24px",
+            background: "var(--md-surface-1)",
+            border: "1px solid var(--md-outline-variant)",
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            transition: "all 0.2s ease",
+          }}
+        >
+          <div>
+            <span style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase", color: "var(--md-primary)", letterSpacing: "0.06em" }}>
+              Penetapan Akademik
+            </span>
+            <h3 style={{ fontSize: 15, fontWeight: 900, color: "var(--md-on-surface)", margin: "2px 0 0 0" }}>
+              Draf & Hasil Konversi RPL
+            </h3>
+            <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", margin: "4px 0 0 0" }}>
+              Cek konfirmasi SKS diakui dan pengajuan sanggahan resmi.
+            </p>
           </div>
-        ))}
-      </div>
+          <span style={{ fontSize: 18, color: "var(--md-primary)" }}>→</span>
+        </Link>
+
+        <Link
+          href="/dashboard/mahasiswa/download"
+          style={{
+            borderRadius: 18,
+            padding: "20px 24px",
+            background: "var(--md-surface-1)",
+            border: "1px solid var(--md-outline-variant)",
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            transition: "all 0.2s ease",
+          }}
+        >
+          <div>
+            <span style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase", color: "var(--md-secondary)", letterSpacing: "0.06em" }}>
+              Arsip & Dokumen
+            </span>
+            <h3 style={{ fontSize: 15, fontWeight: 900, color: "var(--md-on-surface)", margin: "2px 0 0 0" }}>
+              Pusat Unduh Dokumen
+            </h3>
+            <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", margin: "4px 0 0 0" }}>
+              Unduh formulir resmi F01, F02, F03, F07 dan template sanggahan.
+            </p>
+          </div>
+          <span style={{ fontSize: 18, color: "var(--md-secondary)" }}>→</span>
+        </Link>
+      </section>
     </div>
   );
 }

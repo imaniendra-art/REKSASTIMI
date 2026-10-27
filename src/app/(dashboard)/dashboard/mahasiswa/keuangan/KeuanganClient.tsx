@@ -33,7 +33,15 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
-  const [fileName, setFileName] = useState("");
+  const [jenis, setJenis] = useState("Biaya Pendaftaran RPL");
+
+  const [fileNameBukti, setFileNameBukti] = useState("");
+  const [fileNameKtp, setFileNameKtp] = useState("");
+  const [fileNameKk, setFileNameKk] = useState("");
+  const [fileNameAkta, setFileNameAkta] = useState("");
+  const [fileNameIjazah, setFileNameIjazah] = useState("");
+
+  const isPendaftaran = jenis.toLowerCase().includes("pendaftaran");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,10 +52,14 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
     const result = await submitPayment(formData);
 
     if (result.success) {
-      setMessage({ type: "success", text: "Bukti pembayaran berhasil dikirim." });
-      setTimeout(() => setMessage({ type: "", text: "" }), 4000);
+      setMessage({ type: "success", text: "Bukti pembayaran dan berkas wajib berhasil dikirim." });
+      setTimeout(() => setMessage({ type: "", text: "" }), 5000);
       e.currentTarget.reset();
-      setFileName("");
+      setFileNameBukti("");
+      setFileNameKtp("");
+      setFileNameKk("");
+      setFileNameAkta("");
+      setFileNameIjazah("");
       router.refresh();
     } else {
       setMessage({ type: "error", text: result.error || "Terjadi kesalahan." });
@@ -57,13 +69,15 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 20, alignItems: "start" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 20, alignItems: "start" }}>
       <div>
         <div className="md-card" style={{ overflow: "hidden" }}>
           <div style={{ padding: "18px 20px", borderBottom: "1px solid var(--md-outline-variant)", background: "var(--md-surface-2)" }}>
-            <p style={{ color: "var(--md-primary)", fontSize: 10, fontWeight: 900, letterSpacing: "0.16em", textTransform: "uppercase" }}>Form Pembayaran</p>
-            <h2 style={{ marginTop: 4, color: "var(--md-on-surface)", fontSize: 18, fontWeight: 900 }}>Konfirmasi Bayar</h2>
-            <p style={{ marginTop: 4, color: "var(--md-on-surface-variant)", fontSize: 12, fontWeight: 650, lineHeight: 1.6 }}>Unggah bukti transfer agar tim keuangan dapat melakukan validasi.</p>
+            <p style={{ color: "var(--md-primary)", fontSize: 10, fontWeight: 900, letterSpacing: "0.16em", textTransform: "uppercase" }}>Form Pembayaran & Berkas</p>
+            <h2 style={{ marginTop: 4, color: "var(--md-on-surface)", fontSize: 18, fontWeight: 900 }}>Konfirmasi Bayar & Upload Berkas</h2>
+            <p style={{ marginTop: 4, color: "var(--md-on-surface-variant)", fontSize: 12, fontWeight: 650, lineHeight: 1.6 }}>
+              Unggah bukti transfer pembayaran beserta foto dokumen wajib pendaftar.
+            </p>
           </div>
 
           <div style={{ padding: 20 }}>
@@ -73,8 +87,8 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
                   marginBottom: 16,
                   borderRadius: 12,
                   border: message.type === "success" ? "1px solid #86efac" : "1px solid #fca5a5",
-                  background: message.type === "success" ? "#ecfdf5" : "#fef2f2",
-                  color: message.type === "success" ? "#047857" : "#b91c1c",
+                  background: message.type === "success" ? "var(--md-success-container)" : "var(--md-error-container)",
+                  color: message.type === "success" ? "var(--md-success)" : "var(--md-error)",
                   padding: 12,
                   fontSize: 12,
                   fontWeight: 800,
@@ -89,8 +103,13 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
                 <label style={labelStyle}>
                   Jenis Pembayaran <span className="text-red-500">*</span>
                 </label>
-                <select name="jenis" required defaultValue="" style={fieldStyle}>
-                  <option value="" disabled>- Pilih Jenis Pembayaran -</option>
+                <select
+                  name="jenis"
+                  required
+                  value={jenis}
+                  onChange={(e) => setJenis(e.target.value)}
+                  style={fieldStyle}
+                >
                   <option value="Biaya Pendaftaran RPL">Biaya Pendaftaran RPL</option>
                   <option value="Biaya Asesmen RPL">Biaya Asesmen RPL</option>
                   <option value="Pembayaran Cicilan RPL">Pembayaran Cicilan RPL</option>
@@ -123,33 +142,34 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
                 <label style={labelStyle}>
                   Berita / Keterangan
                 </label>
-                <textarea name="keterangan" rows={3} placeholder="Sebutkan bank, nama pengirim, atau keterangan pembayaran" style={{ ...fieldStyle, height: 88, resize: "vertical", paddingTop: 12 }} />
+                <textarea name="keterangan" rows={2} placeholder="Sebutkan bank, nama pengirim, atau keterangan transfer" style={{ ...fieldStyle, height: 72, resize: "vertical", paddingTop: 10 }} />
               </div>
 
+              {/* ── 1. Upload Bukti Transfer Bank ── */}
               <div>
                 <label style={labelStyle}>
-                  Unggah Bukti <span className="text-red-500">*</span>
+                  1. Bukti Transfer Bank <span className="text-red-500">*</span>
                 </label>
-                <div style={{ border: "1.5px dashed #93c5fd", borderRadius: 14, background: "#eff6ff", padding: 14 }}>
+                <div style={{ border: fileNameBukti ? "1.5px solid var(--md-primary)" : "1.5px dashed var(--md-outline)", borderRadius: 14, background: "var(--md-surface-2)", padding: 12 }}>
                   <label
                     htmlFor="bukti-pembayaran"
                     style={{
-                      minHeight: 52,
+                      minHeight: 42,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: 10,
-                      borderRadius: 12,
+                      gap: 8,
+                      borderRadius: 10,
                       background: "var(--md-primary)",
-                      color: "#fff",
+                      color: "var(--md-on-primary)",
                       cursor: "pointer",
-                      boxShadow: "var(--md-shadow-2)",
-                      fontSize: 13,
-                      fontWeight: 900,
+                      fontSize: 12.5,
+                      fontWeight: 800,
                       textAlign: "center",
                     }}
                   >
-                    Pilih File Bukti Transfer
+                    <span>📁</span>
+                    <span>Pilih File Bukti Transfer</span>
                   </label>
                   <input
                     id="bukti-pembayaran"
@@ -157,18 +177,119 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
                     name="bukti"
                     accept=".jpg,.jpeg,.png,.pdf"
                     required
-                    onChange={(event) => setFileName(event.currentTarget.files?.[0]?.name || "")}
+                    onChange={(event) => setFileNameBukti(event.currentTarget.files?.[0]?.name || "")}
                     style={{ position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clip: "rect(0, 0, 0, 0)", whiteSpace: "nowrap", border: 0 }}
                   />
-                  <p style={{ marginTop: 10, color: fileName ? "var(--md-primary)" : "var(--md-on-surface-variant)", fontSize: 11, fontWeight: 800, textAlign: "center" }}>
-                    {fileName || "Belum ada file dipilih"}
+                  <p style={{ marginTop: 8, color: fileNameBukti ? "var(--md-primary)" : "var(--md-on-surface-variant)", fontSize: 11, fontWeight: 700, textAlign: "center" }}>
+                    {fileNameBukti ? `✓ ${fileNameBukti}` : "Belum ada file dipilih"}
                   </p>
-                  <p style={{ marginTop: 5, color: "var(--md-on-surface-variant)", fontSize: 10, fontWeight: 700, textAlign: "center" }}>Format JPG, PNG, atau PDF. Maksimal 5 MB.</p>
                 </div>
               </div>
 
-              <button type="submit" disabled={loading} style={{ minHeight: 48, marginTop: 4, border: 0, borderRadius: 999, background: "var(--md-primary)", color: "#fff", cursor: loading ? "wait" : "pointer", boxShadow: "var(--md-shadow-2)", fontSize: 13, fontWeight: 900, opacity: loading ? 0.7 : 1 }}>
-                {loading ? "Mengirim..." : "Kirim Konfirmasi"}
+              {/* ── 2. Mandatory Student Documents (Required on Registration Payment) ── */}
+              {isPendaftaran && (
+                <div style={{ marginTop: 8, padding: 14, borderRadius: 16, background: "var(--md-surface-2)", border: "1px solid var(--md-outline-variant)" }}>
+                  <div style={{ marginBottom: 12 }}>
+                    <p style={{ color: "var(--md-primary)", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", display: "flex", alignItems: "center", gap: 6 }}>
+                      <span>📋</span>
+                      <span>Dokumen Wajib Calon Mahasiswa (Wajib Diunggah)</span>
+                    </p>
+                    <p style={{ color: "var(--md-on-surface-variant)", fontSize: 11, marginTop: 2, lineHeight: 1.5 }}>
+                      Untuk verifikasi keabsahan pendaftaran RPL, mohon unggah foto / scan asli berkas berikut (Format JPG/PNG/PDF maks. 5MB).
+                    </p>
+                  </div>
+
+                  <div style={{ display: "grid", gap: 10 }}>
+                    {/* Foto KTP */}
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: "var(--md-on-surface)" }}>🪪 Foto / Scan KTP Asli <span className="text-red-500">*</span></span>
+                        {fileNameKtp && <span style={{ fontSize: 10, fontWeight: 800, color: "var(--md-primary)" }}>✓ Terpilih</span>}
+                      </div>
+                      <input
+                        type="file"
+                        name="file_ktp"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        required={isPendaftaran}
+                        onChange={(e) => setFileNameKtp(e.currentTarget.files?.[0]?.name || "")}
+                        style={{ ...fieldStyle, padding: "8px 12px", minHeight: 40, fontSize: 11.5 }}
+                      />
+                    </div>
+
+                    {/* Foto KK */}
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: "var(--md-on-surface)" }}>👨‍👩‍👧‍👦 Foto / Scan Kartu Keluarga (KK) <span className="text-red-500">*</span></span>
+                        {fileNameKk && <span style={{ fontSize: 10, fontWeight: 800, color: "var(--md-primary)" }}>✓ Terpilih</span>}
+                      </div>
+                      <input
+                        type="file"
+                        name="file_kk"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        required={isPendaftaran}
+                        onChange={(e) => setFileNameKk(e.currentTarget.files?.[0]?.name || "")}
+                        style={{ ...fieldStyle, padding: "8px 12px", minHeight: 40, fontSize: 11.5 }}
+                      />
+                    </div>
+
+                    {/* Foto Akta Kelahiran */}
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: "var(--md-on-surface)" }}>📜 Foto / Scan Akta Kelahiran <span className="text-red-500">*</span></span>
+                        {fileNameAkta && <span style={{ fontSize: 10, fontWeight: 800, color: "var(--md-primary)" }}>✓ Terpilih</span>}
+                      </div>
+                      <input
+                        type="file"
+                        name="file_akta"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        required={isPendaftaran}
+                        onChange={(e) => setFileNameAkta(e.currentTarget.files?.[0]?.name || "")}
+                        style={{ ...fieldStyle, padding: "8px 12px", minHeight: 40, fontSize: 11.5 }}
+                      />
+                    </div>
+
+                    {/* Foto Ijazah SMA */}
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: "var(--md-on-surface)" }}>🎓 Foto / Scan Ijazah SMA/Sederajat <span className="text-red-500">*</span></span>
+                        {fileNameIjazah && <span style={{ fontSize: 10, fontWeight: 800, color: "var(--md-primary)" }}>✓ Terpilih</span>}
+                      </div>
+                      <input
+                        type="file"
+                        name="file_ijazah"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        required={isPendaftaran}
+                        onChange={(e) => setFileNameIjazah(e.currentTarget.files?.[0]?.name || "")}
+                        style={{ ...fieldStyle, padding: "8px 12px", minHeight: 40, fontSize: 11.5 }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  minHeight: 48,
+                  marginTop: 6,
+                  border: 0,
+                  borderRadius: 999,
+                  background: "var(--md-primary)",
+                  color: "var(--md-on-primary)",
+                  cursor: loading ? "wait" : "pointer",
+                  boxShadow: "var(--md-shadow-2)",
+                  fontSize: 13.5,
+                  fontWeight: 900,
+                  opacity: loading ? 0.7 : 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                }}
+              >
+                <span>{loading ? "Mengunggah Berkas & Mengirim..." : "Kirim Konfirmasi & Berkas Pendaftaran"}</span>
+                <span>→</span>
               </button>
             </form>
           </div>
@@ -182,7 +303,7 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
               <p style={{ color: "var(--md-primary)", fontSize: 10, fontWeight: 900, letterSpacing: "0.16em", textTransform: "uppercase" }}>Histori</p>
               <h2 style={{ marginTop: 4, color: "var(--md-on-surface)", fontSize: 18, fontWeight: 900 }}>Riwayat Transaksi</h2>
             </div>
-            <span style={{ flexShrink: 0, borderRadius: 999, background: "#fff", color: "var(--md-on-surface-variant)", border: "1px solid var(--md-outline-variant)", padding: "6px 12px", fontSize: 10, fontWeight: 900 }}>
+            <span style={{ flexShrink: 0, borderRadius: 999, background: "var(--md-surface-1)", color: "var(--md-on-surface-variant)", border: "1px solid var(--md-outline-variant)", padding: "6px 12px", fontSize: 10, fontWeight: 900 }}>
               {histori.length} Transaksi
             </span>
           </div>
@@ -193,7 +314,7 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
                 <div style={{ width: 62, height: 62, margin: "0 auto 14px", borderRadius: 18, background: "var(--md-primary-container)", color: "var(--md-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 900 }}>Rp</div>
                 <p style={{ color: "var(--md-on-surface)", fontSize: 16, fontWeight: 900 }}>Belum ada riwayat transaksi</p>
                 <p style={{ marginTop: 6, color: "var(--md-on-surface-variant)", fontSize: 12, fontWeight: 650, lineHeight: 1.6 }}>
-                  Setelah bukti pembayaran dikirim, status validasi dan catatan keuangan akan tampil di sini.
+                  Setelah bukti pembayaran dan berkas dikirim, status validasi dan catatan keuangan akan tampil di sini.
                 </p>
               </div>
             </div>
@@ -201,7 +322,7 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", minWidth: 720, borderCollapse: "collapse", textAlign: "left" }}>
                 <thead>
-                  <tr style={{ background: "#f8fafc", borderBottom: "1px solid var(--md-outline-variant)" }}>
+                  <tr style={{ background: "var(--md-surface-2)", borderBottom: "1px solid var(--md-outline-variant)" }}>
                     {["Tanggal", "Keterangan", "Nominal", "Status"].map((heading) => (
                       <th key={heading} style={{ padding: "13px 18px", color: "var(--md-on-surface-variant)", fontSize: 10, fontWeight: 900, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                         {heading}
@@ -223,9 +344,9 @@ export default function KeuanganClient({ histori }: { histori: PaymentHistory[] 
                         <div style={{ color: "var(--md-primary)", fontSize: 12, fontWeight: 900 }}>{h.jenisPembayaran}</div>
                         <div style={{ marginTop: 3, color: "var(--md-on-surface-variant)", fontSize: 10, fontWeight: 650 }}>{h.keterangan || "-"}</div>
                         {h.statusVerifikasi === "Ditolak" && h.catatanAdmin && (
-                          <div style={{ marginTop: 8, borderRadius: 10, border: "1px solid #fecaca", background: "#fef2f2", padding: 9 }}>
+                          <div style={{ marginTop: 8, borderRadius: 10, border: "1px solid #fecaca", background: "var(--md-error-container)", padding: 9 }}>
                             <div style={{ marginBottom: 2, color: "var(--md-error)", fontSize: 9, fontWeight: 900, letterSpacing: "0.08em", textTransform: "uppercase" }}>Alasan Ditolak</div>
-                            <div style={{ color: "#b91c1c", fontSize: 10, fontWeight: 650 }}>{h.catatanAdmin}</div>
+                            <div style={{ color: "var(--md-error)", fontSize: 10, fontWeight: 650 }}>{h.catatanAdmin}</div>
                           </div>
                         )}
                       </td>
@@ -259,7 +380,7 @@ const labelStyle: React.CSSProperties = {
 
 const fieldStyle: React.CSSProperties = {
   width: "100%",
-  minHeight: 46,
+  minHeight: 44,
   border: "1px solid var(--md-outline-variant)",
   borderRadius: 12,
   background: "var(--md-surface-2)",
@@ -267,5 +388,5 @@ const fieldStyle: React.CSSProperties = {
   padding: "0 13px",
   outline: "none",
   fontSize: 13,
-  fontWeight: 750,
+  fontWeight: 650,
 };

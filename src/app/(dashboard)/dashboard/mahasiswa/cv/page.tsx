@@ -3,10 +3,11 @@ import { ApplicantProfile } from "@/models/ApplicantProfile";
 import { connectMongoDB } from "@/lib/mongodb";
 import { redirect } from "next/navigation";
 import CVForm from "./CVForm";
+import Link from "next/link";
 import { PageHero } from "@/components/dashboard/UIComponents";
 
 export const metadata = {
-  title: "CV & Riwayat Hidup - REKSA STIMI",
+  title: "CV & Riwayat Hidup Mahasiswa - REKSA STIMI",
 };
 
 export default async function MahasiswaCVPage() {
@@ -19,17 +20,35 @@ export default async function MahasiswaCVPage() {
   await connectMongoDB();
   const profile = await ApplicantProfile.findOne({ userId: session.id }).lean();
 
-  // Convert to plain object for Client Component
   const initialData = profile ? JSON.parse(JSON.stringify(profile)) : {};
 
   return (
-    <div style={{ width: "100%", margin: "0 auto" }}>
+    <div style={{ width: "100%", margin: "0 auto", paddingBottom: 40 }}>
+      {/* ── Breadcrumb Back ── */}
+      <div style={{ marginBottom: 14 }}>
+        <Link
+          href="/dashboard/mahasiswa"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            fontSize: 12.5,
+            fontWeight: 800,
+            color: "var(--md-primary)",
+            textDecoration: "none",
+          }}
+        >
+          <span>←</span>
+          <span>Kembali ke Beranda Mahasiswa</span>
+        </Link>
+      </div>
+
       {/* ── Hero ── */}
       <PageHero
         badgeIcon="📄"
-        badgeText="Curriculum Vitae"
-        title="Riwayat Hidup & Pengalaman"
-        subtitle="Lengkapi rekam jejak pendidikan dan pengalaman profesional Anda sebagai dasar asesmen RPL."
+        badgeText="Formulir F-07 Resmi"
+        title="Curriculum Vitae (CV) & Rekam Jejak"
+        subtitle="Lengkapi data pekerjaan, riwayat pendidikan, pengalaman kerja, sertifikasi pelatihan, dan organisasi sebagai bukti awal pengakuan SKS RPL."
         tone="warning"
       />
 

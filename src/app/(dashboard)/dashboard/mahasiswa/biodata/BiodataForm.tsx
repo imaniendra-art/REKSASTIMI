@@ -7,21 +7,21 @@ import { saveBiodata } from "./actions";
 /* ── Shared style helpers ── */
 const inputBase: React.CSSProperties = {
   width: "100%",
-  background: "#fff",
-  border: "2px solid #cbd5e1",
+  background: "var(--md-surface-1)",
+  border: "1px solid var(--md-outline)",
   borderRadius: 12,
-  padding: "12px 16px",
+  padding: "11px 14px",
   fontSize: 13,
-  fontWeight: 500,
+  fontWeight: 600,
   color: "var(--md-on-surface)",
   outline: "none",
-  transition: "border 200ms, box-shadow 200ms, background 200ms",
+  transition: "all 0.18s ease",
 };
 
 const labelBase: React.CSSProperties = {
   display: "block",
   fontSize: 11,
-  fontWeight: 700,
+  fontWeight: 800,
   color: "var(--md-on-surface-variant)",
   marginBottom: 6,
   textTransform: "uppercase",
@@ -29,15 +29,15 @@ const labelBase: React.CSSProperties = {
 };
 
 const requiredStar: React.CSSProperties = {
-  color: "#ef4444",
-  marginLeft: 2,
+  color: "var(--md-error)",
+  marginLeft: 3,
 };
 
 const sectionCard: React.CSSProperties = {
-  background: "var(--md-surface)",
+  background: "var(--md-surface-1)",
   borderRadius: 20,
-  padding: "28px 28px 32px",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+  padding: "26px 28px",
+  boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
   border: "1px solid var(--md-outline-variant)",
   position: "relative",
   overflow: "hidden",
@@ -57,12 +57,12 @@ const sectionTitle = (color: string): React.CSSProperties => ({
   display: "flex",
   alignItems: "center",
   gap: 10,
-  fontWeight: 800,
+  fontWeight: 900,
   fontSize: 14,
   color: color,
   textTransform: "uppercase",
   letterSpacing: "0.06em",
-  marginBottom: 24,
+  marginBottom: 20,
 });
 
 export default function BiodataForm({ initialData }: { initialData: any }) {
@@ -89,8 +89,6 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
 
     const formData = new FormData(e.currentTarget);
     
-    // Explicitly set the files into formData from state just in case
-    // the uncontrolled inputs did not serialize them properly.
     if (selectedFiles.kk) formData.set("file_kk", selectedFiles.kk);
     if (selectedFiles.ktp) formData.set("file_ktp", selectedFiles.ktp);
     if (selectedFiles.ijazah) formData.set("file_ijazah", selectedFiles.ijazah);
@@ -100,7 +98,7 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
     const result = await saveBiodata(formData);
 
     if (result.success) {
-      setMessage({ type: "success", text: "✅ Data biodata berhasil disimpan!" });
+      setMessage({ type: "success", text: "Data biodata dan berkas berhasil disimpan!" });
       setTimeout(() => setMessage({ type: "", text: "" }), 4000);
       router.refresh();
     } else {
@@ -150,14 +148,12 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
             fontFamily: mono ? "monospace" : "inherit",
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = "#1a56db";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(26,86,219,0.12)";
-            e.currentTarget.style.background = "#fff";
+            e.currentTarget.style.borderColor = "var(--md-primary)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = "#cbd5e1";
+            e.currentTarget.style.borderColor = "var(--md-outline)";
             e.currentTarget.style.boxShadow = "none";
-            e.currentTarget.style.background = "#fff";
           }}
         />
       </div>
@@ -189,26 +185,19 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
           required={required}
           style={{
             ...inputBase,
-            appearance: "none",
             cursor: "pointer",
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231a56db' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "right 14px center",
-            paddingRight: 40,
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = "#1a56db";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(26,86,219,0.12)";
-            e.currentTarget.style.background = "#fff";
+            e.currentTarget.style.borderColor = "var(--md-primary)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = "#cbd5e1";
+            e.currentTarget.style.borderColor = "var(--md-outline)";
             e.currentTarget.style.boxShadow = "none";
-            e.currentTarget.style.background = "#fff";
           }}
         >
-          <option value="" disabled style={{ color: "#94a3b8" }}>
-            ▼  Pilih
+          <option value="" disabled style={{ color: "var(--md-on-surface-variant)" }}>
+            -- Pilih Opsi --
           </option>
           {options.map((o) => (
             <option key={o.value} value={o.value}>
@@ -232,20 +221,22 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
     accept: string;
   }) {
     const uploaded = isUploaded(docType);
+    const existingDoc = getDoc(docType);
     const pickedFile = selectedFiles[docType];
     const pickedName = pickedFile?.name;
+
     return (
       <div
         style={{
-          background: "#fff",
-          border: "2px solid #cbd5e1",
+          background: "var(--md-surface-2)",
+          border: "1px solid var(--md-outline-variant)",
           borderRadius: 16,
-          padding: "20px 16px",
+          padding: "18px 16px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          transition: "border 200ms, box-shadow 200ms",
-          minHeight: 150,
+          minHeight: 145,
+          transition: "all 0.18s ease",
         }}
       >
         <div>
@@ -255,32 +246,51 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
               fontWeight: 800,
               color: "var(--md-on-surface)",
               textTransform: "uppercase",
-              letterSpacing: "0.05em",
+              letterSpacing: "0.04em",
               marginBottom: 8,
             }}
           >
             {label}
           </p>
+
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: 4,
+              gap: 5,
               fontSize: 10,
-              fontWeight: 700,
-              padding: "4px 10px",
+              fontWeight: 800,
+              padding: "3px 8px",
               borderRadius: 6,
-              background: uploaded ? "#d1fae5" : "#f1f5f9",
-              color: uploaded ? "#065f46" : "#64748b",
-              marginBottom: 14,
+              background: uploaded ? "var(--md-success-container)" : "var(--md-surface-1)",
+              color: uploaded ? "var(--md-success)" : "var(--md-on-surface-variant)",
+              border: "1px solid var(--md-outline-variant)",
+              marginBottom: 10,
             }}
           >
-            {uploaded ? "✅ Sudah Upload" : "📎 Belum Upload"}
+            <span>{uploaded ? "✓ Terunggah" : "○ Belum Ada"}</span>
           </div>
+
           {pickedName && (
-            <p style={{ fontSize: 10, color: "#475569", marginBottom: 6, wordBreak: "break-all" }}>📄 {pickedName}</p>
+            <p style={{ fontSize: 10.5, color: "var(--md-primary)", fontWeight: 700, marginBottom: 8, wordBreak: "break-all" }}>
+              File Baru: {pickedName}
+            </p>
+          )}
+
+          {!pickedName && existingDoc?.fileUrl && (
+            <div style={{ marginBottom: 8 }}>
+              <a
+                href={existingDoc.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 10.5, color: "var(--md-primary)", fontWeight: 700, textDecoration: "underline" }}
+              >
+                Lihat Berkas Aktif &rarr;
+              </a>
+            </div>
           )}
         </div>
+
         <label
           style={{
             display: "inline-flex",
@@ -288,18 +298,18 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
             gap: 6,
             padding: "8px 14px",
             fontSize: 11,
-            fontWeight: 700,
-            color: "#1a56db",
-            background: "#eff6ff",
-            border: "1.5px solid #93c5fd",
+            fontWeight: 800,
+            color: "var(--md-primary)",
+            background: "var(--md-primary-container)",
+            border: "1px solid var(--md-outline-variant)",
             borderRadius: 8,
             cursor: "pointer",
-            transition: "background 150ms, border-color 150ms",
             width: "100%",
             justifyContent: "center",
+            transition: "all 0.18s ease",
           }}
         >
-          📂 Pilih File
+          <span>Pilih Berkas</span>
           <input
             type="file"
             name={name}
@@ -319,7 +329,7 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
 
   /* ── Render ── */
   return (
-    <form encType="multipart/form-data" onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <form encType="multipart/form-data" onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20, marginTop: 24 }}>
       {/* Toast Message */}
       {message.text && (
         <div
@@ -330,10 +340,10 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
             padding: "14px 20px",
             borderRadius: 14,
             fontSize: 13,
-            fontWeight: 700,
-            background: message.type === "success" ? "#d1fae5" : "#fee2e2",
-            color: message.type === "success" ? "#065f46" : "#991b1b",
-            border: `1.5px solid ${message.type === "success" ? "#34d399" : "#f87171"}`,
+            fontWeight: 800,
+            background: message.type === "success" ? "var(--md-success-container)" : "var(--md-error-container)",
+            color: message.type === "success" ? "var(--md-success)" : "var(--md-error)",
+            border: `1.5px solid ${message.type === "success" ? "var(--md-success)" : "var(--md-error)"}`,
           }}
         >
           {message.text}
@@ -342,17 +352,16 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
 
       {/* ── Section 1: Detail Mahasiswa ── */}
       <div style={sectionCard}>
-        <div style={accentBar("#1a56db")} />
-        <div style={sectionTitle("#1a56db")}>
-          <span style={{ fontSize: 20 }}>👤</span>
-          1. Detail Mahasiswa
+        <div style={accentBar("var(--md-primary)")} />
+        <div style={sectionTitle("var(--md-primary)")}>
+          1. Identitas Pokok Calon Mahasiswa
         </div>
 
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 18,
+            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+            gap: 16,
           }}
         >
           <InputField
@@ -406,30 +415,29 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
           />
         </div>
 
-        <div style={{ marginTop: 18 }}>
+        <div style={{ marginTop: 16 }}>
           <InputField
             label="Nama Ibu Kandung"
             name="nama_ibu"
             defaultValue={ident.motherName}
             required
-            placeholder="Wajib diisi untuk PDDIKTI"
+            placeholder="Wajib untuk sinkronisasi Neo Feeder PDDIKTI"
           />
         </div>
       </div>
 
-      {/* ── Section 2: Informasi Detail ── */}
+      {/* ── Section 2: Informasi Detail Kependudukan & Kontak ── */}
       <div style={sectionCard}>
-        <div style={accentBar("#6366f1")} />
-        <div style={sectionTitle("#6366f1")}>
-          <span style={{ fontSize: 20 }}>ℹ️</span>
-          2. Informasi Detail Mahasiswa
+        <div style={accentBar("var(--md-secondary)")} />
+        <div style={sectionTitle("var(--md-secondary)")}>
+          2. Kependudukan, Alamat & Kontak Resmi
         </div>
 
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 18,
+            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+            gap: 16,
           }}
         >
           <SelectField
@@ -438,21 +446,21 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
             defaultValue={ident.citizenship || "Indonesia"}
             required
             options={[
-              { value: "Indonesia", label: "Indonesia" },
-              { value: "WNA", label: "WNA (Asing)" },
+              { value: "Indonesia", label: "Indonesia (WNI)" },
+              { value: "WNA", label: "WNA (Warga Negara Asing)" },
             ]}
           />
           <InputField
-            label="NIK (No. KTP)"
+            label="Nomor Induk Kependudukan (NIK)"
             name="nik"
             defaultValue={ident.nik}
             required
             maxLength={16}
-            placeholder="16 Digit Angka"
+            placeholder="16 Digit Angka KTP"
             mono
           />
           <InputField
-            label="NISN"
+            label="Nomor Induk Siswa Nasional (NISN)"
             name="nisn"
             defaultValue={ident.nisn}
             required
@@ -463,9 +471,9 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
           />
         </div>
 
-        <div style={{ marginTop: 18 }}>
+        <div style={{ marginTop: 16 }}>
           <InputField
-            label="Alamat Domisili (Jalan/RT/RW)"
+            label="Alamat Lengkap Domisili (Jalan / Dusun / RT / RW)"
             name="alamat"
             defaultValue={cont.address}
             required
@@ -475,9 +483,9 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: 18,
-            marginTop: 18,
+            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+            gap: 16,
+            marginTop: 16,
           }}
         >
           <InputField
@@ -493,14 +501,14 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
             required
           />
           <InputField
-            label="Email Aktif"
+            label="Alamat Email Aktif"
             name="email"
             defaultValue={cont.email}
             type="email"
             required
           />
           <InputField
-            label="No. HP / WhatsApp"
+            label="Nomor WhatsApp Aktif"
             name="no_hp"
             defaultValue={cont.phone}
             required
@@ -508,107 +516,45 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
         </div>
       </div>
 
-      {/* ── Section 3: Upload Berkas ── */}
-      <div
-        style={{
-          ...sectionCard,
-          background: "var(--md-surface-variant)",
-        }}
-      >
-        <div style={accentBar("#059669")} />
-        <div style={sectionTitle("#059669")}>
-          <span style={{ fontSize: 20 }}>☁️</span>
-          3. Upload Berkas Diri & Dok. Pendukung
+      {/* ── Section 3: Upload Berkas Dokumen ── */}
+      <div style={sectionCard}>
+        <div style={accentBar("var(--md-success)")} />
+        <div style={sectionTitle("var(--md-success)")}>
+          3. Berkas Legalitas & Portofolio Pendukung
         </div>
 
         {/* Info box */}
         <div
           style={{
-            background: "#e0f2fe",
-            border: "1.5px solid #38bdf8",
+            background: "var(--md-surface-2)",
+            border: "1px solid var(--md-outline-variant)",
             borderRadius: 16,
-            padding: "20px 22px",
-            marginBottom: 24,
+            padding: "18px 20px",
+            marginBottom: 20,
           }}
         >
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
-            <span style={{ fontSize: 20, lineHeight: 1 }}>ℹ️</span>
-            <div>
-              <p style={{ fontSize: 13, fontWeight: 800, color: "#075985", marginBottom: 4 }}>
-                Informasi Upload
-              </p>
-              <p style={{ fontSize: 12, color: "#075985", lineHeight: 1.6 }}>
-                Format KTP/KK/Ijazah: <strong>JPG/PNG/PDF</strong>. Maksimal <strong>2MB</strong> per file.
-              </p>
-            </div>
-          </div>
+          <p style={{ fontSize: 13, fontWeight: 800, color: "var(--md-on-surface)", marginBottom: 4 }}>
+            Ketentuan Dokumen Unggahan
+          </p>
+          <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", lineHeight: 1.55 }}>
+            Format KTP, KK, Ijazah: <strong>JPG / PNG / PDF</strong> (Maksimal 2MB per file). Pastikan teks terbaca jelas dan tidak buram.
+          </p>
 
-          {/* Pendukung detail */}
           <div
             style={{
-              background: "#fff",
-              border: "1.5px solid #bae6fd",
+              marginTop: 14,
+              padding: "12px 14px",
+              background: "var(--md-surface-1)",
               borderRadius: 12,
-              padding: "16px 18px",
+              border: "1px solid var(--md-outline-variant)",
             }}
           >
-            <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
-              <p style={{ fontSize: 12, fontWeight: 800, color: "#059669", whiteSpace: "nowrap" }}>
-                📄 Khusus &ldquo;DOK. PENDUKUNG LAINNYA&rdquo;:
-              </p>
-              <p style={{ fontSize: 11, color: "#334155", lineHeight: 1.6, flex: 1, minWidth: 200 }}>
-                Mohon gabungkan bukti-bukti pendukung di bawah ini ke dalam <strong>1 (satu) file PDF bulat</strong> (maksimal 2MB):
-              </p>
-            </div>
-            {(() => {
-              const allItems = [
-                "Ijazah/Transkrip Nilai PT asal",
-                "Daftar Riwayat pekerjaan & tugas",
-                "Sertifikat Kompetensi",
-                "Sert. pengoperasian/lisensi jabatan",
-                "Foto pekerjaan & deskripsi",
-                "Buku harian",
-                "Lembar tugas/kerja di perusahaan",
-                "Dok. analisis/perancangan",
-                "Logbook",
-                "Catatan pelatihan di tempat kerja",
-                "Keanggotaan asosiasi profesi",
-                "Ref./verifikasi pihak 3 / supervisor",
-                "Penghargaan dari industri",
-                "Penilaian kinerja perusahaan",
-                "Dokumen lain yang relevan",
-              ];
-              const cols = [allItems.slice(0, 5), allItems.slice(5, 10), allItems.slice(10, 15)];
-              return (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0 16px" }}>
-                  {cols.map((col, ci) => (
-                    <div key={ci}>
-                      {col.map((item, ri) => {
-                        const num = ci * 5 + ri + 1;
-                        return (
-                          <div
-                            key={num}
-                            style={{
-                              display: "flex",
-                              alignItems: "baseline",
-                              gap: 6,
-                              fontSize: 11,
-                              color: "#475569",
-                              lineHeight: 1.4,
-                              padding: "4px 0",
-                              borderBottom: "1px solid #f1f5f9",
-                            }}
-                          >
-                            <span style={{ fontWeight: 700, color: "#1a56db", minWidth: 20, textAlign: "right", flexShrink: 0 }}>{num}.</span>
-                            <span>{item}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-              );
-            })()}
+            <p style={{ fontSize: 11.5, fontWeight: 800, color: "var(--md-primary)", marginBottom: 4 }}>
+              Khusus &ldquo;Dokumen Pendukung Lainnya&rdquo;:
+            </p>
+            <p style={{ fontSize: 11, color: "var(--md-on-surface-variant)", lineHeight: 1.5 }}>
+              Gabungkan sertifikat pelatihan, surat pengalaman kerja, SK jabatan, atau karya industri ke dalam <strong>1 file PDF</strong> (maksimal 2MB).
+            </p>
           </div>
         </div>
 
@@ -633,43 +579,29 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
         disabled={loading}
         style={{
           width: "100%",
-          background: "linear-gradient(90deg, #1a56db, #6366f1)",
-          color: "#fff",
+          background: "var(--md-primary)",
+          color: "var(--md-on-primary)",
           border: "none",
-          borderRadius: 14,
-          padding: "16px 24px",
-          fontSize: 15,
+          borderRadius: 999,
+          padding: "15px 24px",
+          fontSize: 14,
           fontWeight: 800,
           cursor: loading ? "wait" : "pointer",
           opacity: loading ? 0.7 : 1,
-          boxShadow: "0 6px 20px rgba(26,86,219,0.3)",
-          transition: "opacity 200ms, transform 150ms, box-shadow 200ms",
+          boxShadow: "0 4px 16px var(--theme-glow)",
+          transition: "all 0.18s ease",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           gap: 10,
-          letterSpacing: "0.02em",
         }}
       >
         {loading ? (
-          <span
-            style={{
-              display: "inline-block",
-              width: 20,
-              height: 20,
-              border: "3px solid rgba(255,255,255,0.3)",
-              borderTopColor: "#fff",
-              borderRadius: "50%",
-              animation: "spin 0.6s linear infinite",
-            }}
-          />
+          <span>Menyimpan Biodata...</span>
         ) : (
-          <>💾 SIMPAN DATA PRIBADI</>
+          <span>Simpan Seluruh Data Biodata & Berkas &rarr;</span>
         )}
       </button>
-
-      {/* Spinner keyframe via style tag */}
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </form>
   );
 }

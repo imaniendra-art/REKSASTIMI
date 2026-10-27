@@ -6,6 +6,7 @@ import { F02Pengajuan } from "@/models/F02Pengajuan";
 import { redirect } from "next/navigation";
 import { PageHero } from "@/components/dashboard/UIComponents";
 import FormF02Client from "./FormF02Client";
+import Link from "next/link";
 
 export const metadata = {
   title: "F02 Formulir Aplikasi RPL - REKSA STIMI",
@@ -76,12 +77,31 @@ export default async function F02Page() {
   });
 
   return (
-    <div style={{ width: "100%", margin: "0 auto" }}>
+    <div style={{ width: "100%", margin: "0 auto", paddingBottom: 40 }}>
+      {/* ── Breadcrumb Back ── */}
+      <div style={{ marginBottom: 14 }}>
+        <Link
+          href="/dashboard/mahasiswa"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            fontSize: 12.5,
+            fontWeight: 800,
+            color: "var(--md-primary)",
+            textDecoration: "none",
+          }}
+        >
+          <span>←</span>
+          <span>Kembali ke Beranda Mahasiswa</span>
+        </Link>
+      </div>
+
       <PageHero
         badgeIcon="📝"
-        badgeText="Evaluasi Diri"
-        title="Formulir Aplikasi RPL (F02)"
-        subtitle="Pilih mata kuliah yang ingin direkognisi berdasarkan pengalaman kerja atau pendidikan sebelumnya."
+        badgeText="Formulir Aplikasi RPL (F02)"
+        title="Pemilihan Mata Kuliah Konversi"
+        subtitle="Pilih mata kuliah yang ingin direkognisi berdasarkan rekam jejak kerja (Perolehan) atau pendidikan tinggi sebelumnya (Transfer)."
         tone="success"
       />
 

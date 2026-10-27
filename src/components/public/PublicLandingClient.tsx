@@ -260,50 +260,6 @@ export function PublicLandingClient() {
             Platform <strong>REKSA STIMI</strong> (<strong>Rekognisi Evaluasi dan Konversi Akademik STIMI</strong>) membantu pekerja profesional, wirausahawan, ASN (Aparatur Sipil Negara), anggota POLRI, prajurit TNI, praktisi manajerial (supervisor, manajer operasional, kepala cabang/ruangan), hingga lulusan diploma mengonversikan jam terbang kerja, kepemimpinan tim, portofolio proyek, serta sertifikasi keahlian menjadi <strong>hingga 100 SKS resmi</strong>. Kuliah lebih cepat, hemat, dan sah diakui PDDikti.
           </p>
 
-          {/* Target Audience Badges */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 8,
-              flexWrap: "wrap",
-              maxWidth: 1000,
-              margin: "-16px auto 44px",
-            }}
-          >
-            {[
-              { icon: "🏛️", label: "Aparatur Sipil Negara (ASN/PNS)" },
-              { icon: "👮", label: "Anggota POLRI" },
-              { icon: "🎖️", label: "Prajurit TNI" },
-              { icon: "💼", label: "Pekerja & Karyawan Swasta" },
-              { icon: "🚀", label: "Wirausahawan & Pelaku UMKM" },
-              { icon: "🏢", label: "Supervisor & Manajer Operasional" },
-              { icon: "🏥", label: "Nakes & Admin Faskes / Rumah Sakit" },
-              { icon: "🏦", label: "Staf BUMN, BUMD & Perbankan" },
-              { icon: "🎓", label: "Lulusan Diploma (D1/D2/D3) & Pindahan" },
-            ].map((p, idx) => (
-              <span
-                key={idx}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "6px 14px",
-                  borderRadius: 999,
-                  backgroundColor: "var(--md-surface-1)",
-                  border: "1px solid var(--md-outline-variant)",
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  color: "var(--md-on-surface)",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
-                }}
-              >
-                <span>{p.icon}</span>
-                <span>{p.label}</span>
-              </span>
-            ))}
-          </div>
-
           {/* CTAs */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", marginBottom: 64 }}>
             <Link
@@ -395,57 +351,6 @@ export function PublicLandingClient() {
             <strong>REKSA STIMI</strong> merupakan singkatan dari <strong>Rekognisi Evaluasi dan Konversi Akademik STIMI</strong> — sistem informasi dan platform terpadu STIMI YAPMI Makassar yang memfasilitasi pengakuan capaian pembelajaran masa lampau (RPL Tipe A) menjadi perolehan Satuan Kredit Semester (SKS) resmi program Sarjana Manajemen (S1).
           </p>
 
-          {/* Akronim Pill Breakdown */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 12,
-              flexWrap: "wrap",
-              marginTop: 24,
-            }}
-          >
-            {[
-              { letter: "R", word: "Rekognisi", desc: "Pengakuan jam terbang & pengalaman kerja" },
-              { letter: "E", word: "Evaluasi", desc: "Penilaian terstandar oleh asesor ber-SK" },
-              { letter: "K", word: "Konversi", desc: "Penyetaraan capaian menjadi SKS resmi S1" },
-              { letter: "SA", word: "Akademik STIMI", desc: "Standar mutu kurikulum STIMI YAPMI" },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "8px 16px",
-                  borderRadius: 999,
-                  backgroundColor: "var(--md-surface-1)",
-                  border: "1px solid var(--md-outline-variant)",
-                  fontSize: 13,
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-                }}
-              >
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 24,
-                    height: 24,
-                    borderRadius: "50%",
-                    backgroundColor: "var(--md-primary)",
-                    color: "var(--md-on-primary)",
-                    fontWeight: 900,
-                    fontSize: 11,
-                  }}
-                >
-                  {item.letter}
-                </span>
-                <span style={{ fontWeight: 800, color: "var(--md-on-surface)" }}>{item.word}</span>
-                <span style={{ color: "var(--md-on-surface-variant)", fontSize: 12 }}>• {item.desc}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24 }}>

@@ -17,16 +17,6 @@ type DashboardShellProps = {
 };
 
 /* ── Icon set ── */
-function IconMenu() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="3" y1="12" x2="21" y2="12"></line>
-      <line x1="3" y1="6" x2="21" y2="6"></line>
-      <line x1="3" y1="18" x2="21" y2="18"></line>
-    </svg>
-  );
-}
-
 function IconLogout() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -36,14 +26,6 @@ function IconLogout() {
     </svg>
   );
 }
-
-const notificationTextByRole: Record<Role, string> = {
-  admin: "Selamat datang di REKSA STIMI. Pantau pendaftaran RPL, validasi berkas, plotting penilai, dan finalisasi proses akademik secara berkala.",
-  akademik: "Pusat Akademik REKSA STIMI. Kelola kurikulum, mata kuliah RPL, klaster, dan hasil evaluasi konversi yang perlu ditindaklanjuti.",
-  keuangan: "Pusat Keuangan REKSA STIMI. Verifikasi bukti pembayaran pendaftaran dan konversi SKS mahasiswa secara real-time.",
-  penilai: "Portal Penilai RPL STIMI. Periksa penugasan evaluasi diri mahasiswa, input nilai kriteria VATM, dan terbitkan berita acara.",
-  mahasiswa: "Selamat datang Mahasiswa RPL STIMI. Ikuti pembelajaran singkat bersertifikat, lengkapi formulir evaluasi diri, dan pantau pengakuan SKS Anda.",
-};
 
 export function DashboardShell({ children, user }: DashboardShellProps) {
   const pathname = usePathname();
@@ -83,8 +65,6 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
       ? { href: dashboardHome, label: navItems[0]?.label || "Dashboard" }
       : null;
 
-  const notificationText = notificationTextByRole[user.role];
-
   const initials = user.name
     .split(" ")
     .map((n) => n[0])
@@ -98,10 +78,12 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
       {/* Brand Header */}
       <div
         style={{
-          padding: "20px 18px",
+          padding: isSidebarCollapsed && !isMobile ? "16px 8px" : "18px 16px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: isSidebarCollapsed && !isMobile ? "center" : "space-between",
+          flexDirection: isSidebarCollapsed && !isMobile ? "column" : "row",
+          gap: isSidebarCollapsed && !isMobile ? 12 : 8,
           borderBottom: "1px solid var(--md-outline-variant)",
         }}
       >
@@ -144,6 +126,45 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
             </div>
           )}
         </Link>
+
+        {/* Desktop Sidebar Collapse Toggle Button */}
+        {!isMobile && (
+          <button
+            onClick={() => setIsSidebarCollapsed((prev) => !prev)}
+            title={isSidebarCollapsed ? "Perluas Sidebar" : "Persempit Sidebar"}
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 8,
+              border: "1px solid var(--md-outline-variant)",
+              background: "var(--md-surface-2)",
+              color: "var(--md-on-surface-variant)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              transition: "all 0.15s ease",
+            }}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              {isSidebarCollapsed ? (
+                <polyline points="9 18 15 12 9 6" />
+              ) : (
+                <polyline points="15 18 9 12 15 6" />
+              )}
+            </svg>
+          </button>
+        )}
 
         {isMobile && (
           <button
@@ -294,17 +315,28 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
       {/* User Profile & Logout Footer */}
       <div
         style={{
-          padding: "14px 16px",
+          padding: isSidebarCollapsed && !isMobile ? "12px 6px" : "14px 16px",
           borderTop: "1px solid var(--md-outline-variant)",
           background: "var(--md-surface-2)",
           display: "flex",
+          flexDirection: isSidebarCollapsed && !isMobile ? "column" : "row",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: isSidebarCollapsed && !isMobile ? "center" : "space-between",
           gap: 10,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: isSidebarCollapsed && !isMobile ? "center" : "flex-start",
+            gap: 10,
+            minWidth: 0,
+            width: isSidebarCollapsed && !isMobile ? "100%" : "auto",
+          }}
+        >
           <div
+            title={user.name}
             style={{
               width: 38,
               height: 38,
@@ -449,10 +481,10 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
           display: "flex",
           flexDirection: "column",
           flex: 1,
-          paddingLeft: isSidebarCollapsed ? 96 : 0,
-          transition: "padding-left 0.25s ease",
+          minWidth: 0,
+          transition: "padding-left 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
-        className={`w-full ${isSidebarCollapsed ? "lg:pl-[104px]" : "lg:pl-[298px]"}`}
+        className={`dashboard-main-wrapper w-full ${isSidebarCollapsed ? "sidebar-collapsed lg:!pl-[96px]" : "sidebar-expanded lg:!pl-[284px]"}`}
       >
         {/* ─── TOP APP BAR (FLOATING GLASS HEADER) ─── */}
         <header
@@ -475,102 +507,22 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
             zIndex: 30,
           }}
         >
-          {/* Left: Mobile Hamburger & Breadcrumb */}
+          {/* Left: Section Title */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-            <button
-              onClick={() => setIsMobileDrawerOpen(true)}
-              className="lg:hidden"
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 12,
-                border: "1px solid var(--md-outline-variant)",
-                background: "var(--md-surface-1)",
-                color: "var(--md-primary)",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <IconMenu />
-            </button>
-
-            {/* Desktop collapse toggle */}
-            <button
-              onClick={() => setIsSidebarCollapsed((prev) => !prev)}
-              className="hidden lg:flex"
-              title={isSidebarCollapsed ? "Perluas Sidebar" : "Persempit Sidebar"}
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 10,
-                border: "1px solid var(--md-outline-variant)",
-                background: "var(--md-surface-1)",
-                color: "var(--md-on-surface-variant)",
-                cursor: "pointer",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                {isSidebarCollapsed ? (
-                  <polyline points="13 17 18 12 13 7" />
-                ) : (
-                  <polyline points="11 17 6 12 11 7" />
-                )}
-              </svg>
-            </button>
-
-            {/* Section Title */}
-            <div style={{ minWidth: 0 }}>
-              <span
-                style={{
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: "var(--md-on-surface)",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  display: "block",
-                }}
-              >
-                {currentTopMenu?.label ?? "Dashboard Utama"}
-              </span>
-            </div>
-          </div>
-
-          {/* Center: Running Notification Marquee */}
-          <div
-            className="hidden md:flex"
-            style={{
-              flex: 1,
-              maxWidth: 480,
-              height: 34,
-              borderRadius: 999,
-              backgroundColor: "var(--md-surface-2)",
-              border: "1px solid var(--md-outline-variant)",
-              padding: "0 14px",
-              alignItems: "center",
-              overflow: "hidden",
-            }}
-          >
             <span
               style={{
-                fontSize: 10,
+                fontSize: 16,
                 fontWeight: 800,
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-                color: "var(--md-primary)",
-                marginRight: 10,
-                flexShrink: 0,
+                color: "var(--md-on-surface)",
+                letterSpacing: "-0.01em",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                display: "block",
               }}
             >
-              Info
+              {currentTopMenu?.label ?? "Dashboard Utama"}
             </span>
-            <div className="dashboard-notice-track" style={{ fontSize: 12, color: "var(--md-on-surface-variant)" }}>
-              <span>{notificationText}</span>
-            </div>
           </div>
 
           {/* Right: Theme Controls + User Avatar */}
@@ -632,10 +584,9 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
         <main
           style={{
             flex: 1,
-            padding: "20px 14px 36px 14px",
+            padding: "16px 14px 36px 14px",
             width: "100%",
-            maxWidth: 1440,
-            margin: "0 auto",
+            boxSizing: "border-box",
           }}
         >
           {children}

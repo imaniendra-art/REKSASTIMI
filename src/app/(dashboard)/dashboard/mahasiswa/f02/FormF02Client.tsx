@@ -20,17 +20,6 @@ type Profile = {
   gender: string;
 };
 
-const semesterColors: Record<number, { bg: string; soft: string; text: string; border: string }> = {
-  1: { bg: "#1a56db", soft: "#eff6ff", text: "#1d4ed8", border: "#bfdbfe" },
-  2: { bg: "#059669", soft: "#ecfdf5", text: "#047857", border: "#a7f3d0" },
-  3: { bg: "#dc2626", soft: "#fef2f2", text: "#b91c1c", border: "#fecaca" },
-  4: { bg: "#d97706", soft: "#fffbeb", text: "#b45309", border: "#fde68a" },
-  5: { bg: "#0284c7", soft: "#f0f9ff", text: "#0369a1", border: "#bae6fd" },
-  6: { bg: "#7c3aed", soft: "#f5f3ff", text: "#6d28d9", border: "#ddd6fe" },
-  7: { bg: "#0f766e", soft: "#f0fdfa", text: "#0f766e", border: "#99f6e4" },
-  8: { bg: "#334155", soft: "#f8fafc", text: "#334155", border: "#cbd5e1" },
-};
-
 export default function FormF02Client({
   profile,
   matkulPerSemester,
@@ -120,40 +109,110 @@ export default function FormF02Client({
   };
 
   return (
-    <form onSubmit={handleSave} className="animate-fade-up" style={{ paddingBottom: 60 }}>
-      <section className="md-card" style={{ marginBottom: 20, padding: 0, overflow: "hidden" }}>
-        <div style={{ padding: "15px 18px", background: "linear-gradient(135deg, #fff7ed 0%, #ffffff 100%)", borderBottom: "1px solid #fed7aa" }}>
-          <p style={sectionEyebrow}>Bagian 1</p>
-          <h2 style={sectionTitle}>Data Calon Mahasiswa</h2>
+    <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 20, paddingBottom: 60, marginTop: 24 }}>
+      {/* ── Bagian 1: Data Mahasiswa ── */}
+      <section
+        style={{
+          borderRadius: 20,
+          background: "var(--md-surface-1)",
+          border: "1px solid var(--md-outline-variant)",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ padding: "16px 22px", background: "var(--md-surface-2)", borderBottom: "1px solid var(--md-outline-variant)" }}>
+          <p style={{ margin: 0, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-primary)" }}>
+            Bagian 1
+          </p>
+          <h2 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 900, color: "var(--md-on-surface)" }}>
+            Data Pemohon RPL (Sesuai Biodata)
+          </h2>
         </div>
 
-        <div style={{ padding: 18 }}>
-          <div style={noticeStyle}>
-            Data di bawah ini diambil otomatis dari menu Biodata dan CV. Jika ada kesalahan, silakan ubah di menu terkait.
+        <div style={{ padding: 22 }}>
+          <div
+            style={{
+              background: "var(--md-surface-2)",
+              borderLeft: "4px solid var(--md-primary)",
+              borderRadius: "0 10px 10px 0",
+              padding: "10px 14px",
+              marginBottom: 16,
+              fontSize: 12,
+              color: "var(--md-on-surface-variant)",
+              fontWeight: 600,
+            }}
+          >
+            Data diri di bawah ini disinkronkan otomatis dari menu Biodata. Jika terdapat koreksi, perbarui pada halaman Biodata.
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
             <ReadOnlyField label="Nama Lengkap" value={profile.name} />
-            <ReadOnlyField label="NIK" value={profile.nik} />
+            <ReadOnlyField label="NIK / KTP" value={profile.nik} />
             <ReadOnlyField label="Tempat, Tanggal Lahir" value={`${profile.pob}, ${profile.dob}`} />
-            <ReadOnlyField label="Jenis Kelamin" value={profile.gender} />
+            <ReadOnlyField label="Jenis Kelamin" value={profile.gender === "L" ? "Laki-laki" : profile.gender === "P" ? "Perempuan" : profile.gender} />
           </div>
         </div>
       </section>
 
-      <section className="md-card" style={{ marginBottom: 16, padding: 0, overflow: "hidden" }}>
-        <div style={{ padding: "14px 18px", background: "linear-gradient(135deg, #0f172a 0%, #334155 100%)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+      {/* ── Bagian 2: Pemilihan Mata Kuliah ── */}
+      <section
+        style={{
+          borderRadius: 20,
+          background: "var(--md-surface-1)",
+          border: "1px solid var(--md-outline-variant)",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            padding: "18px 22px",
+            background: "linear-gradient(135deg, var(--md-surface-1) 0%, var(--md-surface-2) 100%)",
+            borderBottom: "1px solid var(--md-outline-variant)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 14,
+            flexWrap: "wrap",
+          }}
+        >
           <div>
-            <p style={{ margin: 0, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.12em", opacity: 0.72 }}>Bagian 2</p>
-            <h2 style={{ margin: "4px 0 0", fontSize: 17, fontWeight: 950 }}>Pilih Mata Kuliah</h2>
+            <p style={{ margin: 0, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-primary)" }}>
+              Bagian 2
+            </p>
+            <h2 style={{ margin: "2px 0 0", fontSize: 17, fontWeight: 900, color: "var(--md-on-surface)" }}>
+              Klaim Mata Kuliah Konversi RPL
+            </h2>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <label style={concentrationWrapStyle}>
-              <span style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.7 }}>
-                Konsentrasi
+            <label
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                border: "1px solid var(--md-outline)",
+                background: "var(--md-surface-1)",
+                borderRadius: 999,
+                padding: "4px 8px 4px 12px",
+              }}
+            >
+              <span style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: "var(--md-on-surface-variant)" }}>
+                Konsentrasi:
               </span>
-              <select value={concentration} onChange={(e) => setConcentration(e.target.value)} style={concentrationSelectStyle}>
+              <select
+                value={concentration}
+                onChange={(e) => setConcentration(e.target.value)}
+                style={{
+                  height: 30,
+                  borderRadius: 999,
+                  border: "none",
+                  background: "transparent",
+                  color: "var(--md-on-surface)",
+                  fontSize: 12,
+                  fontWeight: 800,
+                  outline: "none",
+                  cursor: "pointer",
+                }}
+              >
                 <option value="-">- Umum -</option>
                 {concentrationOptions.map((item) => (
                   <option key={item} value={item}>
@@ -162,16 +221,26 @@ export default function FormF02Client({
                 ))}
               </select>
             </label>
-            <SummaryPill label="Dipilih" value={`${selectedItems.length} Matkul`} />
-            <SummaryPill label="Total" value={`${totalSks} / 100 SKS`} tone="warning" />
+
+            <SummaryPill label="Mata Kuliah" value={`${selectedItems.length}`} />
+            <SummaryPill label="Total Klaim" value={`${totalSks} / 100 SKS`} highlight />
             <SummaryPill label="Transfer" value={`${transferCount}`} />
             <SummaryPill label="Perolehan" value={`${perolehanCount}`} />
           </div>
         </div>
 
-        <div style={{ padding: "12px 14px", borderBottom: "1px solid var(--md-outline-variant)", background: "#fff", display: "flex", gap: 8, overflowX: "auto" }}>
+        {/* Semester Navigator Tabs */}
+        <div
+          style={{
+            padding: "12px 18px",
+            borderBottom: "1px solid var(--md-outline-variant)",
+            background: "var(--md-surface-2)",
+            display: "flex",
+            gap: 8,
+            overflowX: "auto",
+          }}
+        >
           {semesters.map((semester) => {
-            const tone = semesterColors[semester] || semesterColors[8];
             const count = (matkulPerSemester[semester] || []).filter((mk) => selections[mk.id]).length;
             const isActive = semester === activeSemester;
 
@@ -181,51 +250,77 @@ export default function FormF02Client({
                 type="button"
                 onClick={() => setActiveSemester(semester)}
                 style={{
-                  border: `1px solid ${isActive ? tone.bg : tone.border}`,
-                  background: isActive ? tone.bg : tone.soft,
-                  color: isActive ? "#fff" : tone.text,
+                  border: isActive ? "1px solid var(--md-primary)" : "1px solid var(--md-outline-variant)",
+                  background: isActive ? "var(--md-primary)" : "var(--md-surface-1)",
+                  color: isActive ? "var(--md-on-primary)" : "var(--md-on-surface)",
                   borderRadius: 999,
-                  padding: "8px 14px",
+                  padding: "6px 14px",
                   fontSize: 12,
-                  fontWeight: 900,
+                  fontWeight: 800,
                   whiteSpace: "nowrap",
                   cursor: "pointer",
-                  boxShadow: isActive ? "0 8px 18px rgba(15,23,42,0.16)" : "none",
+                  transition: "all 0.16s ease",
+                  boxShadow: isActive ? "0 4px 12px var(--theme-glow)" : "none",
                 }}
               >
-                S{semester} {count > 0 ? `(${count})` : ""}
+                Semester {semester} {count > 0 ? `(${count})` : ""}
               </button>
             );
           })}
         </div>
 
-        <div style={{ padding: 14, background: "#f8fafc" }}>
-          <div style={{ overflow: "hidden", borderRadius: 16, border: "1px solid var(--md-outline-variant)", background: "#fff" }}>
-            <div style={{ background: semesterColors[activeSemester]?.bg || "#334155", color: "#fff", padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 12, fontWeight: 950, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                Semester {activeSemester}
+        {/* Table Container */}
+        <div style={{ padding: 18 }}>
+          <div style={{ overflow: "hidden", borderRadius: 14, border: "1px solid var(--md-outline-variant)", background: "var(--md-surface-1)" }}>
+            <div
+              style={{
+                background: "var(--md-surface-2)",
+                padding: "10px 16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                borderBottom: "1px solid var(--md-outline-variant)",
+              }}
+            >
+              <span style={{ fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--md-on-surface)" }}>
+                Daftar Mata Kuliah Semester {activeSemester}
               </span>
-              <button type="button" onClick={() => handlePilihSemua(activeSemester)} style={smallWhiteButtonStyle}>
-                Pilih Semua
+              <button
+                type="button"
+                onClick={() => handlePilihSemua(activeSemester)}
+                style={{
+                  border: "1px solid var(--md-outline)",
+                  background: "var(--md-surface-1)",
+                  color: "var(--md-on-surface)",
+                  borderRadius: 999,
+                  padding: "5px 12px",
+                  fontSize: 11,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                  textTransform: "uppercase",
+                }}
+              >
+                Pilih Semua Semester {activeSemester}
               </button>
             </div>
 
             <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", minWidth: 860, borderCollapse: "collapse" }}>
+              <table style={{ width: "100%", minWidth: 840, borderCollapse: "collapse" }}>
                 <thead>
-                  <tr>
-                    <th style={{ ...thStyle, width: 54, textAlign: "center" }}>No</th>
-                    <th style={{ ...thStyle, width: 100, textAlign: "center" }}>Kode</th>
-                    <th style={thStyle}>Mata Kuliah</th>
-                    <th style={{ ...thStyle, width: 64, textAlign: "center" }}>SKS</th>
-                    <th style={{ ...thStyle, width: 90, textAlign: "center" }}>Pilih</th>
-                    <th style={{ ...thStyle, width: 220, textAlign: "center" }}>Jenis RPL</th>
+                  <tr style={{ background: "var(--md-surface-2)", borderBottom: "1px solid var(--md-outline-variant)" }}>
+                    <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 50, color: "var(--md-on-surface-variant)" }}>No</th>
+                    <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 100, color: "var(--md-on-surface-variant)" }}>Kode</th>
+                    <th style={{ padding: "10px 14px", fontSize: 11, fontWeight: 900, textAlign: "left", color: "var(--md-on-surface-variant)" }}>Nama Mata Kuliah</th>
+                    <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 64, color: "var(--md-on-surface-variant)" }}>SKS</th>
+                    <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 80, color: "var(--md-on-surface-variant)" }}>Klaim</th>
+                    <th style={{ padding: "10px 14px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 220, color: "var(--md-on-surface-variant)" }}>Jenis Pengajuan RPL</th>
                   </tr>
                 </thead>
                 <tbody>
                   {activeMatkul.length === 0 ? (
                     <tr>
-                      <td colSpan={6} style={{ padding: 26, textAlign: "center", color: "#64748b", fontSize: 13, fontWeight: 700 }}>
+                      <td colSpan={6} style={{ padding: 28, textAlign: "center", color: "var(--md-on-surface-variant)", fontSize: 13, fontWeight: 700 }}>
                         Tidak ada mata kuliah pada semester ini.
                       </td>
                     </tr>
@@ -233,40 +328,55 @@ export default function FormF02Client({
                     activeMatkul.map((mk, idx) => {
                       const isSelectable = mk.isRpl !== false;
                       const isSelected = Boolean(selections[mk.id]);
-                      const rowColor = semesterColors[activeSemester] || semesterColors[8];
 
                       return (
                         <tr
                           key={mk.id}
                           style={{
                             borderBottom: "1px solid var(--md-outline-variant)",
-                            background: !isSelectable ? "#f1f5f9" : isSelected ? rowColor.soft : "#fff",
-                            color: !isSelectable ? "#94a3b8" : "var(--md-on-surface)",
-                            transition: "background 160ms ease",
+                            background: !isSelectable
+                              ? "var(--md-surface-2)"
+                              : isSelected
+                              ? "var(--md-primary-container)"
+                              : "var(--md-surface-1)",
+                            color: !isSelectable ? "var(--md-on-surface-variant)" : "var(--md-on-surface)",
+                            transition: "background 0.15s ease",
                           }}
                         >
-                          <td style={tdCenterStyle}>{idx + 1}</td>
-                          <td style={{ ...tdCenterStyle, fontFamily: "monospace", fontWeight: 900 }}>{mk.kode}</td>
-                          <td style={{ padding: "12px 14px", fontSize: 13, fontWeight: 850 }}>
+                          <td style={{ padding: "12px", textAlign: "center", fontSize: 12, fontWeight: 700 }}>{idx + 1}</td>
+                          <td style={{ padding: "12px", textAlign: "center", fontSize: 12, fontWeight: 800, fontFamily: "monospace" }}>{mk.kode}</td>
+                          <td style={{ padding: "12px 14px", fontSize: 13, fontWeight: 800 }}>
                             {mk.namaMatkul}
                             {!isSelectable && (
-                              <span style={{ marginLeft: 8, display: "inline-flex", borderRadius: 999, padding: "3px 8px", background: "#e2e8f0", color: "#475569", fontSize: 9, fontWeight: 900, textTransform: "uppercase" }}>
-                                Wajib Kuliah
+                              <span
+                                style={{
+                                  marginLeft: 8,
+                                  borderRadius: 999,
+                                  padding: "2px 8px",
+                                  background: "var(--md-surface-2)",
+                                  color: "var(--md-on-surface-variant)",
+                                  fontSize: 9.5,
+                                  fontWeight: 800,
+                                  border: "1px solid var(--md-outline-variant)",
+                                  textTransform: "uppercase",
+                                }}
+                              >
+                                Wajib Kuliah Reguler
                               </span>
                             )}
                           </td>
-                          <td style={{ ...tdCenterStyle, fontWeight: 950, color: isSelectable ? rowColor.text : "#94a3b8" }}>{mk.sks}</td>
-                          <td style={{ padding: "12px 14px", textAlign: "center" }}>
+                          <td style={{ padding: "12px", textAlign: "center", fontWeight: 900, color: "var(--md-primary)" }}>{mk.sks}</td>
+                          <td style={{ padding: "12px", textAlign: "center" }}>
                             {isSelectable ? (
                               <input
                                 type="checkbox"
                                 checked={isSelected}
                                 onChange={(e) => handleToggleMatkul(mk.id, e.target.checked)}
-                                style={checkboxStyle}
+                                style={{ width: 18, height: 18, cursor: "pointer", accentColor: "var(--md-primary)" }}
                                 aria-label={`Pilih ${mk.namaMatkul}`}
                               />
                             ) : (
-                              <span style={{ fontWeight: 900 }}>-</span>
+                              <span style={{ color: "var(--md-on-surface-variant)" }}>-</span>
                             )}
                           </td>
                           <td style={{ padding: "12px 14px", textAlign: "center" }}>
@@ -276,16 +386,25 @@ export default function FormF02Client({
                                 disabled={!isSelected}
                                 onChange={(e) => handleJenisChange(mk.id, e.target.value)}
                                 style={{
-                                  ...selectStyle,
-                                  opacity: isSelected ? 1 : 0.55,
+                                  width: "100%",
+                                  minHeight: 34,
+                                  borderRadius: 8,
+                                  border: "1px solid var(--md-outline)",
+                                  background: "var(--md-surface-1)",
+                                  color: "var(--md-on-surface)",
+                                  padding: "4px 8px",
+                                  fontSize: 12,
+                                  fontWeight: 700,
+                                  outline: "none",
+                                  opacity: isSelected ? 1 : 0.45,
                                   cursor: isSelected ? "pointer" : "not-allowed",
                                 }}
                               >
-                                <option value="Perolehan">Perolehan (Kerja)</option>
-                                <option value="Transfer">Transfer (Kuliah)</option>
+                                <option value="Perolehan">Perolehan (Pengalaman Kerja)</option>
+                                <option value="Transfer">Transfer (Pernah Kuliah/D3/S1)</option>
                               </select>
                             ) : (
-                              <span style={{ color: "#94a3b8", fontWeight: 800 }}>-</span>
+                              <span style={{ color: "var(--md-on-surface-variant)" }}>-</span>
                             )}
                           </td>
                         </tr>
@@ -299,32 +418,67 @@ export default function FormF02Client({
         </div>
       </section>
 
+      {/* Save Message Toast */}
       {saveMessage && (
-        <div style={{
-          padding: 14,
-          marginBottom: 18,
-          borderRadius: 14,
-          fontWeight: 800,
-          fontSize: 13,
-          background: saveMessage.type === "success" ? "#dcfce7" : "#fee2e2",
-          color: saveMessage.type === "success" ? "#166534" : "#991b1b",
-          border: saveMessage.type === "success" ? "1px solid #bbf7d0" : "1px solid #fecaca",
-        }}>
+        <div
+          style={{
+            padding: "14px 18px",
+            borderRadius: 14,
+            fontWeight: 800,
+            fontSize: 13,
+            background: saveMessage.type === "success" ? "var(--md-success-container)" : "var(--md-error-container)",
+            color: saveMessage.type === "success" ? "var(--md-success)" : "var(--md-error)",
+            border: `1.5px solid ${saveMessage.type === "success" ? "var(--md-success)" : "var(--md-error)"}`,
+          }}
+        >
           {saveMessage.text}
         </div>
       )}
 
-      <div style={submitBarStyle}>
+      {/* Sticky Bottom Summary & Submit Bar */}
+      <div
+        style={{
+          position: "sticky",
+          bottom: 14,
+          zIndex: 20,
+          padding: "14px 20px",
+          border: "1px solid var(--md-outline-variant)",
+          borderRadius: 20,
+          background: "var(--md-surface-1)",
+          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 14,
+          flexWrap: "wrap",
+        }}
+      >
         <div>
-          <p style={{ margin: 0, fontSize: 12, color: "#475569", fontWeight: 800 }}>
-            Pastikan total SKS tidak melebihi 100 SKS.
+          <p style={{ margin: 0, fontSize: 13, color: "var(--md-on-surface)", fontWeight: 900 }}>
+            Total Klaim Terpilih: <span style={{ color: "var(--md-primary)" }}>{totalSks} SKS</span> ({selectedItems.length} Mata Kuliah)
           </p>
-          <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b", fontWeight: 650 }}>
-            Simpan setelah semua mata kuliah dan jenis RPL sudah sesuai.
+          <p style={{ margin: "2px 0 0", fontSize: 11.5, color: "var(--md-on-surface-variant)", fontWeight: 600 }}>
+            Maksimal rekomendasi RPL Tipe A adalah 100 SKS. Klik simpan untuk merekam pengajuan ke sistem.
           </p>
         </div>
-        <button type="submit" disabled={isSaving} style={submitButtonStyle(isSaving)}>
-          {isSaving ? "Menyimpan..." : "Simpan Formulir F02"}
+
+        <button
+          type="submit"
+          disabled={isSaving}
+          style={{
+            background: isSaving ? "var(--md-surface-2)" : "var(--md-primary)",
+            color: isSaving ? "var(--md-on-surface-variant)" : "var(--md-on-primary)",
+            border: "none",
+            borderRadius: 999,
+            padding: "12px 26px",
+            fontSize: 13.5,
+            fontWeight: 800,
+            cursor: isSaving ? "not-allowed" : "pointer",
+            boxShadow: isSaving ? "none" : "0 4px 14px var(--theme-glow)",
+            transition: "all 0.18s ease",
+          }}
+        >
+          {isSaving ? "Menyimpan Data..." : "Simpan Formulir F02 →"}
         </button>
       </div>
     </form>
@@ -334,188 +488,43 @@ export default function FormF02Client({
 function ReadOnlyField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <label style={labelStyle}>{label}</label>
-      <div style={readOnlyInputStyle}>{value || "-"}</div>
+      <label style={{ display: "block", marginBottom: 4, fontSize: 10.5, fontWeight: 800, color: "var(--md-on-surface-variant)", textTransform: "uppercase" }}>
+        {label}
+      </label>
+      <div
+        style={{
+          background: "var(--md-surface-2)",
+          border: "1px solid var(--md-outline-variant)",
+          borderRadius: 10,
+          padding: "8px 12px",
+          fontSize: 12.5,
+          fontWeight: 700,
+          color: "var(--md-on-surface)",
+        }}
+      >
+        {value || "-"}
+      </div>
     </div>
   );
 }
 
-function SummaryPill({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "warning" }) {
+function SummaryPill({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div style={{
-      border: "1px solid rgba(255,255,255,0.24)",
-      background: tone === "warning" ? "#fbbf24" : "rgba(255,255,255,0.13)",
-      color: tone === "warning" ? "#1e1b00" : "#fff",
-      borderRadius: 999,
-      padding: "7px 12px",
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 6,
-      whiteSpace: "nowrap",
-    }}>
-      <span style={{ fontSize: 9, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.76 }}>{label}</span>
-      <strong style={{ fontSize: 12, fontWeight: 950 }}>{value}</strong>
+    <div
+      style={{
+        border: highlight ? "1px solid var(--md-primary)" : "1px solid var(--md-outline-variant)",
+        background: highlight ? "var(--md-primary-container)" : "var(--md-surface-1)",
+        color: highlight ? "var(--md-primary)" : "var(--md-on-surface)",
+        borderRadius: 999,
+        padding: "6px 12px",
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        whiteSpace: "nowrap",
+      }}
+    >
+      <span style={{ fontSize: 9.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em", opacity: 0.8 }}>{label}:</span>
+      <strong style={{ fontSize: 12, fontWeight: 900 }}>{value}</strong>
     </div>
   );
-}
-
-const sectionEyebrow: React.CSSProperties = {
-  margin: 0,
-  fontSize: 10,
-  fontWeight: 950,
-  color: "#d97706",
-  textTransform: "uppercase",
-  letterSpacing: "0.12em",
-};
-
-const sectionTitle: React.CSSProperties = {
-  margin: "4px 0 0",
-  fontSize: 18,
-  fontWeight: 950,
-  color: "var(--md-on-surface)",
-  lineHeight: 1.25,
-};
-
-const noticeStyle: React.CSSProperties = {
-  background: "#f8fafc",
-  borderLeft: "4px solid #0ea5e9",
-  borderRadius: "0 12px 12px 0",
-  padding: 13,
-  marginBottom: 16,
-  fontSize: 12,
-  color: "#475569",
-  fontWeight: 650,
-};
-
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  marginBottom: 7,
-  fontSize: 10,
-  fontWeight: 850,
-  color: "#64748b",
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-};
-
-const readOnlyInputStyle: React.CSSProperties = {
-  background: "#f1f5f9",
-  border: "1px solid #e2e8f0",
-  borderRadius: 12,
-  padding: "10px 13px",
-  fontSize: 13,
-  fontWeight: 750,
-  color: "#1e293b",
-  minHeight: 42,
-};
-
-const thStyle: React.CSSProperties = {
-  padding: "11px 14px",
-  textAlign: "left",
-  fontSize: 10,
-  fontWeight: 900,
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-  color: "#64748b",
-  background: "#f8fafc",
-  borderBottom: "1px solid var(--md-outline-variant)",
-  whiteSpace: "nowrap",
-};
-
-const tdCenterStyle: React.CSSProperties = {
-  padding: "12px 14px",
-  textAlign: "center",
-  fontSize: 12,
-  fontWeight: 800,
-};
-
-const checkboxStyle: React.CSSProperties = {
-  width: 20,
-  height: 20,
-  cursor: "pointer",
-  accentColor: "#16a34a",
-};
-
-const selectStyle: React.CSSProperties = {
-  width: "100%",
-  minHeight: 36,
-  borderRadius: 10,
-  border: "1px solid #cbd5e1",
-  background: "#fff",
-  color: "#1e293b",
-  padding: "7px 10px",
-  fontSize: 12,
-  fontWeight: 800,
-  outline: "none",
-};
-
-const concentrationWrapStyle: React.CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 8,
-  border: "1px solid rgba(255,255,255,0.22)",
-  background: "rgba(255,255,255,0.13)",
-  borderRadius: 999,
-  padding: "5px 6px 5px 12px",
-  color: "#fff",
-};
-
-const concentrationSelectStyle: React.CSSProperties = {
-  minWidth: 180,
-  height: 32,
-  borderRadius: 999,
-  border: "none",
-  background: "#fff",
-  color: "#0f172a",
-  padding: "0 12px",
-  fontSize: 12,
-  fontWeight: 900,
-  outline: "none",
-  cursor: "pointer",
-};
-
-const smallWhiteButtonStyle: React.CSSProperties = {
-  border: "1px solid rgba(255,255,255,0.45)",
-  background: "rgba(255,255,255,0.95)",
-  color: "#0f172a",
-  borderRadius: 999,
-  padding: "6px 12px",
-  fontSize: 11,
-  fontWeight: 900,
-  cursor: "pointer",
-  textTransform: "uppercase",
-  letterSpacing: "0.04em",
-};
-
-const submitBarStyle: React.CSSProperties = {
-  position: "sticky",
-  bottom: 0,
-  zIndex: 20,
-  marginTop: 18,
-  padding: 14,
-  border: "1px solid var(--md-outline-variant)",
-  borderRadius: 18,
-  background: "rgba(255,255,255,0.96)",
-  boxShadow: "0 -8px 24px rgba(15,23,42,0.10)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 14,
-  flexWrap: "wrap",
-  backdropFilter: "blur(8px)",
-};
-
-function submitButtonStyle(isSaving: boolean): React.CSSProperties {
-  return {
-    background: isSaving ? "#94a3b8" : "var(--md-primary)",
-    color: "#fff",
-    border: "none",
-    borderRadius: 999,
-    padding: "12px 24px",
-    fontSize: 13,
-    fontWeight: 900,
-    cursor: isSaving ? "not-allowed" : "pointer",
-    boxShadow: isSaving ? "none" : "0 8px 18px rgba(26,86,219,0.24)",
-    textTransform: "uppercase",
-    letterSpacing: "0.04em",
-  };
 }

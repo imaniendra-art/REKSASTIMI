@@ -20,6 +20,24 @@ const guides = [
 export default function MahasiswaPetunjukPage() {
   return (
     <div style={{ width: "100%", margin: "0 auto", paddingBottom: 36 }}>
+      {/* ── Breadcrumb Back ── */}
+      <div style={{ marginBottom: 14 }}>
+        <Link
+          href="/dashboard/mahasiswa"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            fontSize: 12.5,
+            fontWeight: 800,
+            color: "var(--md-primary)",
+            textDecoration: "none",
+          }}
+        >
+          <span>←</span>
+          <span>Kembali ke Beranda Mahasiswa</span>
+        </Link>
+      </div>
       <PageHero
         badgeText="Panduan Mahasiswa"
         title="Petunjuk Penggunaan REKSA"
@@ -29,7 +47,7 @@ export default function MahasiswaPetunjukPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 24 }}>
         {steps.map((step) => (
-          <div key={step.title} className="md-card" style={{ padding: 18, borderLeft: `5px solid ${step.tone}`, background: "#fff" }}>
+          <div key={step.title} className="md-card" style={{ padding: 18, borderLeft: `5px solid ${step.tone}`, background: "var(--md-surface-1)" }}>
             <div style={{ width: 44, height: 44, borderRadius: 14, background: step.bg, color: step.tone, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 950, marginBottom: 12 }}>
               {step.title.split(".")[0]}
             </div>

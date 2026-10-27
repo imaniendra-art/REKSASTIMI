@@ -27,80 +27,203 @@ export function AsesmenListClient() {
   const klasters = klastersData?.data || [];
 
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%", paddingBottom: 40 }}>
+      {/* ── Breadcrumb Back ── */}
+      <div style={{ marginBottom: 14 }}>
+        <Link
+          href="/dashboard/mahasiswa"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            fontSize: 12.5,
+            fontWeight: 800,
+            color: "var(--md-primary)",
+            textDecoration: "none",
+          }}
+        >
+          <span>←</span>
+          <span>Kembali ke Beranda Mahasiswa</span>
+        </Link>
+      </div>
+
       <PageHero
         tone="info"
-        badgeText="Test Kompetensi"
-        title="Asesmen Mandiri"
-        subtitle="Uji capaian pembelajaran untuk mata kuliah RPL yang Anda ajukan."
+        badgeIcon="🎯"
+        badgeText="Asesmen Mandiri & LMS"
+        title="Modul Pembelajaran & Uji Capaian"
+        subtitle="Pelajari ringkasan materi dan selesaikan tes mandiri untuk klaster mata kuliah yang telah Anda klaim pada formulir F02."
       />
 
-      <div className="md-card" style={{ padding: "20px", marginTop: 24 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: "var(--md-on-surface)", marginBottom: 8 }}>
-          Daftar Modul Ujian Tersedia
-        </h2>
-        <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", marginBottom: 20 }}>
-          Modul ujian di bawah ini disesuaikan secara otomatis dengan pilihan mata kuliah pada Form F02 Anda.
-        </p>
+      <div
+        style={{
+          borderRadius: 20,
+          background: "var(--md-surface-1)",
+          border: "1px solid var(--md-outline-variant)",
+          padding: "24px 28px",
+          marginTop: 24,
+          boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
+          <div>
+            <h2 style={{ fontSize: 16, fontWeight: 900, color: "var(--md-on-surface)" }}>
+              Daftar Klaster Mata Kuliah Tersedia
+            </h2>
+            <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", marginTop: 2 }}>
+              Klaster ujian otomatis dipetakan sesuai pilihan mata kuliah pada Form F02 Anda.
+            </p>
+          </div>
+          <span style={{ fontSize: 12, fontWeight: 800, color: "var(--md-primary)" }}>
+            {klasters.length} Klaster Terpetakan
+          </span>
+        </div>
 
         {isLoading ? (
-          <div style={{ padding: 40, textAlign: "center", color: "var(--md-on-surface-variant)" }}>
-            Memuat daftar ujian...
+          <div style={{ padding: 40, textAlign: "center", color: "var(--md-on-surface-variant)", fontSize: 13, fontWeight: 700 }}>
+            Memuat modul pembelajaran klaster...
           </div>
         ) : klasters.length === 0 ? (
-          <div style={{ padding: 40, textAlign: "center", background: "#f8fafc", borderRadius: 12, border: "1px dashed #cbd5e1" }}>
-            <span style={{ fontSize: 40 }}>📭</span>
-            <h3 style={{ marginTop: 12, fontSize: 16, fontWeight: 800, color: "var(--md-on-surface)" }}>Belum ada tes keahlian tersedia</h3>
-            <p style={{ marginTop: 6, fontSize: 13, color: "var(--md-on-surface-variant)" }}>
-              Anda belum mengajukan mata kuliah di Form F02 atau kurikulum belum dipetakan.
+          <div
+            style={{
+              padding: 40,
+              textAlign: "center",
+              background: "var(--md-surface-2)",
+              borderRadius: 16,
+              border: "1px dashed var(--md-outline-variant)",
+            }}
+          >
+            <h3 style={{ fontSize: 16, fontWeight: 900, color: "var(--md-on-surface)" }}>
+              Belum Ada Klaster Ujian Tersedia
+            </h3>
+            <p style={{ marginTop: 6, fontSize: 12.5, color: "var(--md-on-surface-variant)", maxWidth: 460, margin: "6px auto 16px" }}>
+              Anda belum memilih mata kuliah pada Formulir F02 atau mata kuliah terpilih belum memiliki pemetaan klaster.
             </p>
-            <Link href="/dashboard/mahasiswa/f02" style={{ display: "inline-block", marginTop: 16, background: "var(--md-primary)", color: "#fff", padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>
-              Isi Form F02
+            <Link
+              href="/dashboard/mahasiswa/f02"
+              style={{
+                display: "inline-block",
+                background: "var(--md-primary)",
+                color: "var(--md-on-primary)",
+                padding: "10px 22px",
+                borderRadius: 999,
+                fontSize: 12.5,
+                fontWeight: 800,
+                textDecoration: "none",
+                boxShadow: "0 4px 12px var(--theme-glow)",
+              }}
+            >
+              Buka Form F02 Sekarang &rarr;
             </Link>
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
             {klasters.map((klaster) => {
               const isCompleted = klaster.status === "Completed" || klaster.status === "Submitted";
-              
-              return (
-                <div key={klaster.id} style={{ border: "1px solid var(--md-outline-variant)", borderRadius: 16, padding: 20, background: isCompleted ? "#f8fafc" : "#fff", display: "flex", flexDirection: "column" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                    <span style={{ fontSize: 11, fontWeight: 800, padding: "4px 8px", borderRadius: 6, background: isCompleted ? "#dcfce7" : "#e0f2fe", color: isCompleted ? "#166534" : "#0284c7", textTransform: "uppercase" }}>
-                      {isCompleted ? "Selesai" : "Tersedia"}
-                    </span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "var(--md-on-surface-variant)" }}>
-                      {klaster.matkulCount} Matkul
-                    </span>
-                  </div>
-                  
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: "var(--md-on-surface)", marginBottom: 20, lineHeight: 1.3, flex: 1 }}>
-                    {klaster.namaKlaster}
-                  </h3>
 
-                  {isCompleted ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                      <Link 
-                        href={`/dashboard/mahasiswa/asesmen/${klaster.id}`}
-                        style={{ display: "block", textAlign: "center", padding: "10px", background: "var(--md-primary)", border: "1px solid var(--md-primary)", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: "none" }}
+              return (
+                <div
+                  key={klaster.id}
+                  style={{
+                    border: "1px solid var(--md-outline-variant)",
+                    borderRadius: 18,
+                    padding: 20,
+                    background: isCompleted ? "var(--md-surface-2)" : "var(--md-surface-1)",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
+                  }}
+                >
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                      <span
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 900,
+                          padding: "3px 8px",
+                          borderRadius: 6,
+                          background: isCompleted ? "var(--md-success-container)" : "var(--md-primary-container)",
+                          color: isCompleted ? "var(--md-success)" : "var(--md-primary)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.04em",
+                        }}
                       >
-                        Buka Modul & Sertifikat
-                      </Link>
-                      <Link 
-                        href={`/dashboard/mahasiswa/asesmen/${klaster.id}/hasil`}
-                        style={{ display: "block", textAlign: "center", padding: "10px", background: "#f8fafc", border: "1px solid #cbd5e1", color: "var(--md-on-surface)", borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: "none" }}
-                      >
-                        Lihat Hasil Asesmen
-                      </Link>
+                        {isCompleted ? "✓ Selesai" : "○ Siap Diambil"}
+                      </span>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: "var(--md-on-surface-variant)" }}>
+                        {klaster.matkulCount} Mata Kuliah
+                      </span>
                     </div>
-                  ) : (
-                    <Link 
-                      href={`/dashboard/mahasiswa/asesmen/${klaster.id}`}
-                      style={{ display: "block", textAlign: "center", padding: "10px", background: "var(--md-primary)", color: "#fff", borderRadius: 8, fontSize: 13, fontWeight: 800, textDecoration: "none", transition: "transform 0.2s", boxShadow: "0 4px 12px rgba(26,86,219,0.2)" }}
-                    >
-                      Buka Modul Pembelajaran
-                    </Link>
-                  )}
+
+                    <h3 style={{ fontSize: 15.5, fontWeight: 900, color: "var(--md-on-surface)", marginBottom: 12, lineHeight: 1.35 }}>
+                      {klaster.namaKlaster}
+                    </h3>
+
+                    {klaster.lmsDeskripsi && (
+                      <p style={{ fontSize: 12, color: "var(--md-on-surface-variant)", lineHeight: 1.5, marginBottom: 16 }}>
+                        {klaster.lmsDeskripsi}
+                      </p>
+                    )}
+                  </div>
+
+                  <div style={{ marginTop: 16 }}>
+                    {isCompleted ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <Link
+                          href={`/dashboard/mahasiswa/asesmen/${klaster.id}`}
+                          style={{
+                            display: "block",
+                            textAlign: "center",
+                            padding: "9px 14px",
+                            background: "var(--md-primary)",
+                            color: "var(--md-on-primary)",
+                            borderRadius: 999,
+                            fontSize: 12,
+                            fontWeight: 800,
+                            textDecoration: "none",
+                          }}
+                        >
+                          Buka Materi & Unduh Sertifikat
+                        </Link>
+                        <Link
+                          href={`/dashboard/mahasiswa/asesmen/${klaster.id}/hasil`}
+                          style={{
+                            display: "block",
+                            textAlign: "center",
+                            padding: "8px 14px",
+                            background: "var(--md-surface-1)",
+                            border: "1px solid var(--md-outline)",
+                            color: "var(--md-on-surface)",
+                            borderRadius: 999,
+                            fontSize: 12,
+                            fontWeight: 800,
+                            textDecoration: "none",
+                          }}
+                        >
+                          Lihat Rincian Hasil Asesmen
+                        </Link>
+                      </div>
+                    ) : (
+                      <Link
+                        href={`/dashboard/mahasiswa/asesmen/${klaster.id}`}
+                        style={{
+                          display: "block",
+                          textAlign: "center",
+                          padding: "10px 14px",
+                          background: "var(--md-primary)",
+                          color: "var(--md-on-primary)",
+                          borderRadius: 999,
+                          fontSize: 12.5,
+                          fontWeight: 800,
+                          textDecoration: "none",
+                          boxShadow: "0 4px 14px var(--theme-glow)",
+                        }}
+                      >
+                        Buka Modul & Uji Mandiri &rarr;
+                      </Link>
+                    )}
+                  </div>
                 </div>
               );
             })}

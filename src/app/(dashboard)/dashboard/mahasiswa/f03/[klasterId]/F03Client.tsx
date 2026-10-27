@@ -226,7 +226,7 @@ export default function F03Client({ klasterId }: { klasterId: string }) {
                         const res = data.attempt?.matkulResults?.find((r: any) => String(r.matkulId) === courseId);
                         if (res && res.finalGrade) {
                           return (
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", background: "#fff", border: "1.5px solid var(--md-outline)", borderRadius: 999, fontSize: 11, fontWeight: 700, color: "var(--md-on-surface-variant)" }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", background: "var(--md-surface-1)", border: "1.5px solid var(--md-outline)", borderRadius: 999, fontSize: 11, fontWeight: 700, color: "var(--md-on-surface-variant)" }}>
                               Nilai Tes: <strong style={{ fontSize: 14, color: "var(--md-primary)" }}>{res.finalGrade}</strong>
                             </span>
                           );
@@ -258,7 +258,7 @@ export default function F03Client({ klasterId }: { klasterId: string }) {
                         <p style={{ fontSize: 13, fontWeight: 700, color: "var(--md-on-surface-variant)" }}>{m.kode || "Kode belum tersedia"}</p>
                         
                         {m.deskripsi && (
-                          <div style={{ marginTop: 12, padding: "12px", background: "#f8fafc", borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 12, lineHeight: 1.6, color: "var(--md-on-surface)" }}>
+                          <div style={{ marginTop: 12, padding: "12px", background: "var(--md-surface-2)", borderRadius: 8, border: "1px solid var(--md-outline-variant)", fontSize: 12, lineHeight: 1.6, color: "var(--md-on-surface)" }}>
                             <strong style={{ display: "block", marginBottom: 4, color: "var(--md-on-surface-variant)" }}>Deskripsi:</strong>
                             {m.deskripsi}
                           </div>
@@ -285,7 +285,7 @@ export default function F03Client({ klasterId }: { klasterId: string }) {
                           <select
                             style={{
                               width: "100%", height: 40, padding: "0 12px", borderRadius: "var(--md-radius-sm)",
-                              border: "1px solid var(--md-outline)", background: "#fff",
+                              border: "1px solid var(--md-outline)", background: "var(--md-surface-1)",
                               fontSize: 13, fontWeight: 700, color: "var(--md-on-surface)", outline: "none",
                               transition: "border-color 180ms, box-shadow 180ms",
                             }}
@@ -312,7 +312,7 @@ export default function F03Client({ klasterId }: { klasterId: string }) {
                             onChange={(e) => handleInputChange(courseId, "buktiFileUrl", e.target.value)}
                             style={{
                               width: "100%", height: 40, padding: "0 12px", borderRadius: "var(--md-radius-sm)",
-                              border: "1px solid var(--md-outline)", background: "#fff",
+                              border: "1px solid var(--md-outline)", background: "var(--md-surface-1)",
                               fontSize: 13, fontWeight: 600, color: "var(--md-on-surface)", outline: "none",
                               transition: "border-color 180ms, box-shadow 180ms",
                             }}
