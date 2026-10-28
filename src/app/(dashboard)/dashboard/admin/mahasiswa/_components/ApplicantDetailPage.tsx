@@ -95,7 +95,7 @@ export function ApplicantDetailPage({ id }: { id: string }) {
         style={{
           padding: "24px 26px",
           marginBottom: 18,
-          background: "linear-gradient(135deg, #1a56db 0%, #4f46e5 60%, #6366f1 100%)",
+          background: "linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary) 100%)",
           color: "#fff",
           overflow: "hidden",
         }}
@@ -363,7 +363,7 @@ function DocumentsTab({ applicant }: { applicant: Applicant }) {
                       padding: "5px 12px",
                       fontSize: 11,
                       fontWeight: 800,
-                      color: "#1a56db",
+                      color: "var(--md-primary)",
                       background: "#eff6ff",
                       border: "1.5px solid #93c5fd",
                       borderRadius: 8,

@@ -1,3 +1,4 @@
+import { ensureRegistrationPayment } from "@/lib/payment-guard";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageHero } from "@/components/dashboard/UIComponents";
@@ -22,6 +23,7 @@ export default async function MahasiswaDownloadPage() {
   if (!session || session.role !== "mahasiswa") {
     redirect("/login");
   }
+  await ensureRegistrationPayment(session.id);
 
   await connectMongoDB();
 
@@ -45,7 +47,7 @@ export default async function MahasiswaDownloadPage() {
       status: profile ? "available" : "locked",
       actionLabel: profile ? "Buka F01" : "Lengkapi Biodata",
       href: profile ? "/mahasiswa/cetak-f01" : "/dashboard/mahasiswa/biodata",
-      tone: "#0284c7",
+      tone: "var(--md-primary)",
       meta: registrationNumber !== "-" ? `No. Reg: ${registrationNumber}` : "Belum ada nomor registrasi",
     },
     {
@@ -63,7 +65,7 @@ export default async function MahasiswaDownloadPage() {
       status: "available",
       actionLabel: "Buka F07",
       href: "/mahasiswa/cetak-f07",
-      tone: "#1a56db",
+      tone: "var(--md-primary)",
       meta: "Form CV mahasiswa",
     },
     {
@@ -95,7 +97,7 @@ export default async function MahasiswaDownloadPage() {
         status: "available" as const,
         actionLabel: "Buka",
         href: `/mahasiswa/cetak-f03/${k._id}`,
-        tone: "#6366f1",
+        tone: "var(--md-secondary, var(--md-primary))",
         meta: `Siap cetak`,
       }))
     : [
@@ -105,7 +107,7 @@ export default async function MahasiswaDownloadPage() {
           status: statusRpl === "EVALUASI_F03" || f02Count > 0 ? "available" : "locked",
           actionLabel: statusRpl === "EVALUASI_F03" || f02Count > 0 ? "Buka" : "Terkunci",
           href: "/dashboard/mahasiswa/f03",
-          tone: "#6366f1",
+          tone: "var(--md-secondary, var(--md-primary))",
           meta: f02Count > 0 ? "Belum isi F03" : "Isi F02 dahulu",
         }
       ];
@@ -171,26 +173,7 @@ export default async function MahasiswaDownloadPage() {
 
   return (
     <div style={{ width: "100%", margin: "0 auto", paddingBottom: 36 }}>
-      {/* ── Breadcrumb Back ── */}
-      <div style={{ marginBottom: 14 }}>
-        <Link
-          href="/dashboard/mahasiswa"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: 12.5,
-            fontWeight: 800,
-            color: "var(--md-primary)",
-            textDecoration: "none",
-          }}
-        >
-          <span>←</span>
-          <span>Kembali ke Beranda Mahasiswa</span>
-        </Link>
-      </div>
       <PageHero
-        badgeText="Pusat Download"
         title="Pusat Unduhan Dokumen"
         subtitle={`${fullName} | No. Reg: ${registrationNumber}`}
         tone="dark"
@@ -203,7 +186,7 @@ export default async function MahasiswaDownloadPage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
-        <DownloadColumn title="Administrasi & Penilai" color="#0284c7" items={adminItems} />
+        <DownloadColumn title="Administrasi & Penilai" color="var(--md-primary)" items={adminItems} />
         <DownloadColumn title="Evaluasi Klaster" color="#059669" items={evaluationItems} />
         <DownloadColumn title="Sertifikat Lulus" color="#d97706" items={certificateItems} />
         <DownloadColumn title="Riwayat Kwitansi" color="#64748b" items={paymentItems} />

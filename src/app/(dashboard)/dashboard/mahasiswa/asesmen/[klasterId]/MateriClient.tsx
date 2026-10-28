@@ -46,7 +46,7 @@ export function MateriClient({ klasterId }: { klasterId: string }) {
     const isCompleted = message.includes("sudah menyelesaikan");
     return (
       <div style={{ width: "100%" }}>
-        <PageHero tone="maroon" badgeText="Materi Pembelajaran" title={isCompleted ? "Tes Sudah Selesai" : "Materi Belum Dapat Dibuka"} subtitle="" />
+        <PageHero tone="primary" title={isCompleted ? "Tes Sudah Selesai" : "Materi Belum Dapat Dibuka"} subtitle="" />
         <div style={{ padding: 40, textAlign: "center", background: "#f8fafc", borderRadius: 12, marginTop: 24 }}>
           <span style={{ fontSize: 40 }}>{isCompleted ? "✅" : "⚠️"}</span>
           <h3 style={{ marginTop: 12, fontSize: 16, fontWeight: 800, color: "var(--md-on-surface)" }}>
@@ -90,8 +90,7 @@ export function MateriClient({ klasterId }: { klasterId: string }) {
   return (
     <div style={{ width: "100%", paddingBottom: 100 }}>
       <PageHero
-        tone="maroon"
-        badgeText={isCompleted ? "Materi (Mode Peninjauan)" : "Materi Pembelajaran"}
+        tone="primary"
         title={tesData.klaster.namaKlaster}
         subtitle={isCompleted ? "Anda telah menyelesaikan asesmen ini. Anda tetap dapat mempelajari materi di bawah ini." : "Pelajari materi di bawah ini dengan saksama sebelum Anda memulai ujian/asesmen mandiri."}
       />

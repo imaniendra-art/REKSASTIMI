@@ -1,3 +1,4 @@
+import { ensureRegistrationPayment } from "@/lib/payment-guard";
 "use client";
 
 import { useEffect, useState } from "react";
@@ -64,28 +65,8 @@ export default function MahasiswaHasilRplPage() {
 
   return (
     <div style={{ width: "100%", paddingBottom: 40 }}>
-      {/* ── Breadcrumb Back ── */}
-      <div style={{ marginBottom: 14 }}>
-        <Link
-          href="/dashboard/mahasiswa"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: 12.5,
-            fontWeight: 800,
-            color: "var(--md-primary)",
-            textDecoration: "none",
-          }}
-        >
-          <span>←</span>
-          <span>Kembali ke Beranda Mahasiswa</span>
-        </Link>
-      </div>
 
       <PageHero
-        badgeIcon="📜"
-        badgeText="Penetapan & Berita Acara"
         title="Draf Hasil Rekognisi SKS (RPL)"
         subtitle="Tinjau draf konversi nilai dan pengakuan SKS dari tim penilai. Anda dapat menerima hasil atau mengajukan sanggahan resmi sebelum sidang pleno institusi."
         tone="primary"

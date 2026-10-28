@@ -28,29 +28,9 @@ export function AsesmenListClient() {
 
   return (
     <div style={{ width: "100%", paddingBottom: 40 }}>
-      {/* ── Breadcrumb Back ── */}
-      <div style={{ marginBottom: 14 }}>
-        <Link
-          href="/dashboard/mahasiswa"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: 12.5,
-            fontWeight: 800,
-            color: "var(--md-primary)",
-            textDecoration: "none",
-          }}
-        >
-          <span>←</span>
-          <span>Kembali ke Beranda Mahasiswa</span>
-        </Link>
-      </div>
 
       <PageHero
-        tone="info"
-        badgeIcon="🎯"
-        badgeText="Asesmen Mandiri & LMS"
+        tone="primary"
         title="Modul Pembelajaran & Uji Capaian"
         subtitle="Pelajari ringkasan materi dan selesaikan tes mandiri untuk klaster mata kuliah yang telah Anda klaim pada formulir F02."
       />

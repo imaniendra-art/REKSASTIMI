@@ -165,7 +165,6 @@ export default function F03Client({ klasterId }: { klasterId: string }) {
 
       <PageHero
         tone="secondary"
-        badgeText="Evaluasi Diri / Portofolio"
         title={data.klaster.namaKlaster}
         subtitle="Lengkapi evaluasi diri dan bukti portofolio untuk setiap mata kuliah yang diklaim pada F02."
         rightContent={

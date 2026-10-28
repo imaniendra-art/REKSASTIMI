@@ -162,8 +162,8 @@ export default async function MahasiswaDashboardPage() {
     {
       title: "Biodata Pribadi",
       desc: "Data diri, orang tua & sinkronisasi PDDIKTI.",
-      tone: "var(--md-info)",
-      bg: "var(--md-info-container)",
+      tone: "var(--md-primary)",
+      bg: "var(--md-primary-container)",
       lock: isPaymentLocked,
       href: "/dashboard/mahasiswa/biodata",
       emoji: "👤",
@@ -189,8 +189,8 @@ export default async function MahasiswaDashboardPage() {
     {
       title: "Test Kompetensi Mandiri",
       desc: "Ujian modul materi & capaian pembelajaran.",
-      tone: "var(--md-info)",
-      bg: "var(--md-info-container)",
+      tone: "var(--md-secondary, var(--md-primary))",
+      bg: "var(--md-secondary-container, var(--md-primary-container))",
       lock: isPaymentLocked || currentIndex < 4,
       href: "/dashboard/mahasiswa/asesmen",
       emoji: "🎯",
@@ -222,10 +222,6 @@ export default async function MahasiswaDashboardPage() {
       >
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 24, position: "relative", zIndex: 1 }}>
           <div style={{ flex: 1, minWidth: 280 }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 12px", borderRadius: 999, background: "var(--md-primary-container)", color: "var(--md-primary)", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 14 }}>
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--md-primary)" }} />
-              Portal Calon Mahasiswa RPL
-            </div>
 
             <h1 style={{ fontSize: "clamp(22px, 3.2vw, 32px)", fontWeight: 900, color: "var(--md-on-surface)", lineHeight: 1.25, letterSpacing: "-0.02em", margin: 0 }}>
               Selamat Datang, {studentName}
@@ -351,7 +347,7 @@ export default async function MahasiswaDashboardPage() {
 
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                   <a
-                    href="https://wa.me/6281234567890?text=Halo%20Admin%20Keuangan%20STIMI%20YAPMI,%20saya%20sudah%20mengunggah%20bukti%20bayar%20pendaftaran%20RPL%20mohon%20diverifikasi."
+                    href="https://wa.me/6285174489071?text=Halo%20Pak%20Riswan%20(Keuangan%20STIMI),%20saya%20sudah%20mengunggah%20bukti%20bayar%20pendaftaran%20RPL%20mohon%20diverifikasi."
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -450,7 +446,7 @@ export default async function MahasiswaDashboardPage() {
                     Biaya Registrasi: <strong>Rp 250.000</strong>
                   </div>
                   <div style={{ padding: "6px 12px", borderRadius: 8, background: "var(--md-surface-2)", border: "1px solid var(--md-outline-variant)" }}>
-                    Bank Syariah Indonesia (BSI): <strong>7123456789</strong> a.n. STIMI YAPMI Makassar
+                    Bank Rakyat Indonesia (BRI): <strong>3419-0106-7835-533</strong> A.n Sekolah Tinggi Ilmu Manajemen Indonesia (RPL)
                   </div>
                 </div>
               </div>

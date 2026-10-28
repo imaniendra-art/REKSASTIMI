@@ -8,6 +8,16 @@ import { revalidatePath } from "next/cache";
 import fs from "fs";
 import path from "path";
 
+function sanitizeSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove accents/diacritics
+    .replace(/[^a-z0-9]/g, "_")      // replace non-alphanumeric with _
+    .replace(/_+/g, "_")             // remove redundant underscores
+    .replace(/^_|_$/g, "");          // trim leading/trailing underscores
+}
+
 export async function submitPayment(formData: FormData) {
   try {
     const session = await getSession();
@@ -30,11 +40,12 @@ export async function submitPayment(formData: FormData) {
       return { success: false, error: "Nominal pembayaran harus lebih dari 0." };
     }
 
-    if (fileBukti.size > 5 * 1024 * 1024) {
-      return { success: false, error: "Ukuran file bukti pembayaran maksimal 5 MB." };
+    // Limit 15MB max (client compressor usually brings it down to ~300KB)
+    if (fileBukti.size > 15 * 1024 * 1024) {
+      return { success: false, error: "Ukuran file bukti pembayaran maksimal 15 MB." };
     }
 
-    const validTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"];
     if (!validTypes.includes(fileBukti.type)) {
       return { success: false, error: "Format file bukti pembayaran tidak didukung. Gunakan JPG, PNG, atau PDF." };
     }
@@ -62,6 +73,11 @@ export async function submitPayment(formData: FormData) {
 
     await connectMongoDB();
 
+    // Determine clean student name slug (e.g. budi_santoso)
+    const profile = await ApplicantProfile.findOne({ userId: session.id });
+    const rawName = (profile as any)?.identity?.fullName || session.name || session.username || "mahasiswa";
+    const slugName = sanitizeSlug(rawName) || "mahasiswa";
+
     // 1. Setup upload directories
     const keuanganUploadDir = path.join(process.cwd(), "public", "uploads", "keuangan");
     if (!fs.existsSync(keuanganUploadDir)) {
@@ -77,19 +93,24 @@ export async function submitPayment(formData: FormData) {
       "image/jpeg": "jpg",
       "image/jpg": "jpg",
       "image/png": "png",
+      "image/webp": "webp",
       "application/pdf": "pdf",
     };
 
-    // 2. Save payment receipt file
-    const buktiExt = extByType[fileBukti.type] ?? "bin";
-    const buktiFilename = `BAYAR_${session.id}_${Date.now()}.${buktiExt}`;
+    // 2. Save payment receipt file with standardized naming: pendaftaran_nama.ext
+    const buktiExt = extByType[fileBukti.type] ?? "jpg";
+    const buktiFilename = isPendaftaran
+      ? `pendaftaran_${slugName}.${buktiExt}`
+      : `bayar_${slugName}_${Date.now()}.${buktiExt}`;
+
     const buktiFilePath = path.join(keuanganUploadDir, buktiFilename);
     const buktiBuffer = Buffer.from(await fileBukti.arrayBuffer());
+    // Safely write / overwrite
     fs.writeFileSync(buktiFilePath, buktiBuffer);
     const buktiUrl = `/uploads/keuangan/${buktiFilename}`;
 
-    // 3. Save mandatory student registration documents if provided
-    const profile = await ApplicantProfile.findOne({ userId: session.id });
+    // 3. Save mandatory student registration documents with standardized naming:
+    // ktp_nama.ext, kk_nama.ext, akta_nama.ext, ijazah_nama.ext
     const currentDocs: any[] = ((profile?.documents || []) as any[]).map((d) => ({
       type: d.type,
       fileName: d.fileName,
@@ -109,9 +130,11 @@ export async function submitPayment(formData: FormData) {
     for (const item of docItems) {
       if (item.file && item.file.size > 0) {
         const docExt = extByType[item.file.type] ?? "jpg";
-        const docFilename = `${item.key}_${session.id}_${Date.now()}.${docExt}`;
+        // Standardized naming as requested: ktp_nama, kk_nama, akta_nama, ijazah_nama
+        const docFilename = `${item.key}_${slugName}.${docExt}`;
         const docPath = path.join(studentUploadDir, docFilename);
         const docBuffer = Buffer.from(await item.file.arrayBuffer());
+        // Safely write / overwrite
         fs.writeFileSync(docPath, docBuffer);
         const docUrl = `/uploads/${session.id}/${docFilename}`;
 
@@ -119,7 +142,7 @@ export async function submitPayment(formData: FormData) {
         if (existingIdx > -1) {
           currentDocs[existingIdx] = {
             ...currentDocs[existingIdx],
-            fileName: item.file.name,
+            fileName: docFilename,
             fileUrl: docUrl,
             validationStatus: "menunggu",
             uploadedAt: new Date(),
@@ -127,7 +150,7 @@ export async function submitPayment(formData: FormData) {
         } else {
           currentDocs.push({
             type: item.key,
-            fileName: item.file.name,
+            fileName: docFilename,
             fileUrl: docUrl,
             validationStatus: "menunggu",
             uploadedAt: new Date(),
@@ -136,41 +159,45 @@ export async function submitPayment(formData: FormData) {
       }
     }
 
-    // 4. Create Payment document
+    // 4. Create or update Payment document
+    // If registration payment is being re-submitted, update existing or create new
     await Payment.create({
       userId: session.id,
       jenisPembayaran: jenis,
       tanggalBayar: new Date(tanggalBayar),
       nominal: nominalNumber,
-      keterangan: keterangan || "",
+      keterangan: keterangan || (isPendaftaran ? "Pembayaran Pendaftaran RPL STIMI YAPMI" : "-"),
       buktiBayar: buktiUrl,
       statusVerifikasi: "Proses",
     });
 
-    // 5. Update Applicant Profile
+    // 5. Update ApplicantProfile documents & status
     if (profile) {
       profile.documents = currentDocs as any;
       profile.markModified("documents");
-
-      const currentStatus = profile.progress?.paymentStatus || "BELUM_BAYAR";
-      if (currentStatus === "BELUM_BAYAR" || currentStatus === "DITOLAK") {
-        const prof = profile as any;
-        if (!prof.progress) prof.progress = {};
-        prof.progress.paymentStatus = "PROSES";
+      if (isPendaftaran && (!profile.statusPembayaran || profile.statusPembayaran === "BELUM_BAYAR" || profile.statusPembayaran === "DITOLAK")) {
         profile.statusPembayaran = "PROSES";
-        profile.statusRpl = "PEMBAYARAN";
+        (profile as any).progress = {
+          ...((profile as any).progress || {}),
+          paymentStatus: "PROSES",
+        };
       }
-
       await profile.save();
     }
 
     revalidatePath("/dashboard/mahasiswa/keuangan");
     revalidatePath("/dashboard/mahasiswa");
-    revalidatePath("/dashboard/admin/mahasiswa");
+    revalidatePath("/dashboard/layout");
 
-    return { success: true };
+    return {
+      success: true,
+      data: {
+        buktiUrl,
+        buktiFilename,
+      },
+    };
   } catch (error: any) {
-    console.error("submitPayment error:", error);
-    return { success: false, error: error.message || "Gagal menyimpan konfirmasi pembayaran." };
+    console.error("Error submitPayment:", error);
+    return { success: false, error: error.message || "Gagal memproses pembayaran dan berkas." };
   }
 }

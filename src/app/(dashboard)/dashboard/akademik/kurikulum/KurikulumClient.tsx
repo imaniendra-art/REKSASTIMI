@@ -275,8 +275,8 @@ export default function KurikulumClient({
               style={{
                 padding: "6px 12px",
                 borderRadius: 999,
-                border: filterSemester === null ? "1px solid #1a56db" : "1px solid var(--md-outline-variant)",
-                background: filterSemester === null ? "#1a56db" : "#fff",
+                border: filterSemester === null ? "1px solid var(--md-primary)" : "1px solid var(--md-outline-variant)",
+                background: filterSemester === null ? "var(--md-primary)" : "#fff",
                 color: filterSemester === null ? "#fff" : "#64748b",
                 fontSize: 10,
                 fontWeight: 800,
@@ -292,8 +292,8 @@ export default function KurikulumClient({
                 style={{
                   padding: "6px 10px",
                   borderRadius: 999,
-                  border: filterSemester === s ? "1px solid #1a56db" : "1px solid var(--md-outline-variant)",
-                  background: filterSemester === s ? "#1a56db" : "#fff",
+                  border: filterSemester === s ? "1px solid var(--md-primary)" : "1px solid var(--md-outline-variant)",
+                  background: filterSemester === s ? "var(--md-primary)" : "#fff",
                   color: filterSemester === s ? "#fff" : "#64748b",
                   fontSize: 10,
                   fontWeight: 800,
@@ -324,7 +324,7 @@ export default function KurikulumClient({
             <span
               style={{
                 background: "#dbeafe",
-                color: "#1a56db",
+                color: "var(--md-primary)",
                 borderRadius: 999,
                 padding: "2px 10px",
                 fontSize: 11,
@@ -337,7 +337,7 @@ export default function KurikulumClient({
           <button
             onClick={() => setShowAddForm(!showAddForm)}
             style={{
-              background: "linear-gradient(90deg, #1a56db, #6366f1)",
+              background: "linear-gradient(90deg, var(--md-primary), var(--md-secondary))",
               color: "#fff",
               border: "none",
               borderRadius: 999,
@@ -584,7 +584,7 @@ export default function KurikulumClient({
                         style={{
                           fontFamily: "monospace",
                           fontWeight: 800,
-                          color: "#1a56db",
+                          color: "var(--md-primary)",
                           fontSize: 12,
                         }}
                       >
@@ -649,7 +649,7 @@ export default function KurikulumClient({
                             bottom: 0,
                             borderRadius: 999,
                             background: m.isRpl
-                              ? "linear-gradient(90deg, #1a56db, #6366f1)"
+                              ? "linear-gradient(90deg, var(--md-primary), var(--md-secondary))"
                               : "#cbd5e1",
                             transition: "background 300ms",
                           }}

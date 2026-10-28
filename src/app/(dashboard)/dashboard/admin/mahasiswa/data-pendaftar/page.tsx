@@ -181,7 +181,7 @@ export default function DataPendaftarPage() {
                             width: 40,
                             height: 40,
                             borderRadius: "50%",
-                            background: "linear-gradient(135deg, #1a56db, #6366f1)",
+                            background: "linear-gradient(135deg, var(--md-primary), var(--md-secondary))",
                             color: "#fff",
                             display: "flex",
                             alignItems: "center",

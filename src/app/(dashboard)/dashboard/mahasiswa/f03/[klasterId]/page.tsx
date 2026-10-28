@@ -1,3 +1,4 @@
+import { ensureRegistrationPayment } from "@/lib/payment-guard";
 import { Metadata } from "next";
 import F03Client from "./F03Client";
 

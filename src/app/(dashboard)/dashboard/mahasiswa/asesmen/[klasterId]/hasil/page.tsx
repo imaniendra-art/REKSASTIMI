@@ -1,3 +1,4 @@
+import { ensureRegistrationPayment } from "@/lib/payment-guard";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { connectMongoDB } from "@/lib/mongodb";
@@ -9,6 +10,7 @@ import Link from "next/link";
 export default async function MahasiswaHasilAsesmenPage({ params }: { params: Promise<{ klasterId: string }> }) {
   const session = await getSession();
   if (!session) redirect("/login");
+  await ensureRegistrationPayment(session.id);
 
   const resolvedParams = await params;
   await connectMongoDB();
@@ -25,8 +27,7 @@ export default async function MahasiswaHasilAsesmenPage({ params }: { params: Pr
   return (
     <div style={{ width: "100%" }}>
       <PageHero
-        tone="maroon"
-        badgeText="Hasil Asesmen"
+        tone="primary"
         title={klaster.namaKlaster as string}
         subtitle="Rincian hasil evaluasi kemampuan untuk rumpun ilmu ini."
       />

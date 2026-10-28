@@ -22,14 +22,14 @@ export function PageHero({
   withSparkles = false,
 }: PageHeroProps) {
   const heroGradient = {
-    primary: "linear-gradient(135deg, #1a56db 0%, #4f46e5 60%, #6366f1 100%)",
+    primary: "linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary, var(--md-primary)) 100%)",
+    secondary: "linear-gradient(135deg, var(--md-secondary, var(--md-primary)) 0%, var(--md-primary) 100%)",
+    info: "linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary, var(--md-primary)) 100%)",
     success: "linear-gradient(135deg, #047857 0%, #059669 58%, #10b981 100%)",
     warning: "linear-gradient(135deg, #b45309 0%, #d97706 58%, #f59e0b 100%)",
     danger: "linear-gradient(135deg, #b91c1c 0%, #dc2626 58%, #ef4444 100%)",
-    info: "linear-gradient(135deg, #0369a1 0%, #0284c7 58%, #38bdf8 100%)",
     dark: "linear-gradient(135deg, #0f172a 0%, #1e293b 58%, #334155 100%)",
-    secondary: "linear-gradient(135deg, #4f46e5 0%, #6366f1 58%, #8b5cf6 100%)",
-    maroon: "linear-gradient(135deg, #7f1d1d 0%, #991b1b 58%, #b91c1c 100%)",
+    maroon: "linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary, var(--md-primary)) 100%)",
   }[tone];
 
   return (
@@ -43,7 +43,7 @@ export function PageHero({
         color: "#fff",
         position: "relative",
         overflow: "hidden",
-        boxShadow: "0 12px 36px rgba(26,86,219,0.25)",
+        boxShadow: "0 12px 36px var(--theme-glow, rgba(0,0,0,0.15))",
       }}
     >
       {/* Decorative orbs */}
@@ -113,7 +113,7 @@ export function PageHero({
               fontWeight: 500,
               opacity: 0.9,
               lineHeight: 1.6,
-              color: "#e0e7ff",
+              color: "rgba(255, 255, 255, 0.9)",
             }}
           >
             {subtitle}

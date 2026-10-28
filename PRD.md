@@ -42,12 +42,13 @@ Tahap ini berfokus pada **perombakan total antarmuka (UI/UX Overhaul)**, **penye
   - Tampilan rapi, collapsible, dan responsif (menjadi slide-over drawer di perangkat mobile).
 - **Multi-Theme Engine:**
   - Mendukung mode **Light** dan **Dark** (true dark).
-  - 5 Preset Palet Warna Aksen:
+  - 6 Preset Palet Warna Aksen:
     1. **Teal:** Toska modern segar.
     2. **Burgundy:** Merah anggur marun berwibawa.
     3. **Dusty Rose:** Merah muda lembut hangat.
     4. **Charcoal:** Arang netral minimalis tajam.
     5. **Orange Burn:** Oranye bata/terakota energetik.
+    6. **Deep Blue:** Biru safir kerajaan (royal sapphire/cobalt) yang tegas, berwibawa, dan kontras dari Teal.
   - Pengatur tema diletakkan di Navbar kanan atas (Dropdown Palet Warna + Switcher Dark/Light), dengan penyimpanan preferensi di `localStorage`.
 
 ---

@@ -1,3 +1,4 @@
+import { ensureRegistrationPayment } from "@/lib/payment-guard";
 import { getSession } from "@/lib/session";
 import { connectMongoDB } from "@/lib/mongodb";
 import { MataKuliah } from "@/models/MataKuliah";
@@ -18,6 +19,7 @@ export default async function F02Page() {
   if (!session || session.role !== "mahasiswa") {
     redirect("/login");
   }
+  await ensureRegistrationPayment(session.id);
 
   await connectMongoDB();
 
@@ -78,28 +80,8 @@ export default async function F02Page() {
 
   return (
     <div style={{ width: "100%", margin: "0 auto", paddingBottom: 40 }}>
-      {/* ── Breadcrumb Back ── */}
-      <div style={{ marginBottom: 14 }}>
-        <Link
-          href="/dashboard/mahasiswa"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: 12.5,
-            fontWeight: 800,
-            color: "var(--md-primary)",
-            textDecoration: "none",
-          }}
-        >
-          <span>←</span>
-          <span>Kembali ke Beranda Mahasiswa</span>
-        </Link>
-      </div>
 
       <PageHero
-        badgeIcon="📝"
-        badgeText="Formulir Aplikasi RPL (F02)"
         title="Pemilihan Mata Kuliah Konversi"
         subtitle="Pilih mata kuliah yang ingin direkognisi berdasarkan rekam jejak kerja (Perolehan) atau pendidikan tinggi sebelumnya (Transfer)."
         tone="success"

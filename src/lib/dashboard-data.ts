@@ -172,22 +172,28 @@ export const roleMenu: Record<Role, MenuItem[]> = {
   ],
   keuangan: [
     {
-      label: "Panel Kendali Keuangan",
+      label: "Panel Kendali & Validasi",
       href: "/dashboard/keuangan",
-      description: "Verifikasi pembayaran dan monitoring dana.",
+      description: "Monitoring arus kas dan validasi cepat mutasi bank.",
       tone: "primary"
     },
     {
-      label: "Rekapitulasi Dana",
-      href: "/dashboard/keuangan/rekap",
-      description: "Rekap pembayaran pendaftar.",
-      tone: "success"
+      label: "Laporan & Ekspor Kas",
+      href: "/dashboard/keuangan/laporan",
+      description: "Rekapitulasi keuangan dan ekspor laporan kas pendaftar.",
+      tone: "primary"
     },
     {
-      label: "Antrean Validasi",
-      href: "/dashboard/keuangan/validasi",
-      description: "Bukti bayar menunggu pemeriksaan.",
-      tone: "warning"
+      label: "Kuitansi & Tanda Terima",
+      href: "/dashboard/keuangan/kuitansi",
+      description: "Cetak bukti kuitansi pembayaran resmi mahasiswa.",
+      tone: "primary"
+    },
+    {
+      label: "Pengaturan Tarif & Rekening",
+      href: "/dashboard/keuangan/tarif",
+      description: "Konfigurasi biaya pendaftaran dan rekening bank kampus.",
+      tone: "primary"
     }
   ],
   penilai: [
@@ -218,6 +224,12 @@ export const roleMenu: Record<Role, MenuItem[]> = {
       tone: "primary"
     },
     {
+      label: "Keuangan",
+      href: "/dashboard/mahasiswa/keuangan",
+      description: "Tagihan dan bukti pembayaran.",
+      tone: "danger"
+    },
+    {
       label: "Biodata",
       href: "/dashboard/mahasiswa/biodata",
       description: "Data diri, orang tua, dan alamat.",
@@ -228,12 +240,6 @@ export const roleMenu: Record<Role, MenuItem[]> = {
       href: "/dashboard/mahasiswa/cv",
       description: "Pendidikan, pekerjaan, dan organisasi.",
       tone: "warning"
-    },
-    {
-      label: "Keuangan",
-      href: "/dashboard/mahasiswa/keuangan",
-      description: "Tagihan dan bukti pembayaran.",
-      tone: "danger"
     },
     {
       label: "Form F02",
@@ -266,6 +272,9 @@ export function getMenuIcon(label: string) {
   const l = label.toLowerCase();
   if (l.includes("mahasiswa") || l.includes("pendaftar")) return "👨‍🎓";
   if (l.includes("akademik") || l.includes("kurikulum") || l.includes("matkul") || l.includes("klaster")) return "🎓";
+  if (l.includes("kuitansi")) return "🧾";
+  if (l.includes("laporan") || l.includes("ekspor")) return "📑";
+  if (l.includes("tarif") || l.includes("rekening")) return "⚙️";
   if (l.includes("keuangan") || l.includes("dana") || l.includes("bayar") || l.includes("validasi") || l.includes("rekap")) return "💰";
   if (l.includes("download") || l.includes("unduh")) return "⬇️";
   if (l.includes("asesmen") || l.includes("nilai") || l.includes("evaluasi") || l.includes("riwayat")) return "📊";

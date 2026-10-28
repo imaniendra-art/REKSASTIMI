@@ -1,3 +1,4 @@
+import { ensureRegistrationPayment } from "@/lib/payment-guard";
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -27,29 +28,9 @@ export default function F03ListPage() {
 
   return (
     <div style={{ width: "100%", paddingBottom: 40 }}>
-      {/* ── Breadcrumb Back ── */}
-      <div style={{ marginBottom: 14 }}>
-        <Link
-          href="/dashboard/mahasiswa"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: 12.5,
-            fontWeight: 800,
-            color: "var(--md-primary)",
-            textDecoration: "none",
-          }}
-        >
-          <span>←</span>
-          <span>Kembali ke Beranda Mahasiswa</span>
-        </Link>
-      </div>
 
       <PageHero
         tone="secondary"
-        badgeIcon="📋"
-        badgeText="Formulir Evaluasi Diri (F03)"
         title="Portofolio Capaian Pembelajaran"
         subtitle="Lengkapi evaluasi diri, tingkat penguasaan kompetensi, dan lampiran bukti portofolio (VATM) untuk setiap mata kuliah yang Anda klaim."
       />

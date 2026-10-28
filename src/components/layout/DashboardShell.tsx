@@ -13,6 +13,7 @@ type DashboardShellProps = {
   user: {
     name: string;
     role: Role;
+    isPaymentLocked?: boolean;
   };
 };
 
@@ -48,22 +49,7 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
     .flatMap((item) => (item.children ?? []).map((child) => ({ child, parent: item })))
     .find(({ child }) => pathname === child.href || pathname.startsWith(`${child.href}/`));
 
-  const isAdminMahasiswaDetail = /^\/dashboard\/admin\/mahasiswa\/[a-f0-9]{24}$/i.test(pathname);
-  const isAkademikMatkulDetail = /^\/dashboard\/akademik\/matkul\/[a-f0-9]{24}$/i.test(pathname);
-  const isAkademikKlasterDetail = /^\/dashboard\/akademik\/klaster\/[a-f0-9]{24}$/i.test(pathname);
-  const backTarget = isAdminMahasiswaDetail
-    ? { href: "/dashboard/admin/mahasiswa/data-pendaftar", label: "Daftar Pendaftar Mahasiswa" }
-    : isAkademikMatkulDetail
-    ? { href: "/dashboard/akademik/matkul-rpl", label: "Mata Kuliah RPL" }
-    : isAkademikKlasterDetail
-    ? { href: "/dashboard/akademik/klaster", label: "Data Klaster" }
-    : currentChildMenu && currentChildMenu.parent.href !== pathname
-    ? { href: currentChildMenu.parent.href, label: currentChildMenu.parent.label }
-    : currentTopMenu && pathname !== currentTopMenu.href
-    ? { href: currentTopMenu.href, label: currentTopMenu.label }
-    : currentTopMenu && currentTopMenu.href !== dashboardHome
-      ? { href: dashboardHome, label: navItems[0]?.label || "Dashboard" }
-      : null;
+  // Back navigation removed per user request
 
   const initials = user.name
     .split(" ")
@@ -84,7 +70,7 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
           justifyContent: isSidebarCollapsed && !isMobile ? "center" : "space-between",
           flexDirection: isSidebarCollapsed && !isMobile ? "column" : "row",
           gap: isSidebarCollapsed && !isMobile ? 12 : 8,
-          borderBottom: "1px solid var(--md-outline-variant)",
+          borderBottom: "1.5px solid var(--sidebar-border)",
         }}
       >
         <Link
@@ -187,30 +173,6 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
         )}
       </div>
 
-      {/* Role Pill */}
-      {(!isSidebarCollapsed || isMobile) && (
-        <div style={{ padding: "12px 18px 6px" }}>
-          <div
-            style={{
-              padding: "6px 12px",
-              borderRadius: 999,
-              background: "var(--md-primary-container)",
-              color: "var(--md-on-primary-container)",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
-            }}
-          >
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--md-primary)" }} />
-            <span>Portal {roleLabels[user.role]}</span>
-          </div>
-        </div>
-      )}
-
       {/* Nav Menu Items */}
       <div style={{ flex: 1, overflowY: "auto", padding: "12px 14px", display: "flex", flexDirection: "column", gap: 4 }}>
         {navItems.map((item) => {
@@ -219,34 +181,81 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
           const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus[item.label];
 
+          // Strict lock for mahasiswa if registration payment is not accepted yet
+          const isLocked = Boolean(
+            user.role === "mahasiswa" &&
+            user.isPaymentLocked &&
+            item.href !== "/dashboard/mahasiswa" &&
+            item.href !== "/dashboard/mahasiswa/keuangan"
+          );
+
+          const isKeuanganPending = Boolean(
+            user.role === "mahasiswa" &&
+            user.isPaymentLocked &&
+            item.href === "/dashboard/mahasiswa/keuangan"
+          );
+
           return (
             <div key={item.label} style={{ marginBottom: 2 }}>
               <div style={{ display: "flex", alignItems: "center" }}>
-                <Link
-                  href={item.href}
-                  onClick={() => { if (!hasChildren && isMobile) setIsMobileDrawerOpen(false); }}
-                  title={item.label}
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    padding: isSidebarCollapsed && !isMobile ? "12px" : "10px 14px",
-                    borderRadius: 14,
-                    textDecoration: "none",
-                    background: isActive ? "var(--md-primary-container)" : "transparent",
-                    color: isActive ? "var(--md-on-primary-container)" : "var(--md-on-surface)",
-                    fontWeight: isActive ? 700 : 600,
-                    fontSize: 13.5,
-                    border: isActive ? "1px solid var(--md-primary)" : "1px solid transparent",
-                    boxShadow: isActive ? "0 4px 14px var(--theme-glow)" : "none",
-                    transition: "all 0.18s ease",
-                    justifyContent: isSidebarCollapsed && !isMobile ? "center" : "flex-start",
-                  }}
-                >
-                  <span style={{ fontSize: 18, lineHeight: 1 }}>{emoji}</span>
-                  {(!isSidebarCollapsed || isMobile) && <span>{item.label}</span>}
-                </Link>
+                {isLocked ? (
+                  <div
+                    title={`${item.label} (Terkunci: Selesaikan pembayaran pendaftaran)`}
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: isSidebarCollapsed && !isMobile ? "center" : "space-between",
+                      padding: isSidebarCollapsed && !isMobile ? "12px" : "10px 14px",
+                      borderRadius: 14,
+                      background: "transparent",
+                      color: "var(--md-on-surface-variant)",
+                      opacity: 0.45,
+                      cursor: "not-allowed",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      userSelect: "none",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ fontSize: 18, lineHeight: 1, filter: "grayscale(1)" }}>{emoji}</span>
+                      {(!isSidebarCollapsed || isMobile) && <span>{item.label}</span>}
+                    </div>
+                    {(!isSidebarCollapsed || isMobile) && <span style={{ fontSize: 13 }}>🔒</span>}
+                  </div>
+                ) : (
+                  <Link
+                    href={item.href}
+                    onClick={() => { if (!hasChildren && isMobile) setIsMobileDrawerOpen(false); }}
+                    title={item.label}
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: isSidebarCollapsed && !isMobile ? "center" : "space-between",
+                      padding: isSidebarCollapsed && !isMobile ? "12px" : "10px 14px",
+                      borderRadius: 14,
+                      textDecoration: "none",
+                      background: isActive ? "var(--md-primary)" : "transparent",
+                      color: isActive ? "#ffffff" : "var(--md-on-surface)",
+                      fontWeight: isActive ? 800 : 600,
+                      fontSize: 13.5,
+                      border: isActive ? "1px solid var(--md-primary)" : "1px solid transparent",
+                      boxShadow: isActive ? "0 4px 14px var(--theme-glow)" : "none",
+                      transition: "all 0.18s ease",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ fontSize: 18, lineHeight: 1 }}>{emoji}</span>
+                      {(!isSidebarCollapsed || isMobile) && <span>{item.label}</span>}
+                    </div>
+                    {isKeuanganPending && (!isSidebarCollapsed || isMobile) && (
+                      <span style={{ fontSize: 10, fontWeight: 900, background: "var(--md-primary)", color: "#fff", padding: "2px 7px", borderRadius: 999, letterSpacing: "0.04em" }}>
+                        Wajib
+                      </span>
+                    )}
+                  </Link>
+                )}
 
                 {hasChildren && (!isSidebarCollapsed || isMobile) && (
                   <button
@@ -316,8 +325,8 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
       <div
         style={{
           padding: isSidebarCollapsed && !isMobile ? "12px 6px" : "14px 16px",
-          borderTop: "1px solid var(--md-outline-variant)",
-          background: "var(--md-surface-2)",
+          borderTop: "1.5px solid var(--sidebar-border)",
+          background: "transparent",
           display: "flex",
           flexDirection: isSidebarCollapsed && !isMobile ? "column" : "row",
           alignItems: "center",
@@ -428,8 +437,8 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
           width: isSidebarCollapsed ? 82 : 270,
           backgroundColor: "var(--sidebar-bg)",
           borderRadius: 24,
-          border: "1px solid var(--sidebar-border)",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+          border: "1.5px solid var(--sidebar-border)",
+          boxShadow: "0 12px 32px var(--theme-glow, rgba(0,0,0,0.08))",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           zIndex: 40,
@@ -486,18 +495,18 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
         }}
         className={`dashboard-main-wrapper w-full ${isSidebarCollapsed ? "sidebar-collapsed lg:!pl-[96px]" : "sidebar-expanded lg:!pl-[284px]"}`}
       >
-        {/* ─── TOP APP BAR (FLOATING GLASS HEADER) ─── */}
+        {/* ─── TOP APP BAR (FLOATING ISLAND GLASS HEADER - GAYA LULUSANSTIMI) ─── */}
         <header
           style={{
             margin: "14px 14px 0 14px",
-            padding: "0 18px",
+            padding: "0 20px",
             height: 64,
-            borderRadius: 20,
-            backgroundColor: "var(--sidebar-bg)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            border: "1px solid var(--sidebar-border)",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
+            borderRadius: 22,
+            backgroundColor: "var(--header-bg)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1.5px solid var(--header-border)",
+            boxShadow: "0 8px 24px var(--theme-glow, rgba(0,0,0,0.06))",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -507,78 +516,129 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
             zIndex: 30,
           }}
         >
-          {/* Left: Section Title */}
+          {/* Left: Section Title & Description (Tanpa tombol garis 3) */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-            <span
-              style={{
-                fontSize: 16,
-                fontWeight: 800,
-                color: "var(--md-on-surface)",
-                letterSpacing: "-0.01em",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                display: "block",
-              }}
-            >
-              {currentTopMenu?.label ?? "Dashboard Utama"}
-            </span>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span
+                  style={{
+                    fontSize: 16.5,
+                    fontWeight: 900,
+                    color: "var(--md-on-surface)",
+                    letterSpacing: "-0.015em",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    display: "block",
+                  }}
+                >
+                  {currentTopMenu?.label ?? "Panel REKSA STIMI"}
+                </span>
+                <span
+                  style={{
+                    fontSize: 9.5,
+                    fontWeight: 800,
+                    padding: "2px 7px",
+                    borderRadius: 6,
+                    background: "var(--md-primary-container)",
+                    color: "var(--md-primary)",
+                    letterSpacing: "0.03em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {user.role}
+                </span>
+              </div>
+              {currentTopMenu?.description && (
+                <p
+                  className="hidden md:block"
+                  style={{
+                    margin: "2px 0 0",
+                    fontSize: 11,
+                    color: "var(--md-on-surface-variant)",
+                    fontWeight: 650,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {currentTopMenu.description}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Right: Theme Controls + User Avatar */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            {/* Multi-Theme Selector (5 Colors + Dark/Light Mode) */}
+          {/* Right: Quick Action to Public Web, Theme Selector, Profile & Logout */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* Multi-Theme Selector */}
             <ThemeSelector />
 
             {/* Public Link Shortcut */}
             <Link
               href="/"
               target="_blank"
-              title="Kunjungi Portal Publik REKSA"
+              title="Kunjungi Portal Publik REKSA di Tab Baru"
               style={{
-                width: 38,
-                height: 38,
-                borderRadius: "50%",
-                border: "1px solid var(--md-outline-variant)",
+                height: 36,
+                padding: "0 12px",
+                borderRadius: 10,
+                border: "1px solid var(--sidebar-border)",
                 background: "var(--md-surface-1)",
                 color: "var(--md-primary)",
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
-                justifyContent: "center",
+                gap: 6,
                 textDecoration: "none",
-                fontSize: 14,
-                boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
+                fontSize: 11.5,
+                fontWeight: 750,
+                boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
               }}
             >
-              🌐
+              <span>🌐</span>
+              <span className="hidden sm:inline">Web Publik</span>
+            </Link>
+
+            <div style={{ width: 1, height: 22, background: "var(--sidebar-border)", margin: "0 2px" }} />
+
+            {/* User Info Label */}
+            <div className="hidden md:flex" style={{ flexDirection: "column", textAlign: "right", minWidth: 0 }}>
+              <span style={{ fontSize: 11.5, fontWeight: 800, color: "var(--md-on-surface)", lineHeight: 1.2 }}>
+                {user.name}
+              </span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: "var(--md-on-surface-variant)" }}>
+                {roleLabels[user.role] ?? user.role}
+              </span>
+            </div>
+
+            {/* Quick Logout Button (Gaya LULUSANSTIMI) */}
+            <Link
+              href="/logout"
+              title="Keluar dari Sistem"
+              style={{
+                height: 36,
+                padding: "0 12px",
+                borderRadius: 10,
+                border: "1px solid var(--md-error-container)",
+                background: "var(--md-error-container)",
+                color: "var(--md-error)",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
+                textDecoration: "none",
+                fontSize: 11.5,
+                fontWeight: 800,
+                boxShadow: "0 1px 3px rgba(220, 38, 38, 0.08)",
+                cursor: "pointer",
+                transition: "all 0.18s ease",
+              }}
+            >
+              <IconLogout />
+              <span className="hidden sm:inline">Keluar</span>
             </Link>
           </div>
         </header>
 
-        {/* Back navigation bar if present */}
-        {backTarget && (
-          <div style={{ margin: "10px 14px 0" }}>
-            <Link
-              href={backTarget.href}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "6px 14px",
-                borderRadius: 999,
-                background: "var(--md-surface-1)",
-                border: "1px solid var(--md-outline-variant)",
-                fontSize: 12.5,
-                fontWeight: 600,
-                color: "var(--md-primary)",
-                textDecoration: "none",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-              }}
-            >
-              ← Kembali ke {backTarget.label}
-            </Link>
-          </div>
-        )}
+        
 
         {/* ─── MAIN PAGE CONTENT ─── */}
         <main

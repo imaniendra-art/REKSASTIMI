@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-export type ColorTheme = "teal" | "burgundy" | "dusty-rose" | "charcoal" | "orange-burn";
+export type ColorTheme = "teal" | "burgundy" | "dusty-rose" | "charcoal" | "orange-burn" | "deep-blue";
 export type ModeTheme = "light" | "dark";
 
 interface ThemeContextType {
@@ -19,6 +19,7 @@ export const THEME_PALETTES: { id: ColorTheme; name: string; hex: string; bgClas
   { id: "dusty-rose", name: "Dusty Rose (Pink)", hex: "#be185d", bgClass: "bg-pink-700" },
   { id: "charcoal", name: "Charcoal (Arang)", hex: "#334155", bgClass: "bg-slate-700" },
   { id: "orange-burn", name: "Orange Burn (Bata)", hex: "#c2410c", bgClass: "bg-orange-700" },
+  { id: "deep-blue", name: "Deep Blue (Safir)", hex: "#1d4ed8", bgClass: "bg-blue-700" },
 ];
 
 const ThemeContext = createContext<ThemeContextType>({

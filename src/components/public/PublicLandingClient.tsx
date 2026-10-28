@@ -770,7 +770,7 @@ export function PublicLandingClient() {
               Mulai Pendaftaran Ringan →
             </Link>
             <a
-              href="https://wa.me/6281234567890?text=Halo%20Panitia%20RPL%20STIMI%20YAPMI,%20saya%20ingin%20konsultasi%20jalur%20RPL"
+              href="https://wa.me/6285174489071?text=Halo%20Panitia%20RPL%20STIMI%20YAPMI,%20saya%20ingin%20konsultasi%20jalur%20RPL"
               target="_blank"
               rel="noopener noreferrer"
               style={{

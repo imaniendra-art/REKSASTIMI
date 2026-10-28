@@ -15,23 +15,23 @@ type StatCardProps = {
 
 /* ── Tone → Color mapping (MD3 style) ── */
 const toneTokens: Record<MenuItem["tone"], { bg: string; text: string; accent: string; icon: string }> = {
-  primary:   { bg: "#1a56db", text: "#fff",     accent: "rgba(255,255,255,0.2)", icon: "📊" },
+  primary:   { bg: "var(--md-primary)", text: "var(--md-on-primary)", accent: "rgba(255,255,255,0.2)", icon: "📊" },
   success:   { bg: "#059669", text: "#fff",     accent: "rgba(255,255,255,0.2)", icon: "✅" },
   warning:   { bg: "#d97706", text: "#fff",     accent: "rgba(255,255,255,0.2)", icon: "⏳" },
   danger:    { bg: "#dc2626", text: "#fff",     accent: "rgba(255,255,255,0.2)", icon: "🔔" },
   info:      { bg: "#0284c7", text: "#fff",     accent: "rgba(255,255,255,0.2)", icon: "ℹ️" },
   dark:      { bg: "#1e293b", text: "#fff",     accent: "rgba(255,255,255,0.15)", icon: "🗂️" },
-  secondary: { bg: "#6366f1", text: "#fff",     accent: "rgba(255,255,255,0.2)", icon: "📋" },
+  secondary: { bg: "var(--md-secondary, var(--md-primary))", text: "var(--md-on-secondary, #fff)", accent: "rgba(255,255,255,0.2)", icon: "📋" },
 };
 
 const menuToneTokens: Record<MenuItem["tone"], { bg: string; text: string; border: string; label: string }> = {
-  primary:   { bg: "#dbeafe", text: "#1e3a8a", border: "#93c5fd", label: "Utama" },
+  primary:   { bg: "var(--md-primary-container)", text: "var(--md-on-primary-container)", border: "var(--md-primary)", label: "Utama" },
   success:   { bg: "#d1fae5", text: "#064e3b", border: "#6ee7b7", label: "Akademik" },
   warning:   { bg: "#fef3c7", text: "#78350f", border: "#fcd34d", label: "Dokumen" },
   danger:    { bg: "#fee2e2", text: "#7f1d1d", border: "#fca5a5", label: "Penting" },
   info:      { bg: "#e0f2fe", text: "#0c4a6e", border: "#7dd3fc", label: "Informasi" },
   dark:      { bg: "#f1f5f9", text: "#0f172a", border: "#94a3b8", label: "Sistem" },
-  secondary: { bg: "#ede9fe", text: "#3730a3", border: "#c4b5fd", label: "Lainnya" },
+  secondary: { bg: "var(--md-secondary-container, var(--md-primary-container))", text: "var(--md-secondary, var(--md-primary))", border: "var(--md-secondary, var(--md-primary))", label: "Lainnya" },
 };
 
 /* ── STAT CARD ── */
@@ -42,7 +42,7 @@ export function StatCard({ label, value, note, tone, index = 0, isTextValue = fa
       className="dashboard-stat-card"
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 16px 34px rgba(15,23,42,0.14), 0 8px 18px rgba(26,86,219,0.12)";
+        e.currentTarget.style.boxShadow = "0 16px 34px rgba(15,23,42,0.14), 0 8px 18px var(--theme-glow, rgba(0,0,0,0.12))";
         e.currentTarget.style.filter = "saturate(1.05) brightness(1.02)";
       }}
       onMouseLeave={(e) => {
@@ -144,7 +144,7 @@ export function MenuCard({ item, disabled = true, index = 0 }: { item: MenuItem;
       onMouseEnter={(e) => {
         if (disabled) return;
         e.currentTarget.style.transform = "translateY(-6px) scale(1.01)";
-        e.currentTarget.style.boxShadow = "0 16px 34px rgba(15,23,42,0.13), 0 6px 16px rgba(26,86,219,0.10)";
+        e.currentTarget.style.boxShadow = "0 16px 34px rgba(15,23,42,0.13), 0 6px 16px var(--theme-glow, rgba(0,0,0,0.10))";
         e.currentTarget.style.borderColor = border;
         e.currentTarget.style.background = `linear-gradient(180deg, #ffffff 0%, ${bg} 100%)`;
         const icon = e.currentTarget.querySelector<HTMLElement>(".dashboard-menu-card-icon");

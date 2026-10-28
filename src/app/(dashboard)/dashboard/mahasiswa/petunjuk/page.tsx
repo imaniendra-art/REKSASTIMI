@@ -2,47 +2,28 @@ import Link from "next/link";
 import { PageHero } from "@/components/dashboard/UIComponents";
 
 const steps = [
-  { title: "1. Biodata", desc: "Lengkapi data diri, alamat, kontak, dan identitas sesuai dokumen resmi.", tone: "#1a56db", bg: "#dbeafe" },
+  { title: "1. Biodata", desc: "Lengkapi data diri, alamat, kontak, dan identitas sesuai dokumen resmi.", tone: "var(--md-primary)", bg: "var(--md-primary-container)" },
   { title: "2. CV Riwayat", desc: "Isi riwayat pendidikan, pekerjaan, pelatihan, penghargaan, dan organisasi.", tone: "#059669", bg: "#d1fae5" },
   { title: "3. Pembayaran", desc: "Konfirmasi pembayaran dan tunggu validasi dari bagian keuangan.", tone: "#d97706", bg: "#fef3c7" },
-  { title: "4. Form F02", desc: "Pilih mata kuliah RPL dan tentukan jenis pengajuan Transfer atau Perolehan.", tone: "#0284c7", bg: "#e0f2fe" },
+  { title: "4. Form F02", desc: "Pilih mata kuliah RPL dan tentukan jenis pengajuan Transfer atau Perolehan.", tone: "var(--md-secondary, var(--md-primary))", bg: "var(--md-secondary-container, var(--md-primary-container))" },
   { title: "5. Asesmen", desc: "Ikuti asesmen kompetensi sesuai jadwal dan instruksi yang tersedia.", tone: "#dc2626", bg: "#fee2e2" },
-  { title: "6. Form F03", desc: "Lengkapi evaluasi diri dan bukti portofolio untuk mata kuliah yang diajukan.", tone: "#6366f1", bg: "#ede9fe" },
+  { title: "6. Form F03", desc: "Lengkapi evaluasi diri dan bukti portofolio untuk mata kuliah yang diajukan.", tone: "var(--md-primary)", bg: "var(--md-primary-container)" },
   { title: "7. Verifikasi Penilai", desc: "Tunggu proses pemeriksaan dan penilaian oleh tim penilai.", tone: "#334155", bg: "#f1f5f9" },
   { title: "8. Selesai", desc: "Jika disetujui, hasil RPL diproses untuk pengakuan SKS.", tone: "#16a34a", bg: "#dcfce7" },
 ];
 
 const guides = [
-  { title: "Pedoman RPL STIMI YAPMI", desc: "Panduan umum kebijakan dan tahapan RPL di lingkungan STIMI YAPMI Makassar.", href: "/dashboard/mahasiswa/download", tone: "#1a56db" },
+  { title: "Pedoman RPL STIMI YAPMI", desc: "Panduan umum kebijakan dan tahapan RPL di lingkungan STIMI YAPMI Makassar.", href: "/dashboard/mahasiswa/download", tone: "var(--md-primary)" },
   { title: "Pusat Download Dokumen", desc: "Akses formulir, bukti pembayaran, dan status dokumen RPL Anda.", href: "/dashboard/mahasiswa/download", tone: "#d97706" },
 ];
 
 export default function MahasiswaPetunjukPage() {
   return (
     <div style={{ width: "100%", margin: "0 auto", paddingBottom: 36 }}>
-      {/* ── Breadcrumb Back ── */}
-      <div style={{ marginBottom: 14 }}>
-        <Link
-          href="/dashboard/mahasiswa"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: 12.5,
-            fontWeight: 800,
-            color: "var(--md-primary)",
-            textDecoration: "none",
-          }}
-        >
-          <span>←</span>
-          <span>Kembali ke Beranda Mahasiswa</span>
-        </Link>
-      </div>
       <PageHero
-        badgeText="Panduan Mahasiswa"
         title="Petunjuk Penggunaan REKSA"
         subtitle="Ikuti urutan berikut untuk menyelesaikan proses pendaftaran dan asesmen RPL."
-        tone="info"
+        tone="primary"
       />
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 24 }}>

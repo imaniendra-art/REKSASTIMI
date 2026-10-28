@@ -104,7 +104,7 @@ export function TesClient({ klasterId }: { klasterId: string }) {
     const isCompleted = message.includes("sudah menyelesaikan");
     return (
       <div style={{ width: "100%" }}>
-        <PageHero tone="maroon" badgeText="Test Kompetensi" title={isCompleted ? "Tes Sudah Selesai" : "Tes Belum Dapat Dibuka"} subtitle="" rightContent={null} />
+        <PageHero tone="primary" title={isCompleted ? "Tes Sudah Selesai" : "Tes Belum Dapat Dibuka"} subtitle="" rightContent={null} />
         <div style={{ padding: 40, textAlign: "center", background: "var(--md-surface-1)", borderRadius: "var(--md-radius-lg)", border: "1px solid var(--md-outline-variant)", marginTop: 24 }}>
           <span style={{ fontSize: 40 }}>{isCompleted ? "✅" : "⚠️"}</span>
           <h3 style={{ marginTop: 12, fontSize: 16, fontWeight: 800, color: "var(--md-on-surface)" }}>
@@ -122,7 +122,7 @@ export function TesClient({ klasterId }: { klasterId: string }) {
   if (isLoading || !tesData) {
     return (
       <div style={{ width: "100%" }}>
-        <PageHero tone="maroon" badgeText="Lembar Ujian" title="Menyiapkan Soal..." subtitle="" rightContent={null} />
+        <PageHero tone="primary" title="Menyiapkan Soal..." subtitle="" rightContent={null} />
         <div style={{ padding: 40, textAlign: "center", color: "var(--md-on-surface-variant)" }}>
           Menyiapkan soal ujian...
         </div>
@@ -134,7 +134,7 @@ export function TesClient({ klasterId }: { klasterId: string }) {
   if (!activeQuestion) {
     return (
       <div style={{ width: "100%" }}>
-        <PageHero tone="maroon" badgeText="Lembar Ujian" title="Soal Belum Tersedia" subtitle="" rightContent={null} />
+        <PageHero tone="primary" title="Soal Belum Tersedia" subtitle="" rightContent={null} />
         <div className="md-card" style={{ padding: "40px 24px", textAlign: "center", marginTop: 24 }}>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: "var(--md-on-surface)" }}>Belum ada soal aktif</h3>
           <p style={{ marginTop: 8, fontSize: 13, color: "var(--md-on-surface-variant)" }}>Belum ada soal yang dapat ditampilkan untuk klaster ini.</p>
@@ -156,8 +156,7 @@ export function TesClient({ klasterId }: { klasterId: string }) {
 
       {/* ── Hero Header ── */}
       <PageHero
-        tone="maroon"
-        badgeText="Lembar Ujian Kompetensi"
+        tone="primary"
         title={tesData.klaster.namaKlaster}
         subtitle={`Progress pengisian: ${answeredCount} dari ${totalQ} soal terjawab (${progressValue}%)`}
         rightContent={
