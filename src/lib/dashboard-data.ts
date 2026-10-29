@@ -5,6 +5,7 @@ export type MenuItem = {
   href: string;
   description: string;
   tone: "primary" | "success" | "warning" | "danger" | "info" | "dark" | "secondary";
+  icon?: string;
   children?: Omit<MenuItem, "children">[];
 };
 
@@ -221,68 +222,80 @@ export const roleMenu: Record<Role, MenuItem[]> = {
       label: "Dashboard Mahasiswa",
       href: "/dashboard/mahasiswa",
       description: "Roadmap dan status proses RPL.",
-      tone: "primary"
+      tone: "primary",
+      icon: "🏠"
     },
     {
-      label: "Keuangan",
+      label: "Keuangan Mahasiswa",
       href: "/dashboard/mahasiswa/keuangan",
       description: "Tagihan dan bukti pembayaran.",
-      tone: "danger"
+      tone: "danger",
+      icon: "💰"
     },
     {
-      label: "Biodata",
+      label: "Biodata Diri Mahasiswa",
       href: "/dashboard/mahasiswa/biodata",
       description: "Data diri, orang tua, dan alamat.",
-      tone: "primary"
+      tone: "primary",
+      icon: "📋"
     },
     {
       label: "CV Riwayat",
       href: "/dashboard/mahasiswa/cv",
       description: "Pendidikan, pekerjaan, dan organisasi.",
-      tone: "warning"
+      tone: "warning",
+      icon: "📜"
     },
     {
       label: "Form F02",
       href: "/dashboard/mahasiswa/f02",
       description: "Pemilihan mata kuliah RPL.",
-      tone: "success"
+      tone: "success",
+      icon: "📝"
     },
     {
       label: "Test Kompetensi RPL",
       href: "/dashboard/mahasiswa/asesmen",
       description: "Ujian dan capaian pembelajaran.",
-      tone: "info"
+      tone: "info",
+      icon: "📊"
     },
     {
       label: "Form F03",
       href: "/dashboard/mahasiswa/f03",
       description: "Evaluasi diri dan portofolio.",
-      tone: "secondary"
+      tone: "secondary",
+      icon: "⚖️"
     },
     {
       label: "Pusat Download",
       href: "/dashboard/mahasiswa/download",
       description: "Unduh berkas RPL.",
-      tone: "dark"
+      tone: "dark",
+      icon: "📥"
     }
   ]
 };
 
-export function getMenuIcon(label: string) {
+export function getMenuIcon(label: string, icon?: string) {
+  if (icon) return icon;
   const l = label.toLowerCase();
-  if (l.includes("mahasiswa") || l.includes("pendaftar")) return "👨‍🎓";
-  if (l.includes("akademik") || l.includes("kurikulum") || l.includes("matkul") || l.includes("klaster")) return "🎓";
-  if (l.includes("kuitansi")) return "🧾";
-  if (l.includes("laporan") || l.includes("ekspor")) return "📑";
-  if (l.includes("tarif") || l.includes("rekening")) return "⚙️";
+  if (l.includes("dashboard") || l.includes("command center") || l.includes("panel kendali") || l.includes("beranda")) return "🏠";
+  if (l.includes("biodata") || l.includes("identitas") || l.includes("profil")) return "📋";
   if (l.includes("keuangan") || l.includes("dana") || l.includes("bayar") || l.includes("validasi") || l.includes("rekap")) return "💰";
-  if (l.includes("download") || l.includes("unduh")) return "⬇️";
-  if (l.includes("asesmen") || l.includes("nilai") || l.includes("evaluasi") || l.includes("riwayat")) return "📊";
-  if (l.includes("penilai") || l.includes("asesor")) return "⚖️";
-  if (l.includes("lms") || l.includes("test") || l.includes("matrikulasi")) return "💻";
-  if (l.includes("dokumen") || l.includes("sk") || l.includes("f02") || l.includes("f03") || l.includes("cv") || l.includes("biodata")) return "📄";
+  if (l.includes("kuitansi") || l.includes("tanda terima")) return "🧾";
+  if (l.includes("laporan") || l.includes("ekspor")) return "📑";
+  if (l.includes("tarif") || l.includes("rekening") || l.includes("pengaturan")) return "⚙️";
+  if (l.includes("cv") || l.includes("riwayat")) return "📜";
+  if (l.includes("f02") || l.includes("aplikasi")) return "📝";
+  if (l.includes("f03") || l.includes("rekognisi")) return "⚖️";
+  if (l.includes("asesmen") || l.includes("nilai") || l.includes("evaluasi") || l.includes("test")) return "📊";
+  if (l.includes("download") || l.includes("unduh")) return "📥";
+  if (l.includes("penilai") || l.includes("asesor")) return "👨‍🏫";
+  if (l.includes("akademik") || l.includes("kurikulum") || l.includes("matkul") || l.includes("klaster")) return "🎓";
+  if (l.includes("lms") || l.includes("matrikulasi")) return "💻";
   if (l.includes("periode")) return "📅";
   if (l.includes("akun") || l.includes("user")) return "👤";
-  if (l.includes("dashboard") || l.includes("command center") || l.includes("panel")) return "🏠";
+  if (l.includes("mahasiswa") || l.includes("pendaftar")) return "👨‍🎓";
   return "📌";
 }

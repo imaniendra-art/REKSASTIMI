@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { DocumentPreviewBar } from "@/components/document/DocumentPreviewBar";
 
 export default function F03CetakClient({ data }: { data: any }) {
   const { student, klaster, attempt, matkuls, existingF03 } = data;
@@ -11,12 +12,13 @@ export default function F03CetakClient({ data }: { data: any }) {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: printCss }} />
-      <div className="print-controls no-print">
-        <button type="button" className="btn-print-action btn-primary" dangerouslySetInnerHTML={{ __html: `<span onclick="window.print()">Cetak Dokumen</span>` }} />
-        <Link href={`/dashboard/mahasiswa/f03/${klaster._id}`} className="btn-print-action btn-secondary">
-          Tutup
-        </Link>
-      </div>
+      <DocumentPreviewBar
+        code="F-03"
+        title={`Evaluasi Diri Portofolio • ${klaster?.namaKlaster || "Klaster"}`}
+        studentName={student?.namaLengkap}
+        registrationNumber={student?.nim}
+        backHref="/dashboard/mahasiswa/download"
+      />
 
       <div className="document-container">
         {/* Cover Page */}
@@ -332,19 +334,21 @@ export default function F03CetakClient({ data }: { data: any }) {
 
 const printCss = `
 :root {
-  --blue-header: #e0f2fe;
-  --blue-dark: #0369a1;
+  --blue-header: #f0fdfa;
+  --blue-dark: #0f766e;
   --slate-border: #e2e8f0;
   --ghost-white: #f8fafc;
 }
 
-html, body {
+html, body, body:not(.dark), .dark body, [data-mode="dark"] body {
   margin: 0 !important;
   padding: 0 !important;
-  background-color: #0369a1;
+  background: #334155 !important;
+  background-color: #334155 !important;
+  background-image: none !important;
   min-height: 100vh;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #334155;
+  color: #0f172a;
   line-height: 1.5;
   font-size: 10.5pt;
   display: flex;
@@ -357,13 +361,15 @@ html, body {
 }
 
 .document-container {
-  background: white;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
   width: 100%;
   max-width: 210mm;
   min-height: 297mm;
-  margin: 40px auto;
+  margin: 28px auto 48px auto !important;
   padding: 0.75in;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 4px;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -573,20 +579,24 @@ html, body {
 .btn-secondary { background: #64748b !important; color: white !important; }
 
 @media print {
-  body { background: white !important; }
+  html, body, body:not(.dark), .dark body, [data-mode="dark"] body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
   .document-container {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
     box-shadow: none !important;
     width: 100% !important;
+    max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
+    border-radius: 0 !important;
   }
-  .no-print { display: none !important; }
-  
-  .table-matkul th {
-    background-color: #f2f2f2 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+  .no-print, .print-controls { display: none !important; }
 }
 `;;

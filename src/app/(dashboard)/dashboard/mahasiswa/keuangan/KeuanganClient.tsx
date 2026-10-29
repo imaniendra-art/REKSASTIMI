@@ -25,6 +25,16 @@ type KeuanganClientProps = {
   settings?: FinanceSettingsData;
 };
 
+const getCleanKeterangan = (jenis: string, ket?: string) => {
+  if (!ket || ket.trim() === '' || ket === '-') return null;
+  const k = ket.trim();
+  const lowerK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const lowerJ = jenis.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (lowerK.includes(lowerJ) || lowerJ.includes(lowerK)) return null;
+  if (lowerK.includes('pembayaranpendaftaran') || lowerK.includes('biayapendaftaran')) return null;
+  return k;
+};
+
 function StatusBadge({ status }: { status: PaymentHistory["statusVerifikasi"] }) {
   const style =
     status === "Diterima"
@@ -34,7 +44,7 @@ function StatusBadge({ status }: { status: PaymentHistory["statusVerifikasi"] })
         : { background: "var(--md-warning-container)", color: "var(--md-warning)", border: "1px solid rgba(245, 158, 11, 0.3)" };
 
   return (
-    <span style={{ ...style, display: "inline-flex", alignItems: "center", gap: 4, borderRadius: 999, padding: "5px 12px", fontSize: 11, fontWeight: 800 }}>
+    <span style={{ ...style, display: "inline-flex", alignItems: "center", gap: 4, borderRadius: 999, padding: "3px 9px", fontSize: 10.5, fontWeight: 800 }}>
       <span>{status === "Diterima" ? "✓" : status === "Ditolak" ? "✕" : "⏳"}</span>
       <span>{status}</span>
     </span>
@@ -192,142 +202,43 @@ export default function KeuanganClient({
         {/* ── Kolom Kiri (~65%): Form Pembayaran Pendaftaran / Lanjutan ── */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-4">
           
-          {/* Peringatan Status Gated Funnel Sebelum Pendaftaran Diterima */}
-          {!isRegistrationAccepted && (
+          <div className="md-card" style={{ overflow: "hidden" }}>
             <div
-              className="md-card"
               style={{
-                borderRadius: 16,
-                padding: "18px 20px",
-                background: "var(--md-surface-1)",
-                border: "1px solid var(--md-outline-variant)",
-                borderLeft: pendingRegistrationPayment
-                  ? "5px solid var(--md-warning)"
-                  : rejectedRegistrationPayment
-                  ? "5px solid var(--md-error)"
-                  : "5px solid var(--md-primary)",
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 14,
-              }}
-            >
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 12,
-                  background: pendingRegistrationPayment
-                    ? "var(--md-warning-container)"
-                    : rejectedRegistrationPayment
-                    ? "var(--md-error-container)"
-                    : "var(--md-primary-container)",
-                  color: pendingRegistrationPayment
-                    ? "var(--md-warning)"
-                    : rejectedRegistrationPayment
-                    ? "var(--md-error)"
-                    : "var(--md-primary)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 20,
-                  fontWeight: 900,
-                  flexShrink: 0,
-                }}
-              >
-                {pendingRegistrationPayment ? "⏳" : rejectedRegistrationPayment ? "⚠️" : "🔒"}
-              </div>
-              <div style={{ flex: 1 }}>
-                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 900, color: "var(--md-on-surface)" }}>
-                  {pendingRegistrationPayment
-                    ? "Pembayaran Pendaftaran Sedang Diverifikasi"
-                    : rejectedRegistrationPayment
-                    ? "Pembayaran Pendaftaran Ditolak"
-                    : "Langkah Wajib: Selesaikan Pembayaran Pendaftaran"}
-                </h4>
-                <p style={{ margin: "5px 0 0", fontSize: 12.5, lineHeight: 1.5, color: "var(--md-on-surface-variant)" }}>
-                  {pendingRegistrationPayment
-                    ? "Bukti transfer dan 4 berkas pendaftaran Anda telah diterima sistem dan sedang dalam antrean verifikasi Tim Keuangan (Pak Riswan). Seluruh menu akademik akan otomatis terbuka setelah diverifikasi."
-                    : rejectedRegistrationPayment
-                    ? `Alasan penolakan: ${rejectedRegistrationPayment.catatanAdmin || "Bukti bayar tidak sesuai / tidak terbaca."}. Silakan perbaiki dan kirim ulang bukti bayar serta berkas legalitas di bawah ini.`
-                    : "Seluruh menu akademik di sidebar (Biodata, CV, Form F02, Asesmen Mandiri, Form F03, dan Pusat Download) terkunci. Silakan transfer biaya registrasi Rp 250.000 ke rekening resmi BRI di samping, lalu unggah bukti transfer dan 4 berkas legalitas pendaftar di bawah ini."}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {isRegistrationAccepted && (
-            <div
-              className="md-card"
-              style={{
-                borderRadius: 16,
                 padding: "16px 20px",
-                background: "var(--md-surface-1)",
-                border: "1px solid var(--md-outline-variant)",
-                borderLeft: "5px solid var(--md-success)",
+                borderBottom: "1px solid var(--md-outline-variant)",
+                background: "var(--md-surface-2)",
                 display: "flex",
                 alignItems: "center",
-                gap: 14,
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 8,
               }}
             >
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 12,
-                  background: "var(--md-success-container)",
-                  color: "var(--md-success)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 20,
-                  fontWeight: 900,
-                  flexShrink: 0,
-                }}
-              >
-                ✓
-              </div>
-              <div style={{ flex: 1 }}>
-                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 900, color: "var(--md-on-surface)" }}>
-                  Pembayaran Pendaftaran RPL Terverifikasi
-                </h4>
-                <p style={{ margin: "3px 0 0", fontSize: 12, color: "var(--md-on-surface-variant)", lineHeight: 1.5 }}>
-                  Seluruh akses akademik Anda telah aktif. Form di bawah ini dapat digunakan jika ada tagihan administrasi lanjutan.
+              <div>
+                <p
+                  style={{
+                    color: "var(--md-primary)",
+                    fontSize: 10,
+                    fontWeight: 900,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    margin: 0,
+                  }}
+                >
+                  {!isRegistrationAccepted ? "Form Pendaftaran" : "Form Transaksi"}
                 </p>
+                <h2
+                  style={{
+                    margin: "2px 0 0",
+                    color: "var(--md-on-surface)",
+                    fontSize: 16.5,
+                    fontWeight: 900,
+                  }}
+                >
+                  {!isRegistrationAccepted ? "Konfirmasi Pendaftaran & Berkas" : "Konfirmasi Pembayaran"}
+                </h2>
               </div>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 800,
-                  padding: "4px 12px",
-                  borderRadius: 999,
-                  background: "var(--md-success-container)",
-                  color: "var(--md-success)",
-                  border: "1px solid rgba(16, 185, 129, 0.25)",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 5,
-                  flexShrink: 0,
-                }}
-              >
-                <span>✓</span>
-                <span>Aktif</span>
-              </span>
-            </div>
-          )}
-
-          <div className="md-card" style={{ overflow: "hidden" }}>
-            <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--md-outline-variant)", background: "var(--md-surface-2)" }}>
-              <p style={{ color: "var(--md-primary)", fontSize: 10.5, fontWeight: 900, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-                {!isRegistrationAccepted ? "Formulir Pendaftaran Khusus" : "Formulir Transaksi Lanjutan"}
-              </p>
-              <h2 style={{ marginTop: 4, color: "var(--md-on-surface)", fontSize: 18, fontWeight: 900 }}>
-                {!isRegistrationAccepted ? "Konfirmasi Bayar Pendaftaran & Upload 4 Berkas Legalitas" : "Konfirmasi Pembayaran Transaksi"}
-              </h2>
-              <p style={{ marginTop: 4, color: "var(--md-on-surface-variant)", fontSize: 12.5, fontWeight: 500, lineHeight: 1.5 }}>
-                {!isRegistrationAccepted
-                  ? "Kirim bukti transfer biaya registrasi Rp 250.000 beserta scan KTP, Kartu Keluarga, Akta Kelahiran, dan Ijazah SMA/Sederajat (Foto otomatis di-resize & nama distandarisasi)."
-                  : "Unggah bukti pembayaran bank untuk jenis transaksi administrasi yang Anda pilih."}
-              </p>
             </div>
 
             <div style={{ padding: "22px 24px" }}>
@@ -550,10 +461,10 @@ export default function KeuanganClient({
                     <div style={{ marginBottom: 14 }}>
                       <p style={{ color: "var(--md-primary)", fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", display: "flex", alignItems: "center", gap: 6, margin: 0 }}>
                         <span>📋</span>
-                        <span>4 Berkas Legalitas Wajib Calon Mahasiswa (Auto-Resize & Penamaan Otomatis)</span>
+                        <span>4 Berkas Legalitas Calon Mahasiswa</span>
                       </p>
                       <p style={{ color: "var(--md-on-surface-variant)", fontSize: 11.5, marginTop: 4, lineHeight: 1.5 }}>
-                        Foto dokumen besar otomatis di-resize maksimal 1600px dan disimpan dengan format: <code>ktp_nama</code>, <code>kk_nama</code>, <code>akta_nama</code>, <code>ijazah_nama</code>.
+                        Format berkas: JPG, PNG, atau PDF (maksimal 2MB).
                       </p>
                     </div>
 
@@ -571,9 +482,7 @@ export default function KeuanganClient({
                           onChange={(e) => setFileKtp(e.currentTarget.files?.[0] || null)}
                           style={{ ...fieldStyle, minHeight: 36, padding: "6px 10px", fontSize: 11 }}
                         />
-                        <span style={{ fontSize: 9.5, color: "var(--md-on-surface-variant)", display: "block", marginTop: 4 }}>
-                          Simpan sebagai: <strong>ktp_nama</strong>
-                        </span>
+                        
                       </div>
 
                       {/* Foto KK */}
@@ -589,9 +498,7 @@ export default function KeuanganClient({
                           onChange={(e) => setFileKk(e.currentTarget.files?.[0] || null)}
                           style={{ ...fieldStyle, minHeight: 36, padding: "6px 10px", fontSize: 11 }}
                         />
-                        <span style={{ fontSize: 9.5, color: "var(--md-on-surface-variant)", display: "block", marginTop: 4 }}>
-                          Simpan sebagai: <strong>kk_nama</strong>
-                        </span>
+                        
                       </div>
 
                       {/* Foto Akta Kelahiran */}
@@ -607,9 +514,7 @@ export default function KeuanganClient({
                           onChange={(e) => setFileAkta(e.currentTarget.files?.[0] || null)}
                           style={{ ...fieldStyle, minHeight: 36, padding: "6px 10px", fontSize: 11 }}
                         />
-                        <span style={{ fontSize: 9.5, color: "var(--md-on-surface-variant)", display: "block", marginTop: 4 }}>
-                          Simpan sebagai: <strong>akta_nama</strong>
-                        </span>
+                        
                       </div>
 
                       {/* Foto Ijazah SMA */}
@@ -625,9 +530,7 @@ export default function KeuanganClient({
                           onChange={(e) => setFileIjazah(e.currentTarget.files?.[0] || null)}
                           style={{ ...fieldStyle, minHeight: 36, padding: "6px 10px", fontSize: 11 }}
                         />
-                        <span style={{ fontSize: 9.5, color: "var(--md-on-surface-variant)", display: "block", marginTop: 4 }}>
-                          Simpan sebagai: <strong>ijazah_nama</strong>
-                        </span>
+                        
                       </div>
                     </div>
                   </div>
@@ -743,31 +646,6 @@ export default function KeuanganClient({
             </button>
           </div>
 
-          {/* 2. Kartu Panduan Alur Verifikasi */}
-          <div className="md-card" style={{ padding: "18px 20px" }}>
-            <h3 style={{ margin: "0 0 12px", fontSize: 13.5, fontWeight: 900, color: "var(--md-on-surface)", display: "flex", alignItems: "center", gap: 6 }}>
-              <span>ℹ️</span>
-              <span>Alur Verifikasi Pendaftaran</span>
-            </h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {[
-                { step: "1", title: "Transfer Rp 250.000 ke BRI", desc: "Pastikan transfer ke nomor rekening resmi BRI STIMI di atas." },
-                { step: "2", title: "Unggah Bukti & 4 Berkas", desc: "Foto otomatis di-resize tajam & dinamai pendaftaran_nama, ktp_nama, dst." },
-                { step: "3", title: "Verifikasi Bagian Keuangan", desc: "Admin memvalidasi transaksi dalam 1x24 jam kerja untuk membuka akses akademik." },
-              ].map((item) => (
-                <div key={item.step} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "var(--md-primary-container)", color: "var(--md-primary)", fontSize: 10.5, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                    {item.step}
-                  </div>
-                  <div>
-                    <p style={{ margin: 0, fontSize: 12, fontWeight: 800, color: "var(--md-on-surface)" }}>{item.title}</p>
-                    <p style={{ margin: "1px 0 0", fontSize: 11, color: "var(--md-on-surface-variant)", lineHeight: 1.4 }}>{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* 3. Kartu Kontak WhatsApp Helpdesk Keuangan Riswan */}
           <div
             className="md-card"
@@ -804,7 +682,7 @@ export default function KeuanganClient({
               </div>
             </div>
             <p style={{ margin: "0 0 12px", fontSize: 11.5, color: "var(--md-on-surface-variant)", lineHeight: 1.45 }}>
-              Memiliki kendala transfer atau membutuhkan konfirmasi segera? Hubungi admin keuangan via WhatsApp.
+              Hubungi admin keuangan jika membutuhkan bantuan transaksi.
             </p>
             <a
               href="https://wa.me/6285174489071?text=Halo%20Pak%20Riswan%20(Keuangan%20STIMI),%20saya%20calon%20mahasiswa%20RPL%20ingin%20konfirmasi%20pembayaran%20pendaftaran."
@@ -825,7 +703,7 @@ export default function KeuanganClient({
                 boxShadow: "0 2px 10px rgba(37, 211, 102, 0.25)",
               }}
             >
-              <span>Chat WhatsApp Pak Riswan</span>
+              <span>Chat WhatsApp Admin Keuangan</span>
               <span>↗</span>
             </a>
           </div>
@@ -865,70 +743,91 @@ export default function KeuanganClient({
           </div>
         ) : (
           <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", minWidth: 680, borderCollapse: "collapse", textAlign: "left" }}>
+            <table style={{ width: "100%", minWidth: 600, borderCollapse: "collapse", textAlign: "left" }}>
               <thead>
                 <tr style={{ background: "var(--md-surface-2)", borderBottom: "1px solid var(--md-outline-variant)" }}>
-                  {["Tanggal", "Jenis Pembayaran & Keterangan", "Nominal", "Bukti Resi", "Status Validasi"].map((heading) => (
-                    <th key={heading} style={{ padding: "12px 18px", color: "var(--md-on-surface-variant)", fontSize: 10.5, fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                  {["Tanggal", "Jenis Transaksi", "Nominal", "Bukti Resi", "Status"].map((heading) => (
+                    <th key={heading} style={{ padding: "9px 14px", color: "var(--md-on-surface-variant)", fontSize: 10.5, fontWeight: 900, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                       {heading}
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {histori.map((h) => (
-                  <tr key={h._id} style={{ borderBottom: "1px solid var(--md-outline-variant)" }}>
-                    <td style={{ padding: "14px 18px", color: "var(--md-on-surface-variant)", fontSize: 12, fontWeight: 700, whiteSpace: "nowrap" }}>
-                      {new Date(h.tanggalBayar).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </td>
-                    <td style={{ padding: "14px 18px" }}>
-                      <div style={{ color: "var(--md-primary)", fontSize: 12.5, fontWeight: 900 }}>{h.jenisPembayaran}</div>
-                      <div style={{ marginTop: 2, color: "var(--md-on-surface-variant)", fontSize: 11, fontWeight: 600 }}>{h.keterangan || "-"}</div>
-                      {h.statusVerifikasi === "Ditolak" && h.catatanAdmin && (
-                        <div style={{ marginTop: 8, borderRadius: 10, border: "1px solid #fecaca", background: "var(--md-error-container)", padding: "6px 10px" }}>
-                          <span style={{ color: "var(--md-error)", fontSize: 10, fontWeight: 800 }}>Alasan Penolakan: </span>
-                          <span style={{ color: "var(--md-error)", fontSize: 11 }}>{h.catatanAdmin}</span>
+                {histori.map((h) => {
+                  const cleanKet = getCleanKeterangan(h.jenisPembayaran, h.keterangan);
+                  return (
+                    <tr key={h._id} style={{ borderBottom: "1px solid var(--md-outline-variant)" }}>
+                      <td style={{ padding: "8px 14px", color: "var(--md-on-surface-variant)", fontSize: 11.5, fontWeight: 700, whiteSpace: "nowrap" }}>
+                        {new Date(h.tanggalBayar).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td style={{ padding: "8px 14px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap" }}>
+                          <span style={{ color: "var(--md-on-surface)", fontSize: 12, fontWeight: 800 }}>
+                            {h.jenisPembayaran}
+                          </span>
+                          {cleanKet && (
+                            <span style={{ fontSize: 11, color: "var(--md-on-surface-variant)", fontWeight: 600 }}>
+                              ({cleanKet})
+                            </span>
+                          )}
+                          {h.statusVerifikasi === "Ditolak" && h.catatanAdmin && (
+                            <span
+                              style={{
+                                fontSize: 10,
+                                fontWeight: 700,
+                                color: "var(--md-error)",
+                                background: "var(--md-error-container)",
+                                padding: "1px 6px",
+                                borderRadius: 4,
+                                border: "1px solid rgba(239, 68, 68, 0.25)",
+                              }}
+                            >
+                              Revisi: {h.catatanAdmin}
+                            </span>
+                          )}
                         </div>
-                      )}
-                    </td>
-                    <td style={{ padding: "14px 18px", color: "var(--md-on-surface)", fontSize: 13, fontWeight: 900, whiteSpace: "nowrap" }}>
-                      Rp {Number(h.nominal || 0).toLocaleString("id-ID")}
-                    </td>
-                    <td style={{ padding: "14px 18px", whiteSpace: "nowrap" }}>
-                      {h.buktiBayar ? (
-                        <a
-                          href={h.buktiBayar}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 4,
-                            fontSize: 11,
-                            fontWeight: 800,
-                            color: "var(--md-primary)",
-                            textDecoration: "none",
-                            padding: "4px 10px",
-                            borderRadius: 6,
-                            background: "var(--md-primary-container)",
-                          }}
-                        >
-                          <span>Lihat File</span>
-                          <span>↗</span>
-                        </a>
-                      ) : (
-                        <span style={{ fontSize: 11, color: "var(--md-on-surface-variant)" }}>-</span>
-                      )}
-                    </td>
-                    <td style={{ padding: "14px 18px", whiteSpace: "nowrap" }}>
-                      <StatusBadge status={h.statusVerifikasi} />
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td style={{ padding: "8px 14px", color: "var(--md-on-surface)", fontSize: 12, fontWeight: 900, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+                        Rp {Number(h.nominal || 0).toLocaleString("id-ID")}
+                      </td>
+                      <td style={{ padding: "8px 14px", whiteSpace: "nowrap" }}>
+                        {h.buktiBayar ? (
+                          <a
+                            href={h.buktiBayar}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 3,
+                              fontSize: 10.5,
+                              fontWeight: 800,
+                              color: "var(--md-primary)",
+                              textDecoration: "none",
+                              padding: "2px 8px",
+                              borderRadius: 5,
+                              background: "var(--md-primary-container)",
+                              border: "1px solid var(--md-outline-variant)",
+                            }}
+                          >
+                            <span>Lihat File</span>
+                            <span>↗</span>
+                          </a>
+                        ) : (
+                          <span style={{ fontSize: 11, color: "var(--md-on-surface-variant)" }}>-</span>
+                        )}
+                      </td>
+                      <td style={{ padding: "8px 14px", whiteSpace: "nowrap" }}>
+                        <StatusBadge status={h.statusVerifikasi} />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

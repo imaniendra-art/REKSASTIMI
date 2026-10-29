@@ -310,7 +310,6 @@ export function KeuanganDashboardClient({
               gap: 16,
               background: "var(--md-surface-1)",
               border: "1px solid var(--md-outline-variant)",
-              borderLeft: "5px solid var(--md-success)",
             }}
           >
             <div

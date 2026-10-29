@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
+import { DocumentPreviewBar } from "@/components/document/DocumentPreviewBar";
 
 export function SertifikatClient({ klasterId }: { klasterId: string }) {
   const router = useRouter();
@@ -71,7 +72,9 @@ export function SertifikatClient({ klasterId }: { klasterId: string }) {
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Great+Vibes&family=Inter:wght@400;500;600;700&display=swap');
         
         .cert-body {
-          background: #e2e8f0;
+          background: #334155 !important;
+          background-color: #334155 !important;
+          background-image: none !important;
           min-height: 100vh;
           padding: 40px 20px;
           display: flex;
@@ -122,9 +125,10 @@ export function SertifikatClient({ klasterId }: { klasterId: string }) {
         .cert-page {
           width: 297mm;
           height: 210mm;
-          background: #fdfbf7;
+          background: #fdfbf7 !important;
           position: relative;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35) !important;
+          border-radius: 4px;
           padding: 8mm;
           box-sizing: border-box;
           overflow: hidden;

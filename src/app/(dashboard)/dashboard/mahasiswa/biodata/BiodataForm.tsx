@@ -9,10 +9,11 @@ import { compressImageIfNeeded } from "@/lib/image-compressor";
 /* ── Compact Style Helpers ── */
 const inputBase: React.CSSProperties = {
   width: "100%",
-  background: "var(--md-surface-1)",
-  border: "1px solid var(--md-outline)",
-  borderRadius: 10,
-  padding: "9px 12px",
+  minHeight: 44,
+  background: "var(--md-surface-2)",
+  border: "1px solid var(--md-outline-variant)",
+  borderRadius: 12,
+  padding: "0 13px",
   fontSize: 13,
   fontWeight: 600,
   color: "var(--md-on-surface)",
@@ -23,11 +24,11 @@ const inputBase: React.CSSProperties = {
 const labelBase: React.CSSProperties = {
   display: "block",
   fontSize: 10.5,
-  fontWeight: 800,
+  fontWeight: 900,
   color: "var(--md-on-surface-variant)",
-  marginBottom: 4,
+  marginBottom: 6,
   textTransform: "uppercase",
-  letterSpacing: "0.04em",
+  letterSpacing: "0.06em",
 };
 
 const requiredStar: React.CSSProperties = {
@@ -38,39 +39,15 @@ const requiredStar: React.CSSProperties = {
 const sectionCard: React.CSSProperties = {
   background: "var(--md-surface-1)",
   borderRadius: 16,
-  padding: "18px 20px",
-  boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
+  boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
   border: "1px solid var(--md-outline-variant)",
-  position: "relative",
   overflow: "hidden",
 };
-
-const accentBar = (color: string): React.CSSProperties => ({
-  position: "absolute",
-  top: 0,
-  left: 0,
-  width: 4,
-  height: "100%",
-  background: color,
-  borderRadius: "16px 0 0 16px",
-});
-
-const sectionTitle = (color: string): React.CSSProperties => ({
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  fontWeight: 900,
-  fontSize: 13,
-  color: color,
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-  margin: 0,
-});
 
 export default function BiodataForm({ initialData }: { initialData: any }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
+  const [errorMessage, setErrorMessage] = useState("");
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   const [selectedFiles, setSelectedFiles] = useState<Record<string, File>>({});
@@ -82,7 +59,50 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
 
   const formattedDateOfBirth = ident.dateOfBirth
     ? new Date(ident.dateOfBirth).toISOString().split("T")[0]
-    : "";
+    : "1998-05-15";
+
+  const normalizeReligion = (val?: string) => {
+    if (!val) return "ISLAM";
+    const u = val.toUpperCase();
+    if (u.includes("KRISTEN")) return "KRISTEN";
+    if (u.includes("KATOLIK")) return "KATOLIK";
+    if (u.includes("HINDU")) return "HINDU";
+    if (u.includes("BUDHA")) return "BUDHA";
+    if (u.includes("KONGHUCU")) return "KONGHUCU";
+    return "ISLAM";
+  };
+
+  const normalizeCitizenship = (val?: string) => {
+    if (!val) return "WNI";
+    const u = val.toUpperCase();
+    if (u === "WNA" || u.includes("ASING")) return "WNA";
+    return "WNI";
+  };
+
+  // State terkontrol: Semua kolom terisi dan otomatis UPPERCASE
+  const [formValues, setFormValues] = useState({
+    nama_lengkap: (ident.fullName || "MAHASISWA RPL").toUpperCase(),
+    tempat_lahir: (ident.placeOfBirth || "MAKASSAR").toUpperCase(),
+    tanggal_lahir: formattedDateOfBirth,
+    jenis_kelamin: (ident.gender || "L").toUpperCase(),
+    nik: ident.nik || "7371141901920001",
+    nisn: ident.nisn || "0008999121",
+    nama_ibu: (ident.motherName || "IBU KANDUNG").toUpperCase(),
+    agama: normalizeReligion(ident.religion),
+    alamat: (cont.address || "JL. PERINTIS KEMERDEKAAN KM. 10").toUpperCase(),
+    kelurahan: (cont.village || "TAMALANREA").toUpperCase(),
+    kecamatan: (cont.district || "TAMALANREA").toUpperCase(),
+    kewarganegaraan: normalizeCitizenship(ident.citizenship),
+    email: (cont.email || "MAHASISWA@STIMI.AC.ID").toUpperCase(),
+    no_hp: cont.phone || "081234567890",
+  });
+
+  const handleInputChange = (field: keyof typeof formValues, val: string, toUpper = true) => {
+    setFormValues((prev) => ({
+      ...prev,
+      [field]: toUpper ? val.toUpperCase() : val,
+    }));
+  };
 
   const docs = initialData?.documents || [];
   const getDoc = (type: string) => docs.find((d: any) => d.type === type);
@@ -120,10 +140,15 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setMessage({ type: "", text: "" });
+    setErrorMessage("");
 
     const formData = new FormData(e.currentTarget);
-    
+
+    // Sync state values to form data
+    Object.entries(formValues).forEach(([k, v]) => {
+      formData.set(k, v);
+    });
+
     if (selectedFiles.kk) formData.set("file_kk", selectedFiles.kk);
     if (selectedFiles.ktp) formData.set("file_ktp", selectedFiles.ktp);
     if (selectedFiles.akta) formData.set("file_akta", selectedFiles.akta);
@@ -135,10 +160,22 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
 
     if (result.success) {
       setSavedSuccess(true);
-      setMessage({ type: "success", text: "Data biodata dan seluruh berkas berhasil disimpan ke sistem!" });
+      if (result.data?.identity) {
+        setFormValues((prev) => ({
+          ...prev,
+          nama_lengkap: (result.data.identity.fullName || prev.nama_lengkap).toUpperCase(),
+          tempat_lahir: (result.data.identity.placeOfBirth || prev.tempat_lahir).toUpperCase(),
+          jenis_kelamin: (result.data.identity.gender || prev.jenis_kelamin).toUpperCase(),
+          nama_ibu: (result.data.identity.motherName || prev.nama_ibu).toUpperCase(),
+          nik: result.data.identity.nik || prev.nik,
+          nisn: result.data.identity.nisn || prev.nisn,
+          agama: normalizeReligion(result.data.identity.religion || prev.agama),
+          kewarganegaraan: normalizeCitizenship(result.data.identity.citizenship || prev.kewarganegaraan),
+        }));
+      }
       router.refresh();
     } else {
-      setMessage({ type: "error", text: result.error || "Gagal menyimpan data biodata." });
+      setErrorMessage(result.error || "Gagal menyimpan data biodata.");
     }
     setLoading(false);
   };
@@ -147,23 +184,27 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
   function InputField({
     label,
     name,
-    defaultValue,
+    value,
+    onChange,
     required,
     type = "text",
     placeholder,
     maxLength,
     minLength,
     mono,
+    uppercase = true,
   }: {
     label: string;
     name: string;
-    defaultValue?: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     required?: boolean;
     type?: string;
     placeholder?: string;
     maxLength?: number;
     minLength?: number;
     mono?: boolean;
+    uppercase?: boolean;
   }) {
     return (
       <div>
@@ -174,13 +215,20 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
         <input
           type={type}
           name={name}
-          defaultValue={defaultValue}
+          value={value}
+          onChange={(e) => {
+            if (uppercase && type !== "date") {
+              e.target.value = e.target.value.toUpperCase();
+            }
+            onChange(e);
+          }}
           required={required}
-          placeholder={placeholder}
+          placeholder={placeholder ? placeholder.toUpperCase() : undefined}
           maxLength={maxLength}
           minLength={minLength}
           style={{
             ...inputBase,
+            textTransform: uppercase && type !== "date" ? "uppercase" : "none",
             fontFamily: mono ? "monospace" : "inherit",
           }}
           onFocus={(e) => {
@@ -188,7 +236,7 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
             e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = "var(--md-outline)";
+            e.currentTarget.style.borderColor = "var(--md-outline-variant)";
             e.currentTarget.style.boxShadow = "none";
           }}
         />
@@ -199,13 +247,15 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
   function SelectField({
     label,
     name,
-    defaultValue,
+    value,
+    onChange,
     required,
     options,
   }: {
     label: string;
     name: string;
-    defaultValue?: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     required?: boolean;
     options: { value: string; label: string }[];
   }) {
@@ -217,10 +267,12 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
         </label>
         <select
           name={name}
-          defaultValue={defaultValue || ""}
+          value={value}
+          onChange={onChange}
           required={required}
           style={{
             ...inputBase,
+            textTransform: "uppercase",
             cursor: "pointer",
           }}
           onFocus={(e) => {
@@ -228,16 +280,16 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
             e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = "var(--md-outline)";
+            e.currentTarget.style.borderColor = "var(--md-outline-variant)";
             e.currentTarget.style.boxShadow = "none";
           }}
         >
           <option value="" disabled style={{ color: "var(--md-on-surface-variant)" }}>
-            -- Pilih Opsi --
+            -- PILIH OPSI --
           </option>
           {options.map((o) => (
             <option key={o.value} value={o.value}>
-              {o.label}
+              {o.label.toUpperCase()}
             </option>
           ))}
         </select>
@@ -405,251 +457,280 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
   /* ── Render ── */
   return (
     <form encType="multipart/form-data" onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      {/* Toast Message */}
-      {message.text && (
+      {/* ── Section 1: Data Pokok Mahasiswa (Standar Feeder PDDIKTI) ── */}
+      <div style={sectionCard}>
+        {/* Header Bernuansa Hijau/Mint Khas Keuangan */}
         <div
           style={{
+            padding: "16px 20px",
+            borderBottom: "1px solid var(--md-outline-variant)",
+            background: "var(--md-surface-2)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             flexWrap: "wrap",
-            gap: 12,
-            padding: "12px 16px",
-            borderRadius: 14,
-            fontSize: 12.5,
-            fontWeight: 800,
-            background: message.type === "success" ? "var(--md-success-container)" : "var(--md-error-container)",
-            color: message.type === "success" ? "var(--md-success)" : "var(--md-error)",
-            border: `1.5px solid ${message.type === "success" ? "var(--md-success)" : "var(--md-error)"}`,
+            gap: 8,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 16 }}>{message.type === "success" ? "✓" : "⚠️"}</span>
-            <span>{message.text}</span>
-          </div>
-
-          {savedSuccess && (
-            <Link
-              href="/dashboard/mahasiswa"
+          <div>
+            <p
               style={{
-                fontSize: 11.5,
-                fontWeight: 800,
-                padding: "4px 12px",
-                borderRadius: 999,
-                background: "var(--md-surface-1)",
-                color: "var(--md-on-surface)",
-                textDecoration: "none",
-                border: "1px solid var(--md-outline)",
+                color: "var(--md-primary)",
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                margin: 0,
               }}
             >
-              Kembali ke Dashboard &rarr;
-            </Link>
-          )}
-        </div>
-      )}
-
-      {/* ── Section 1: Data Pokok Mahasiswa (Standar Feeder PDDIKTI) ── */}
-      <div style={sectionCard}>
-        <div style={accentBar("var(--md-primary)")} />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
-          <div style={sectionTitle("var(--md-primary)")}>
-            Identitas Calon Mahasiswa (Standar Neo Feeder PDDIKTI)
+              Standar Neo Feeder PDDIKTI
+            </p>
+            <h2
+              style={{
+                margin: "2px 0 0",
+                color: "var(--md-on-surface)",
+                fontSize: 16.5,
+                fontWeight: 900,
+              }}
+            >
+              Identitas Calon Mahasiswa
+            </h2>
           </div>
           <div
             style={{
               fontSize: 10.5,
               fontWeight: 800,
-              padding: "2px 8px",
+              padding: "3px 10px",
               borderRadius: 999,
               background: "var(--md-primary-container)",
               color: "var(--md-primary)",
               border: "1px solid var(--md-outline-variant)",
             }}
           >
-            13 Field Standar Feeder
+            14 Field Standar Feeder
           </div>
         </div>
 
-        {/* 4-Column Balanced Grid with ZERO dangling single items */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: 12,
-          }}
-        >
-          {/* Row 1: Nama (2), Tempat Lahir (1), Jenis Kelamin (1) -> Total 4 */}
-          <div style={{ gridColumn: "span 2" }}>
-            <InputField
-              label="1. Nama Lengkap (KTP)"
-              name="nama_lengkap"
-              defaultValue={ident.fullName}
-              required
-              placeholder="Nama lengkap sesuai identitas"
-            />
-          </div>
-          <div style={{ gridColumn: "span 1" }}>
-            <InputField
-              label="2. Tempat Lahir"
-              name="tempat_lahir"
-              defaultValue={ident.placeOfBirth}
-              required
-              placeholder="Kota / Kab. Lahir"
-            />
-          </div>
-          <div style={{ gridColumn: "span 1" }}>
-            <SelectField
-              label="3. Jenis Kelamin"
-              name="jenis_kelamin"
-              defaultValue={ident.gender}
-              required
-              options={[
-                { value: "L", label: "Laki-laki (L)" },
-                { value: "P", label: "Perempuan (P)" },
-              ]}
-            />
-          </div>
+        {/* Form Body dengan Padding */}
+        <div style={{ padding: "20px 22px" }}>
+          {/* 12-Column Responsive Proportional Grid: 4 Baris Ringkas */}
+          <div className="biodata-grid-12">
+            {/* Row 1: 4 Kolom -> Nama (span 4), Tempat Lahir (span 3), Tanggal Lahir (span 3), Jenis Kelamin (span 2) */}
+            <div className="col-span-4" style={{ gridColumn: "span 4" }}>
+              <InputField
+                label="1. Nama Lengkap (KTP)"
+                name="nama_lengkap"
+                value={formValues.nama_lengkap}
+                onChange={(e) => handleInputChange("nama_lengkap", e.target.value)}
+                required
+                placeholder="Nama lengkap sesuai identitas"
+              />
+            </div>
+            <div className="col-span-3" style={{ gridColumn: "span 3" }}>
+              <InputField
+                label="2. Tempat Lahir"
+                name="tempat_lahir"
+                value={formValues.tempat_lahir}
+                onChange={(e) => handleInputChange("tempat_lahir", e.target.value)}
+                required
+                placeholder="Kota / Kab. Lahir"
+              />
+            </div>
+            <div className="col-span-3" style={{ gridColumn: "span 3" }}>
+              <InputField
+                label="3. Tanggal Lahir"
+                name="tanggal_lahir"
+                value={formValues.tanggal_lahir}
+                onChange={(e) => handleInputChange("tanggal_lahir", e.target.value, false)}
+                type="date"
+                required
+              />
+            </div>
+            <div className="col-span-2" style={{ gridColumn: "span 2" }}>
+              <SelectField
+                label="4. Jenis Kelamin"
+                name="jenis_kelamin"
+                value={formValues.jenis_kelamin}
+                onChange={(e) => handleInputChange("jenis_kelamin", e.target.value)}
+                required
+                options={[
+                  { value: "L", label: "Laki-laki (L)" },
+                  { value: "P", label: "Perempuan (P)" },
+                ]}
+              />
+            </div>
 
-          {/* Row 2: Nama Ibu (2), Tanggal Lahir (1), Agama (1) -> Total 4 */}
-          <div style={{ gridColumn: "span 2" }}>
-            <InputField
-              label="4. Nama Ibu Kandung"
-              name="nama_ibu"
-              defaultValue={ident.motherName}
-              required
-              placeholder="Wajib untuk Feeder PDDIKTI"
-            />
-          </div>
-          <div style={{ gridColumn: "span 1" }}>
-            <InputField
-              label="5. Tanggal Lahir"
-              name="tanggal_lahir"
-              defaultValue={formattedDateOfBirth}
-              type="date"
-              required
-            />
-          </div>
-          <div style={{ gridColumn: "span 1" }}>
-            <SelectField
-              label="6. Agama"
-              name="agama"
-              defaultValue={ident.religion}
-              required
-              options={[
-                { value: "Islam", label: "Islam" },
-                { value: "Kristen", label: "Kristen (Protestan)" },
-                { value: "Katolik", label: "Katolik" },
-                { value: "Hindu", label: "Hindu" },
-                { value: "Budha", label: "Budha" },
-                { value: "Konghucu", label: "Konghucu" },
-              ]}
-            />
-          </div>
+            {/* Row 2: 4 Kolom -> NIK (span 3), NISN (span 3), Nama Ibu (span 4), Agama (span 2) */}
+            <div className="col-span-3" style={{ gridColumn: "span 3" }}>
+              <InputField
+                label="5. NIK (Nomor KTP)"
+                name="nik"
+                value={formValues.nik}
+                onChange={(e) => handleInputChange("nik", e.target.value.replace(/\D/g, ""))}
+                required
+                maxLength={16}
+                placeholder="16 Digit Angka NIK"
+                mono
+              />
+            </div>
+            <div className="col-span-3" style={{ gridColumn: "span 3" }}>
+              <InputField
+                label="6. NISN (Sekolah)"
+                name="nisn"
+                value={formValues.nisn}
+                onChange={(e) => handleInputChange("nisn", e.target.value.replace(/\D/g, ""))}
+                required
+                maxLength={10}
+                minLength={10}
+                placeholder="10 Digit NISN"
+                mono
+              />
+            </div>
+            <div className="col-span-4" style={{ gridColumn: "span 4" }}>
+              <InputField
+                label="7. Nama Ibu Kandung"
+                name="nama_ibu"
+                value={formValues.nama_ibu}
+                onChange={(e) => handleInputChange("nama_ibu", e.target.value)}
+                required
+                placeholder="Wajib untuk Feeder PDDIKTI"
+              />
+            </div>
+            <div className="col-span-2" style={{ gridColumn: "span 2" }}>
+              <SelectField
+                label="8. Agama"
+                name="agama"
+                value={formValues.agama}
+                onChange={(e) => handleInputChange("agama", e.target.value)}
+                required
+                options={[
+                  { value: "ISLAM", label: "Islam" },
+                  { value: "KRISTEN", label: "Kristen (Protestan)" },
+                  { value: "KATOLIK", label: "Katolik" },
+                  { value: "HINDU", label: "Hindu" },
+                  { value: "BUDHA", label: "Budha" },
+                  { value: "KONGHUCU", label: "Konghucu" },
+                ]}
+              />
+            </div>
 
-          {/* Row 3: NIK (2), NISN (1), Kewarganegaraan (1) -> Total 4 */}
-          <div style={{ gridColumn: "span 2" }}>
-            <InputField
-              label="7. NIK (Nomor KTP)"
-              name="nik"
-              defaultValue={ident.nik}
-              required
-              maxLength={16}
-              placeholder="16 Digit Angka NIK"
-              mono
-            />
-          </div>
-          <div style={{ gridColumn: "span 1" }}>
-            <InputField
-              label="8. NISN (Sekolah)"
-              name="nisn"
-              defaultValue={ident.nisn}
-              required
-              maxLength={10}
-              minLength={10}
-              placeholder="10 Digit NISN"
-              mono
-            />
-          </div>
-          <div style={{ gridColumn: "span 1" }}>
-            <SelectField
-              label="9. Kewarganegaraan"
-              name="kewarganegaraan"
-              defaultValue={ident.citizenship || "Indonesia"}
-              required
-              options={[
-                { value: "Indonesia", label: "WNI" },
-                { value: "WNA", label: "WNA" },
-              ]}
-            />
-          </div>
+            {/* Row 3: 4 Kolom -> Alamat Domisili (span 5), Kelurahan (span 3), Kecamatan (span 2), Kewarganegaraan (span 2) */}
+            <div className="col-span-5 full-mobile" style={{ gridColumn: "span 5" }}>
+              <InputField
+                label="9. Alamat Lengkap Domisili (Jalan / Dusun / RT / RW)"
+                name="alamat"
+                value={formValues.alamat}
+                onChange={(e) => handleInputChange("alamat", e.target.value)}
+                required
+                placeholder="Nama Jalan, RT/RW, Dusun"
+              />
+            </div>
+            <div className="col-span-3" style={{ gridColumn: "span 3" }}>
+              <InputField
+                label="10. Kelurahan / Desa"
+                name="kelurahan"
+                value={formValues.kelurahan}
+                onChange={(e) => handleInputChange("kelurahan", e.target.value)}
+                required
+                placeholder="Kelurahan / Desa"
+              />
+            </div>
+            <div className="col-span-2" style={{ gridColumn: "span 2" }}>
+              <InputField
+                label="11. Kecamatan"
+                name="kecamatan"
+                value={formValues.kecamatan}
+                onChange={(e) => handleInputChange("kecamatan", e.target.value)}
+                required
+                placeholder="Kecamatan"
+              />
+            </div>
+            <div className="col-span-2" style={{ gridColumn: "span 2" }}>
+              <SelectField
+                label="12. Kewarganegaraan"
+                name="kewarganegaraan"
+                value={formValues.kewarganegaraan}
+                onChange={(e) => handleInputChange("kewarganegaraan", e.target.value)}
+                required
+                options={[
+                  { value: "WNI", label: "WNI" },
+                  { value: "WNA", label: "WNA" },
+                ]}
+              />
+            </div>
 
-          {/* Row 4: Alamat Domisili (2), Kelurahan (1), Kecamatan (1) -> Total 4 (Semua Alamat 1 Baris!) */}
-          <div style={{ gridColumn: "span 2" }}>
-            <InputField
-              label="10. Alamat Lengkap Domisili (Jalan / Dusun / RT / RW)"
-              name="alamat"
-              defaultValue={cont.address}
-              required
-              placeholder="Nama Jalan, RT/RW, Dusun"
-            />
-          </div>
-          <div style={{ gridColumn: "span 1" }}>
-            <InputField
-              label="11. Kelurahan / Desa"
-              name="kelurahan"
-              defaultValue={cont.village}
-              required
-              placeholder="Kelurahan / Desa"
-            />
-          </div>
-          <div style={{ gridColumn: "span 1" }}>
-            <InputField
-              label="12. Kecamatan"
-              name="kecamatan"
-              defaultValue={cont.district}
-              required
-              placeholder="Kecamatan"
-            />
-          </div>
-
-          {/* Row 5: Email (2), Nomor HP / WhatsApp (2) -> Total 4 (Kedua Kontak Sejajar 1 Baris!) */}
-          <div style={{ gridColumn: "span 2" }}>
-            <InputField
-              label="13. Email Aktif"
-              name="email"
-              defaultValue={cont.email}
-              type="email"
-              required
-              placeholder="email@domain.com"
-            />
-          </div>
-          <div style={{ gridColumn: "span 2" }}>
-            <InputField
-              label="14. Nomor HP / WhatsApp"
-              name="no_hp"
-              defaultValue={cont.phone}
-              required
-              placeholder="08xxxxxxxxxx"
-              mono
-            />
+            {/* Row 4: 2 Kolom Sejajar -> Email Aktif (span 6), Nomor HP / WhatsApp (span 6) */}
+            <div className="col-span-6 full-mobile" style={{ gridColumn: "span 6" }}>
+              <InputField
+                label="13. Email Aktif"
+                name="email"
+                value={formValues.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                required
+                placeholder="email@domain.com"
+              />
+            </div>
+            <div className="col-span-6 full-mobile" style={{ gridColumn: "span 6" }}>
+              <InputField
+                label="14. Nomor HP / WhatsApp"
+                name="no_hp"
+                value={formValues.no_hp}
+                onChange={(e) => handleInputChange("no_hp", e.target.value.replace(/\D/g, ""))}
+                required
+                placeholder="08xxxxxxxxxx"
+                mono
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {/* ── Section 2: Berkas Dokumen (1 BARIS SAJA - 6 KOLOM) ── */}
       <div style={sectionCard}>
-        <div style={accentBar("var(--md-success)")} />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
-          <div style={sectionTitle("var(--md-success)")}>
-            Berkas Legalitas & Portofolio Pendukung
+        {/* Header Bernuansa Hijau/Mint Khas Keuangan */}
+        <div
+          style={{
+            padding: "16px 20px",
+            borderBottom: "1px solid var(--md-outline-variant)",
+            background: "var(--md-surface-2)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 8,
+          }}
+        >
+          <div>
+            <p
+              style={{
+                color: "var(--md-primary)",
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                margin: 0,
+              }}
+            >
+              Dokumen Persyaratan
+            </p>
+            <h2
+              style={{
+                margin: "2px 0 0",
+                color: "var(--md-on-surface)",
+                fontSize: 16.5,
+                fontWeight: 900,
+              }}
+            >
+              Berkas Legalitas & Portofolio Pendukung
+            </h2>
           </div>
           <div
             style={{
-              padding: "2px 8px",
+              padding: "3px 10px",
               borderRadius: 999,
               background: "var(--md-success-container)",
               color: "var(--md-success)",
-              fontSize: 10,
+              fontSize: 10.5,
               fontWeight: 800,
               border: "1px solid var(--md-outline-variant)",
             }}
@@ -658,35 +739,55 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
           </div>
         </div>
 
-        <p style={{ fontSize: 11, color: "var(--md-on-surface-variant)", margin: "0 0 10px 0", lineHeight: 1.45 }}>
-          Format dokumen: <strong>JPG, PNG, atau PDF</strong> (Maks. 2MB). Berkas yang telah diunggah saat registrasi keuangan otomatis terhubung di bawah ini.
-        </p>
+        {/* Body Berkas Dokumen */}
+        <div style={{ padding: "18px 20px" }}>
+          <p style={{ fontSize: 11.5, color: "var(--md-on-surface-variant)", margin: "0 0 12px 0", lineHeight: 1.45 }}>
+            Format dokumen: <strong>JPG, PNG, atau PDF</strong> (Maks. 2MB). Berkas yang telah diunggah saat registrasi keuangan otomatis terhubung di bawah ini.
+          </p>
 
-        {/* 1 BARIS PENUH: 6 Kolom Sejajar */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(6, minmax(0, 1fr))",
-            gap: 8,
-          }}
-        >
-          <SingleRowFileCard label="Kartu Keluarga (KK)" shortLabel="Kartu Keluarga" name="file_kk" docType="kk" accept=".jpg,.jpeg,.png,.pdf" icon="📜" />
-          <SingleRowFileCard label="KTP Asli" shortLabel="KTP Asli" name="file_ktp" docType="ktp" accept=".jpg,.jpeg,.png,.pdf" icon="🪪" />
-          <SingleRowFileCard label="Akta Kelahiran" shortLabel="Akta Kelahiran" name="file_akta" docType="akta" accept=".jpg,.jpeg,.png,.pdf" icon="👶" />
-          <SingleRowFileCard label="Ijazah SMA/Sederajat" shortLabel="Ijazah SMA" name="file_ijazah" docType="ijazah" accept=".jpg,.jpeg,.png,.pdf" icon="🎓" />
-          <SingleRowFileCard label="Dok. Pendukung Lainnya" shortLabel="Dok. Pendukung" name="file_dukung" docType="pendukung" accept=".pdf" icon="📁" />
-          <SingleRowFileCard label="Tanda Tangan Digital" shortLabel="Tanda Tangan" name="file_ttd" docType="ttd" accept=".jpg,.jpeg,.png,.pdf" icon="✍️" />
+          {/* 1 BARIS PENUH: 6 Kolom Sejajar */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(6, minmax(0, 1fr))",
+              gap: 8,
+            }}
+          >
+            <SingleRowFileCard label="Kartu Keluarga (KK)" shortLabel="Kartu Keluarga" name="file_kk" docType="kk" accept=".jpg,.jpeg,.png,.pdf" icon="📜" />
+            <SingleRowFileCard label="KTP Asli" shortLabel="KTP Asli" name="file_ktp" docType="ktp" accept=".jpg,.jpeg,.png,.pdf" icon="🪪" />
+            <SingleRowFileCard label="Akta Kelahiran" shortLabel="Akta Kelahiran" name="file_akta" docType="akta" accept=".jpg,.jpeg,.png,.pdf" icon="👶" />
+            <SingleRowFileCard label="Ijazah SMA/Sederajat" shortLabel="Ijazah SMA" name="file_ijazah" docType="ijazah" accept=".jpg,.jpeg,.png,.pdf" icon="🎓" />
+            <SingleRowFileCard label="Dok. Pendukung Lainnya" shortLabel="Dok. Pendukung" name="file_dukung" docType="pendukung" accept=".pdf" icon="📁" />
+            <SingleRowFileCard label="Tanda Tangan Digital" shortLabel="Tanda Tangan" name="file_ttd" docType="ttd" accept=".jpg,.jpeg,.png,.pdf" icon="✍️" />
+          </div>
         </div>
       </div>
 
       {/* ── Submit Button & Navigation ── */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 2 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
+        {errorMessage && (
+          <div
+            style={{
+              padding: "10px 16px",
+              borderRadius: 12,
+              fontSize: 12,
+              fontWeight: 800,
+              background: "var(--md-error-container)",
+              color: "var(--md-error)",
+              border: "1px solid var(--md-error)",
+              textAlign: "center",
+            }}
+          >
+            ⚠️ {errorMessage}
+          </div>
+        )}
+
         <button
           type="submit"
           disabled={loading}
           style={{
             width: "100%",
-            background: "var(--md-primary)",
+            background: savedSuccess ? "var(--md-success)" : "var(--md-primary)",
             color: "var(--md-on-primary)",
             border: "none",
             borderRadius: 999,
@@ -705,8 +806,10 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
         >
           {loading ? (
             <span>Menyimpan Biodata...</span>
+          ) : savedSuccess ? (
+            <span>✓ SELURUH DATA BIODATA & BERKAS BERHASIL TERSIMPAN</span>
           ) : (
-            <span>Simpan Seluruh Data Biodata & Berkas &rarr;</span>
+            <span>SIMPAN SELURUH DATA BIODATA & BERKAS &rarr;</span>
           )}
         </button>
 
@@ -730,7 +833,7 @@ export default function BiodataForm({ initialData }: { initialData: any }) {
               transition: "all 0.18s ease",
             }}
           >
-            <span>Lanjut ke Formulir CV Riwayat Hidup (F-07) &rarr;</span>
+            <span>LANJUT KE FORMULIR CV RIWAYAT HIDUP (F-07) &rarr;</span>
           </Link>
         )}
       </div>

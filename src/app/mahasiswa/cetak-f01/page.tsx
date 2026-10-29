@@ -5,6 +5,7 @@ import { connectMongoDB } from "@/lib/mongodb";
 import { ApplicantProfile } from "@/models/ApplicantProfile";
 import { MataKuliah } from "@/models/MataKuliah";
 import Link from "next/link";
+import { DocumentPreviewBar } from "@/components/document/DocumentPreviewBar";
 
 export async function generateMetadata() {
   const session = await getSession();
@@ -46,12 +47,12 @@ export default async function CetakF01Page() {
   return (
     <>
       <style>{printCss}</style>
-      <div className="print-controls no-print">
-        <button type="button" className="btn-print-action btn-primary" dangerouslySetInnerHTML={{ __html: `<span onclick="window.print()">Cetak Dokumen</span>` }} />
-        <Link href="/dashboard/mahasiswa/download" className="btn-print-action btn-secondary">
-          Tutup
-        </Link>
-      </div>
+      <DocumentPreviewBar
+        code="F-01"
+        title="Formulir Petunjuk & Aplikasi RPL"
+        studentName={mhs.nama}
+        registrationNumber={mhs.noReg}
+      />
 
       <div className="document-container">
         <div className="cover-page">
@@ -244,19 +245,21 @@ function renderRows(matkul: Array<{ id: string; semester: number; kode: string; 
 
 const printCss = `
 :root {
-  --blue-header: #e0f2fe;
-  --blue-dark: #0369a1;
+  --blue-header: #f0fdfa;
+  --blue-dark: #0f766e;
   --slate-border: #e2e8f0;
   --ghost-white: #f8fafc;
 }
 
-html, body {
+html, body, body:not(.dark), .dark body, [data-mode="dark"] body {
   margin: 0 !important;
   padding: 0 !important;
-  background-color: #0369a1;
+  background: #334155 !important;
+  background-color: #334155 !important;
+  background-image: none !important;
   min-height: 100vh;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #334155;
+  color: #0f172a;
   line-height: 1.5;
   font-size: 10.5pt;
   display: flex;
@@ -269,13 +272,15 @@ html, body {
 }
 
 .document-container {
-  background: white;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
   width: 100%;
   max-width: 210mm;
   min-height: 297mm;
-  margin: 40px auto;
+  margin: 28px auto 48px auto !important;
   padding: 0.75in;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 4px;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -378,12 +383,12 @@ html, body {
 }
 
 .section-title {
-  background: linear-gradient(to right, #bae6fd, #e0f2fe) !important;
-  color: #0369a1;
+  background: linear-gradient(to right, #ccfbf1, #f0fdfa) !important;
+  color: #0f766e;
   font-weight: 900;
   padding: 10px 18px;
-  border-left: 5px solid #0369a1;
-  border-bottom: 2px solid #0369a1;
+  border-left: 5px solid #0d9488;
+  border-bottom: 2px solid #0d9488;
   font-size: 11.5pt;
   margin-top: 30px;
   margin-bottom: 15px;
@@ -435,7 +440,7 @@ html, body {
 
 .table-matkul th {
   background-color: #f0f9ff !important;
-  color: #0369a1;
+  color: #0f766e;
   text-align: center;
   font-weight: 800;
   border: 1.5px solid #334155 !important;
@@ -562,13 +567,20 @@ html, body {
 .btn-secondary { background: #64748b !important; color: white !important; }
 
 @media print {
-  body { background: white !important; }
+  html, body, body:not(.dark), .dark body, [data-mode="dark"] body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+  }
   .document-container {
+    background: #ffffff !important;
     box-shadow: none !important;
     width: 100% !important;
+    max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
+    border-radius: 0 !important;
   }
   .no-print { display: none !important; }
 }

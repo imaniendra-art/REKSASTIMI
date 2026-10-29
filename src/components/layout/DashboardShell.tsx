@@ -177,7 +177,7 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
       <div style={{ flex: 1, overflowY: "auto", padding: "12px 14px", display: "flex", flexDirection: "column", gap: 4 }}>
         {navItems.map((item) => {
           const isActive = pathname === item.href;
-          const emoji = getMenuIcon(item.label);
+          const emoji = item.icon || getMenuIcon(item.label, item.icon);
           const hasChildren = item.children && item.children.length > 0;
           const isExpanded = expandedMenus[item.label];
 
@@ -516,56 +516,23 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
             zIndex: 30,
           }}
         >
-          {/* Left: Section Title & Description (Tanpa tombol garis 3) */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span
-                  style={{
-                    fontSize: 16.5,
-                    fontWeight: 900,
-                    color: "var(--md-on-surface)",
-                    letterSpacing: "-0.015em",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    display: "block",
-                  }}
-                >
-                  {currentTopMenu?.label ?? "Panel REKSA STIMI"}
-                </span>
-                <span
-                  style={{
-                    fontSize: 9.5,
-                    fontWeight: 800,
-                    padding: "2px 7px",
-                    borderRadius: 6,
-                    background: "var(--md-primary-container)",
-                    color: "var(--md-primary)",
-                    letterSpacing: "0.03em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {user.role}
-                </span>
-              </div>
-              {currentTopMenu?.description && (
-                <p
-                  className="hidden md:block"
-                  style={{
-                    margin: "2px 0 0",
-                    fontSize: 11,
-                    color: "var(--md-on-surface-variant)",
-                    fontWeight: 650,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {currentTopMenu.description}
-                </p>
-              )}
-            </div>
+          {/* Left: Clean, Large, Bold Page Title */}
+          <div style={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+            <h1
+              style={{
+                fontSize: 20,
+                fontWeight: 900,
+                color: "var(--md-on-surface)",
+                letterSpacing: "-0.02em",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                margin: 0,
+                lineHeight: 1.2,
+              }}
+            >
+              {currentTopMenu?.label ?? "Panel REKSA STIMI"}
+            </h1>
           </div>
 
           {/* Right: Quick Action to Public Web, Theme Selector, Profile & Logout */}
@@ -644,7 +611,7 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
         <main
           style={{
             flex: 1,
-            padding: "16px 14px 36px 14px",
+            padding: "16px 14px 20px 14px",
             width: "100%",
             boxSizing: "border-box",
           }}
@@ -652,21 +619,66 @@ export function DashboardShell({ children, user }: DashboardShellProps) {
           {children}
         </main>
 
-        {/* ─── FOOTER ─── */}
+        {/* ─── FLOATING ROUNDED FOOTER (HARMONIS DENGAN SIDEBAR & HEADER) ─── */}
         <footer
           style={{
-            padding: "16px 20px",
-            textAlign: "center",
-            fontSize: 11.5,
-            fontWeight: 700,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            color: "var(--md-on-surface-variant)",
-            borderTop: "1px solid var(--md-outline-variant)",
             marginTop: "auto",
+            marginBottom: 14,
+            marginLeft: 14,
+            marginRight: 14,
+            padding: "12px 22px",
+            borderRadius: 20,
+            backgroundColor: "var(--header-bg)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1.5px solid var(--header-border)",
+            boxShadow: "0 8px 24px var(--theme-glow, rgba(0, 0, 0, 0.05))",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 12,
+            fontSize: 11,
+            fontWeight: 700,
+            color: "var(--md-on-surface-variant)",
           }}
         >
-          REKSA STIMI YAPMI MAKASSAR © 2026 — SISTEM INFORMASI REKOGNISI PEMBELAJARAN LAMPAU
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span
+              style={{
+                color: "var(--md-primary)",
+                fontWeight: 900,
+                fontSize: 12,
+                letterSpacing: "0.05em",
+              }}
+            >
+              REKSA
+            </span>
+            <span style={{ opacity: 0.4 }}>—</span>
+            <span style={{ fontWeight: 750, color: "var(--md-on-surface)" }}>
+              Rekognisi Evaluasi dan Konversi Akademik
+            </span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span
+              style={{
+                background: "var(--md-primary-container)",
+                color: "var(--md-primary)",
+                padding: "3px 9px",
+                borderRadius: 8,
+                fontSize: 10.5,
+                fontWeight: 900,
+                letterSpacing: "0.04em",
+                border: "1px solid var(--sidebar-border)",
+              }}
+            >
+              PUSDATIN
+            </span>
+            <span style={{ fontWeight: 650 }}>Pusat Data dan Informasi</span>
+            <span style={{ opacity: 0.4 }}>•</span>
+            <span style={{ fontWeight: 800, color: "var(--md-on-surface)" }}>STIMI YAPMI MAKASSAR</span>
+          </div>
         </footer>
       </div>
     </div>

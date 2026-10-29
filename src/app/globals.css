@@ -2294,3 +2294,35 @@ nextjs-portal,
 div[data-nextjs-dev-indicator] {
   display: none !important;
 }
+
+
+/* ─── Responsive 12-Column Micro Grid for Biodata & Feeder Forms ─── */
+.biodata-grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 1024px) {
+  .biodata-grid-12 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .biodata-grid-12 > div.col-span-4,
+  .biodata-grid-12 > div.col-span-5,
+  .biodata-grid-12 > div.col-span-6 {
+    grid-column: span 6 !important;
+  }
+  .biodata-grid-12 > div.col-span-3,
+  .biodata-grid-12 > div.col-span-2 {
+    grid-column: span 3 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .biodata-grid-12 {
+    grid-template-columns: 1fr;
+  }
+  .biodata-grid-12 > div {
+    grid-column: span 1 !important;
+  }
+}

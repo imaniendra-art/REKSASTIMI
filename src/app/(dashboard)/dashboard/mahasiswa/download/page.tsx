@@ -1,7 +1,6 @@
 import { ensureRegistrationPayment } from "@/lib/payment-guard";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { PageHero } from "@/components/dashboard/UIComponents";
 import { connectMongoDB } from "@/lib/mongodb";
 import { getSession } from "@/lib/session";
 import { ApplicantProfile } from "@/models/ApplicantProfile";
@@ -16,6 +15,10 @@ type DownloadItem = {
   href?: string;
   tone: string;
   meta?: string;
+};
+
+export const metadata = {
+  title: "Pusat Unduhan & Dokumen RPL - REKSA STIMI",
 };
 
 export default async function MahasiswaDownloadPage() {
@@ -35,7 +38,7 @@ export default async function MahasiswaDownloadPage() {
 
   const acceptedPayments = payments.filter((payment) => payment.statusVerifikasi === "Diterima");
   const latestPayment = payments[0];
-  const fullName = profile?.identity?.fullName || session.name || "Mahasiswa";
+  const fullName = (profile?.identity?.fullName || session.name || "MAHASISWA RPL").toUpperCase();
   const registrationNumber = profile?.registrationNumber || profile?.nim || "-";
   const statusRpl = profile?.statusRpl || "PENDAFTARAN";
   const canDownloadFinal = ["SIAP_PLENO", "LULUS"].includes(statusRpl);
@@ -43,46 +46,38 @@ export default async function MahasiswaDownloadPage() {
   const adminItems: DownloadItem[] = [
     {
       title: "Aplikasi RPL (F-01)",
-      desc: "Data pendaftaran dan identitas mahasiswa RPL.",
+      desc: "Formulir pendaftaran resmi & identitas biodata mahasiswa RPL.",
       status: profile ? "available" : "locked",
       actionLabel: profile ? "Buka F01" : "Lengkapi Biodata",
       href: profile ? "/mahasiswa/cetak-f01" : "/dashboard/mahasiswa/biodata",
       tone: "var(--md-primary)",
-      meta: registrationNumber !== "-" ? `No. Reg: ${registrationNumber}` : "Belum ada nomor registrasi",
+      meta: registrationNumber !== "-" ? `No. Reg: ${registrationNumber}` : "Tersinkronisasi Neo Feeder",
     },
     {
       title: "Asesmen RPL (F-02)",
-      desc: "Daftar mata kuliah dan jenis RPL yang diajukan.",
+      desc: "Formulir daftar mata kuliah konversi & jalur pengajuan RPL.",
       status: f02Count > 0 ? "available" : "pending",
       actionLabel: f02Count > 0 ? "Buka F02" : "Isi F02",
       href: f02Count > 0 ? "/mahasiswa/cetak-f02" : "/dashboard/mahasiswa/f02",
-      tone: "#dc2626",
-      meta: `${f02Count} mata kuliah diajukan`,
+      tone: f02Count > 0 ? "var(--md-primary)" : "#dc2626",
+      meta: f02Count > 0 ? `${f02Count} mata kuliah diajukan` : "Belum simpan pengajuan F02",
     },
     {
       title: "Riwayat Hidup (F-07)",
-      desc: "CV, riwayat pendidikan, pekerjaan, pelatihan, dan organisasi.",
+      desc: "Curriculum Vitae resmi, pendidikan, pelatihan, organisasi & kerja.",
       status: "available",
       actionLabel: "Buka F07",
       href: "/mahasiswa/cetak-f07",
       tone: "var(--md-primary)",
-      meta: "Form CV mahasiswa",
+      meta: "Formulir CV lengkap terintegrasi",
     },
     {
-      title: "Surat Sanggahan",
-      desc: "Surat untuk konfirmasi atau sanggahan hasil asesmen RPL.",
+      title: "Surat Sanggahan Hasil",
+      desc: "Format resmi konfirmasi atau sanggahan hasil asesmen konversi.",
       status: canDownloadFinal ? "available" : "locked",
       actionLabel: canDownloadFinal ? "Tersedia" : "Terkunci",
       tone: "#d97706",
-      meta: canDownloadFinal ? "Status sudah siap pleno/lulus" : "Menunggu konfirmasi hasil",
-    },
-    {
-      title: "Surat Beda Nama",
-      desc: "Pernyataan kesamaan nama untuk kebutuhan administrasi.",
-      status: "pending",
-      actionLabel: "Belum Tersedia",
-      tone: "#334155",
-      meta: "Generator dokumen belum tersedia",
+      meta: canDownloadFinal ? "Status siap pleno / lulus" : "Tersedia saat pengumuman hasil",
     },
   ];
 
@@ -92,23 +87,23 @@ export default async function MahasiswaDownloadPage() {
 
   const f03Items: DownloadItem[] = userKlasters.length > 0 
     ? userKlasters.map((k: any) => ({
-        title: `F03: ${k.namaKlaster}`,
-        desc: `Form evaluasi diri dan dokumen portofolio asesi.`,
+        title: `F-03: ${k.namaKlaster}`,
+        desc: `Formulir evaluasi diri & bukti portofolio asesi klaster.`,
         status: "available" as const,
-        actionLabel: "Buka",
+        actionLabel: "Buka F03",
         href: `/mahasiswa/cetak-f03/${k._id}`,
-        tone: "var(--md-secondary, var(--md-primary))",
-        meta: `Siap cetak`,
+        tone: "var(--md-primary)",
+        meta: `Dokumen portofolio klaster`,
       }))
     : [
         {
           title: "Form Evaluasi Diri (F-03)",
-          desc: "Form evaluasi diri berdasarkan mata kuliah RPL.",
+          desc: "Formulir evaluasi diri berdasarkan mata kuliah konversi RPL.",
           status: statusRpl === "EVALUASI_F03" || f02Count > 0 ? "available" : "locked",
-          actionLabel: statusRpl === "EVALUASI_F03" || f02Count > 0 ? "Buka" : "Terkunci",
+          actionLabel: statusRpl === "EVALUASI_F03" || f02Count > 0 ? "Buka F03" : "Terkunci",
           href: "/dashboard/mahasiswa/f03",
-          tone: "var(--md-secondary, var(--md-primary))",
-          meta: f02Count > 0 ? "Belum isi F03" : "Isi F02 dahulu",
+          tone: "var(--md-primary)",
+          meta: f02Count > 0 ? "Siap pengisian berkas portofolio" : "Selesaikan F-02 terlebih dahulu",
         }
       ];
 
@@ -116,11 +111,11 @@ export default async function MahasiswaDownloadPage() {
     ...f03Items,
     {
       title: "Berita Acara Asesmen",
-      desc: "Hasil asesmen setelah diverifikasi penilai.",
+      desc: "Rekapitulasi nilai dan hasil evaluasi setelah divalidasi asesor.",
       status: canDownloadFinal ? "available" : "locked",
       actionLabel: canDownloadFinal ? "Tersedia" : "Terkunci",
       tone: "#059669",
-      meta: canDownloadFinal ? "Siap cetak" : "Belum selesai",
+      meta: canDownloadFinal ? "Dokumen resmi siap cetak" : "Menunggu verifikasi asesor",
     },
   ];
 
@@ -129,7 +124,7 @@ export default async function MahasiswaDownloadPage() {
 
   const kompetensiCertItems: DownloadItem[] = userAttempts.map((attempt: any) => ({
     title: `Sertifikat: ${attempt.klasterId?.namaKlaster || "Klaster"}`,
-    desc: `Bukti telah lulus tes uji kompetensi klaster.`,
+    desc: `Sertifikat kelulusan uji asesmen mandiri klaster kompetensi.`,
     status: "available" as const,
     actionLabel: "Lihat",
     href: `/mahasiswa/cetak-sertifikat/${attempt.klasterId?._id || attempt.klasterId}`,
@@ -140,29 +135,29 @@ export default async function MahasiswaDownloadPage() {
   const certificateItems: DownloadItem[] = [
     ...kompetensiCertItems,
     {
-      title: "Sertifikat Kelulusan RPL (Akhir)",
-      desc: "Sertifikat kelulusan RPL jika seluruh proses telah disahkan.",
+      title: "Sertifikat Kelulusan RPL (SK Akhir)",
+      desc: "Sertifikat dan Surat Keputusan (SK) kelulusan konversi akademik.",
       status: statusRpl === "LULUS" ? "available" : "locked",
       actionLabel: statusRpl === "LULUS" ? "Tersedia" : "Terkunci",
       tone: "#059669",
-      meta: statusRpl === "LULUS" ? "Status lulus" : "Menunggu pleno akhir",
+      meta: statusRpl === "LULUS" ? "Kelulusan telah disahkan" : "Menunggu rapat pleno akhir",
     },
   ];
 
   const paymentItems: DownloadItem[] = acceptedPayments.length
     ? acceptedPayments.map((payment) => ({
         title: payment.jenisPembayaran,
-        desc: "Bukti pembayaran yang sudah divalidasi keuangan.",
+        desc: "Bukti kwitansi resmi yang telah divalidasi oleh Bagian Keuangan.",
         status: "available" as const,
         actionLabel: payment.buktiBayar ? "Lihat Bukti" : "Terverifikasi",
         href: payment.buktiBayar || undefined,
-        tone: "#64748b",
-        meta: `${formatDate(payment.tanggalBayar)} | Rp ${Number(payment.nominal || 0).toLocaleString("id-ID")}`,
+        tone: "#059669",
+        meta: `${formatDate(payment.tanggalBayar)} • Rp ${Number(payment.nominal || 0).toLocaleString("id-ID")}`,
       }))
     : [
         {
           title: "Riwayat Kwitansi",
-          desc: "Bukti pembayaran akan tampil setelah divalidasi keuangan.",
+          desc: "Bukti kwitansi pembayaran akan muncul setelah divalidasi.",
           status: latestPayment ? "pending" : "locked",
           actionLabel: latestPayment ? "Menunggu Validasi" : "Belum Ada",
           href: "/dashboard/mahasiswa/keuangan",
@@ -172,20 +167,10 @@ export default async function MahasiswaDownloadPage() {
       ];
 
   return (
-    <div style={{ width: "100%", margin: "0 auto", paddingBottom: 36 }}>
-      <PageHero
-        title="Pusat Unduhan Dokumen"
-        subtitle={`${fullName} | No. Reg: ${registrationNumber}`}
-        tone="dark"
-        rightContent={
-          <div style={{ minWidth: 230, border: "1px solid rgba(255,255,255,0.22)", borderRadius: 16, background: "rgba(255,255,255,0.12)", padding: 16 }}>
-            <p style={{ margin: 0, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", opacity: 0.72 }}>Status RPL</p>
-            <p style={{ margin: "6px 0 0", fontSize: 18, fontWeight: 950 }}>{statusRpl.replace(/_/g, " ")}</p>
-          </div>
-        }
-      />
+    <div style={{ width: "100%", margin: "0 auto", paddingBottom: 40, marginTop: 14 }}>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
+      {/* ── 4 Kolom Dokumen ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         <DownloadColumn title="Administrasi & Penilai" color="var(--md-primary)" items={adminItems} />
         <DownloadColumn title="Evaluasi Klaster" color="#059669" items={evaluationItems} />
         <DownloadColumn title="Sertifikat Lulus" color="#d97706" items={certificateItems} />
@@ -197,11 +182,43 @@ export default async function MahasiswaDownloadPage() {
 
 function DownloadColumn({ title, color, items }: { title: string; color: string; items: DownloadItem[] }) {
   return (
-    <section>
-      <h2 style={{ margin: "0 0 12px", fontSize: 12, fontWeight: 950, textTransform: "uppercase", letterSpacing: "0.1em", color }}>
-        {title}
-      </h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <section
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+      }}
+    >
+      <div
+        style={{
+          padding: "8px 14px",
+          borderRadius: 12,
+          background: "var(--md-surface-2)",
+          border: "1px solid var(--md-outline-variant)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <h2 style={{ margin: 0, fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color }}>
+          {title}
+        </h2>
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 800,
+            borderRadius: 999,
+            padding: "2px 8px",
+            background: "var(--md-surface-1)",
+            border: "1px solid var(--md-outline-variant)",
+            color: "var(--md-on-surface-variant)",
+          }}
+        >
+          {items.length} Berkas
+        </span>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {items.map((item) => (
           <DownloadCard key={`${title}-${item.title}`} item={item} />
         ))}
@@ -216,48 +233,120 @@ function DownloadCard({ item }: { item: DownloadItem }) {
 
   const content = (
     <>
-      <div style={{ width: 38, height: 38, borderRadius: 12, background: `${item.tone}1a`, color: item.tone, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 950, flexShrink: 0 }}>
+      <div
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 10,
+          background: item.status === "available" ? "rgba(14, 165, 164, 0.12)" : "var(--md-surface-2)",
+          color: item.status === "available" ? "var(--md-primary)" : "var(--md-on-surface-variant)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 10,
+          fontWeight: 900,
+          flexShrink: 0,
+          border: `1px solid ${item.status === "available" ? "rgba(14, 165, 164, 0.3)" : "var(--md-outline-variant)"}`,
+        }}
+      >
         {statusLabel(item.status)}
       </div>
+
       <div style={{ minWidth: 0, flex: 1 }}>
-        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 950, color: item.status === "locked" ? "#64748b" : "var(--md-on-surface)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.title}</h3>
-        <p style={{ margin: "3px 0 0", fontSize: 11, lineHeight: 1.45, fontWeight: 650, color: "var(--md-on-surface-variant)" }}>{item.desc}</p>
-        {item.meta && <p style={{ margin: "4px 0 0", fontSize: 10, fontWeight: 850, color: item.tone }}>{item.meta}</p>}
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 12.5,
+            fontWeight: 900,
+            color: item.status === "locked" ? "var(--md-on-surface-variant)" : "var(--md-on-surface)",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {item.title}
+        </h3>
+        <p style={{ margin: "2px 0 0", fontSize: 11, lineHeight: 1.4, fontWeight: 600, color: "var(--md-on-surface-variant)" }}>
+          {item.desc}
+        </p>
+        {item.meta && (
+          <p style={{ margin: "4px 0 0", fontSize: 10, fontWeight: 800, color: item.tone }}>
+            {item.meta}
+          </p>
+        )}
       </div>
+
       <div style={{ flexShrink: 0, alignSelf: "flex-start", marginTop: 2 }}>
-        <span style={{ borderRadius: 8, padding: "6px 10px", background: item.status === "locked" ? "var(--md-surface-2)" : item.status === "pending" ? "var(--md-warning-container)" : "var(--md-surface-1)", border: `1px solid ${item.status === "locked" ? "var(--md-outline-variant)" : item.status === "pending" ? "var(--md-warning)" : item.tone}`, color: item.status === "locked" ? "var(--md-on-surface-variant)" : item.status === "pending" ? "var(--md-warning)" : item.tone, fontSize: 10, fontWeight: 900, whiteSpace: "nowrap", display: "inline-block" }}>
+        <span
+          style={{
+            borderRadius: 999,
+            padding: "5px 12px",
+            background: item.status === "available" ? "var(--md-primary)" : "var(--md-surface-2)",
+            border: `1px solid ${item.status === "available" ? "var(--md-primary)" : "var(--md-outline-variant)"}`,
+            color: item.status === "available" ? "var(--md-on-primary)" : "var(--md-on-surface-variant)",
+            fontSize: 10.5,
+            fontWeight: 900,
+            whiteSpace: "nowrap",
+            display: "inline-block",
+            boxShadow: item.status === "available" ? "0 2px 8px var(--theme-glow)" : "none",
+          }}
+        >
           {item.actionLabel}
         </span>
       </div>
     </>
   );
 
-  const baseClass = "md-card flex items-center gap-3 no-underline transition-all duration-300";
-  const interactiveClass = isClickable 
-    ? "hover:-translate-y-1 hover:shadow-md cursor-pointer hover:border-slate-300" 
-    : "cursor-default";
-
   const style = {
     padding: "12px 14px",
-    opacity: item.status === "locked" ? 0.72 : 1,
+    borderRadius: 14,
+    background: "var(--md-surface-1)",
     border: "1px solid var(--md-outline-variant)",
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    textDecoration: "none",
+    transition: "all 0.16s ease",
+    opacity: item.status === "locked" ? 0.65 : 1,
   };
 
   if (!item.href) {
-    return <div className={`${baseClass} ${interactiveClass}`} style={style}>{content}</div>;
+    return (
+      <div style={{ ...style, cursor: "default" }}>
+        {content}
+      </div>
+    );
   }
 
   if (isExternal) {
-    return <a className={`${baseClass} ${interactiveClass}`} href={item.href} target="_blank" rel="noreferrer" style={style}>{content}</a>;
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noreferrer"
+        style={{ ...style, cursor: "pointer" }}
+        className="hover:border-teal-400 hover:shadow-sm"
+      >
+        {content}
+      </a>
+    );
   }
 
-  return <Link className={`${baseClass} ${interactiveClass}`} href={item.href} style={style}>{content}</Link>;
+  return (
+    <Link
+      href={item.href}
+      style={{ ...style, cursor: "pointer" }}
+      className="hover:border-teal-400 hover:shadow-sm"
+    >
+      {content}
+    </Link>
+  );
 }
 
 function statusLabel(status: DownloadItem["status"]) {
-  if (status === "available") return "OK";
-  if (status === "pending") return "...";
-  return "LOCK";
+  if (status === "available") return "✓";
+  if (status === "pending") return "⏳";
+  return "🔒";
 }
 
 function formatDate(value: Date) {

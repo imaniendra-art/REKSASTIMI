@@ -180,15 +180,15 @@ export async function submitPayment(formData: FormData) {
     // 5. Update ApplicantProfile documents & status
     if (profile) {
       profile.documents = currentDocs as any;
-      profile.markModified("documents");
+      const updateFields: any = {
+        documents: currentDocs,
+      };
       if (isPendaftaran && (!profile.statusPembayaran || profile.statusPembayaran === "BELUM_BAYAR" || profile.statusPembayaran === "DITOLAK")) {
         profile.statusPembayaran = "PROSES";
-        (profile as any).progress = {
-          ...((profile as any).progress || {}),
-          paymentStatus: "PROSES",
-        };
+        updateFields.statusPembayaran = "PROSES";
+        updateFields["progress.paymentStatus"] = "PROSES";
       }
-      await profile.save();
+      await ApplicantProfile.updateOne({ _id: profile._id }, { $set: updateFields });
     } else {
       const activePeriod = await Period.findOne({ isActive: true }).lean();
       await ApplicantProfile.create({

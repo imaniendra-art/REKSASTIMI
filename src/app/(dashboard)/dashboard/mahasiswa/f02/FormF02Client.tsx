@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { saveF02 } from "./actions";
+import Link from "next/link";
 
 type Matkul = {
   id: string;
@@ -33,14 +34,37 @@ export default function FormF02Client({
   initialConcentration: string;
   concentrationOptions: string[];
 }) {
-  const semesters = Object.keys(matkulPerSemester)
-    .map(Number)
-    .sort((a, b) => a - b);
+  const semesters = useMemo(() => {
+    return Object.keys(matkulPerSemester)
+      .map(Number)
+      .sort((a, b) => a - b);
+  }, [matkulPerSemester]);
+
+  // Initial sensible default: if user already has saved choices, use them.
+  // Otherwise, automatically pre-select recommended courses up to 100 SKS.
+  const initialSelections = useMemo(() => {
+    if (pilihanUser && Object.keys(pilihanUser).length > 0) {
+      return pilihanUser;
+    }
+    const defaults: Record<string, string> = {};
+    let accumulatedSks = 0;
+    for (const sem of semesters) {
+      const list = matkulPerSemester[sem] || [];
+      for (const mk of list) {
+        if (mk.isRpl !== false && accumulatedSks + (Number(mk.sks) || 0) <= 100) {
+          defaults[mk.id] = "Perolehan";
+          accumulatedSks += Number(mk.sks) || 0;
+        }
+      }
+    }
+    return defaults;
+  }, [pilihanUser, matkulPerSemester, semesters]);
 
   const [activeSemester, setActiveSemester] = useState<number>(semesters[0] || 1);
-  const [selections, setSelections] = useState<Record<string, string>>(pilihanUser);
+  const [selections, setSelections] = useState<Record<string, string>>(initialSelections);
   const [concentration, setConcentration] = useState(initialConcentration || "-");
   const [isSaving, setIsSaving] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const selectedItems = useMemo(() => {
@@ -54,6 +78,7 @@ export default function FormF02Client({
   const activeMatkul = matkulPerSemester[activeSemester] || [];
 
   const handleToggleMatkul = (matkulId: string, checked: boolean) => {
+    setHasSaved(false);
     setSelections((prev) => {
       const next = { ...prev };
       if (checked) {
@@ -66,6 +91,7 @@ export default function FormF02Client({
   };
 
   const handleJenisChange = (matkulId: string, jenis: string) => {
+    setHasSaved(false);
     setSelections((prev) => ({
       ...prev,
       [matkulId]: jenis,
@@ -73,6 +99,7 @@ export default function FormF02Client({
   };
 
   const handlePilihSemua = (semester: number) => {
+    setHasSaved(false);
     const semesterMatkul = matkulPerSemester[semester] || [];
     const selectable = semesterMatkul.filter((mk) => mk.isRpl !== false);
     const allSelected = selectable.length > 0 && selectable.every((mk) => selections[mk.id]);
@@ -102,14 +129,18 @@ export default function FormF02Client({
 
     const result = await saveF02(dataToSave, concentration);
     setIsSaving(false);
-    setSaveMessage({
-      type: result.success ? "success" : "error",
-      text: result.message,
-    });
+    if (result.success) {
+      setHasSaved(true);
+    } else {
+      setSaveMessage({
+        type: "error",
+        text: result.message,
+      });
+    }
   };
 
   return (
-    <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 20, paddingBottom: 60, marginTop: 24 }}>
+    <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 20, paddingBottom: 60, marginTop: 14 }}>
       {/* ── Bagian 1: Data Mahasiswa ── */}
       <section
         style={{
@@ -119,36 +150,51 @@ export default function FormF02Client({
           overflow: "hidden",
         }}
       >
-        <div style={{ padding: "16px 22px", background: "var(--md-surface-2)", borderBottom: "1px solid var(--md-outline-variant)" }}>
-          <p style={{ margin: 0, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-primary)" }}>
-            Bagian 1
-          </p>
-          <h2 style={{ margin: "2px 0 0", fontSize: 16, fontWeight: 900, color: "var(--md-on-surface)" }}>
-            Data Pemohon RPL (Sesuai Biodata)
-          </h2>
+        <div
+          style={{
+            padding: "16px 22px",
+            background: "var(--md-surface-2)",
+            borderBottom: "1px solid var(--md-outline-variant)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 10,
+          }}
+        >
+          <div>
+            <p style={{ margin: 0, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--md-primary)" }}>
+              BAGIAN 1 • DATA PEMOHON
+            </p>
+            <h2 style={{ margin: "2px 0 0", fontSize: 17, fontWeight: 900, color: "var(--md-on-surface)" }}>
+              Data Diri Mahasiswa RPL
+            </h2>
+          </div>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "4px 12px",
+              borderRadius: 999,
+              background: "var(--md-surface-1)",
+              border: "1px solid var(--md-outline-variant)",
+              fontSize: 10.5,
+              fontWeight: 800,
+              color: "var(--md-primary)",
+            }}
+          >
+            <span>✓</span>
+            <span>Disinkronkan dari Biodata PDDIKTI</span>
+          </div>
         </div>
 
         <div style={{ padding: 22 }}>
-          <div
-            style={{
-              background: "var(--md-surface-2)",
-              borderLeft: "4px solid var(--md-primary)",
-              borderRadius: "0 10px 10px 0",
-              padding: "10px 14px",
-              marginBottom: 16,
-              fontSize: 12,
-              color: "var(--md-on-surface-variant)",
-              fontWeight: 600,
-            }}
-          >
-            Data diri di bawah ini disinkronkan otomatis dari menu Biodata. Jika terdapat koreksi, perbarui pada halaman Biodata.
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
-            <ReadOnlyField label="Nama Lengkap" value={profile.name} />
-            <ReadOnlyField label="NIK / KTP" value={profile.nik} />
-            <ReadOnlyField label="Tempat, Tanggal Lahir" value={`${profile.pob}, ${profile.dob}`} />
-            <ReadOnlyField label="Jenis Kelamin" value={profile.gender === "L" ? "Laki-laki" : profile.gender === "P" ? "Perempuan" : profile.gender} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
+            <ReadOnlyField label="NAMA LENGKAP (KTP)" value={profile.name} />
+            <ReadOnlyField label="NIK (NOMOR KTP)" value={profile.nik} />
+            <ReadOnlyField label="TEMPAT, TANGGAL LAHIR" value={`${profile.pob}, ${profile.dob}`} />
+            <ReadOnlyField label="JENIS KELAMIN" value={profile.gender} />
           </div>
         </div>
       </section>
@@ -164,8 +210,8 @@ export default function FormF02Client({
       >
         <div
           style={{
-            padding: "18px 22px",
-            background: "linear-gradient(135deg, var(--md-surface-1) 0%, var(--md-surface-2) 100%)",
+            padding: "16px 22px",
+            background: "var(--md-surface-2)",
             borderBottom: "1px solid var(--md-outline-variant)",
             display: "flex",
             alignItems: "center",
@@ -175,8 +221,8 @@ export default function FormF02Client({
           }}
         >
           <div>
-            <p style={{ margin: 0, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-primary)" }}>
-              Bagian 2
+            <p style={{ margin: 0, fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--md-primary)" }}>
+              BAGIAN 2 • APLIKASI RPL
             </p>
             <h2 style={{ margin: "2px 0 0", fontSize: 17, fontWeight: 900, color: "var(--md-on-surface)" }}>
               Klaim Mata Kuliah Konversi RPL
@@ -189,34 +235,38 @@ export default function FormF02Client({
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 8,
-                border: "1px solid var(--md-outline)",
+                border: "1px solid var(--md-outline-variant)",
                 background: "var(--md-surface-1)",
                 borderRadius: 999,
-                padding: "4px 8px 4px 12px",
+                padding: "4px 10px 4px 12px",
+                minHeight: 34,
               }}
             >
-              <span style={{ fontSize: 10, fontWeight: 800, textTransform: "uppercase", color: "var(--md-on-surface-variant)" }}>
+              <span style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase", color: "var(--md-on-surface-variant)", letterSpacing: "0.05em" }}>
                 Konsentrasi:
               </span>
               <select
                 value={concentration}
-                onChange={(e) => setConcentration(e.target.value)}
+                onChange={(e) => {
+                  setHasSaved(false);
+                  setConcentration(e.target.value);
+                }}
                 style={{
-                  height: 30,
+                  height: 28,
                   borderRadius: 999,
                   border: "none",
                   background: "transparent",
                   color: "var(--md-on-surface)",
-                  fontSize: 12,
+                  fontSize: 11.5,
                   fontWeight: 800,
                   outline: "none",
                   cursor: "pointer",
                 }}
               >
-                <option value="-">- Umum -</option>
-                {concentrationOptions.map((item) => (
+                <option value="-">- UMUM -</option>
+                {(concentrationOptions || []).map((item) => (
                   <option key={item} value={item}>
-                    {item}
+                    {(item || "").toUpperCase()}
                   </option>
                 ))}
               </select>
@@ -232,9 +282,9 @@ export default function FormF02Client({
         {/* Semester Navigator Tabs */}
         <div
           style={{
-            padding: "12px 18px",
+            padding: "12px 20px",
             borderBottom: "1px solid var(--md-outline-variant)",
-            background: "var(--md-surface-2)",
+            background: "var(--md-surface-1)",
             display: "flex",
             gap: 8,
             overflowX: "auto",
@@ -251,27 +301,28 @@ export default function FormF02Client({
                 onClick={() => setActiveSemester(semester)}
                 style={{
                   border: isActive ? "1px solid var(--md-primary)" : "1px solid var(--md-outline-variant)",
-                  background: isActive ? "var(--md-primary)" : "var(--md-surface-1)",
+                  background: isActive ? "var(--md-primary)" : "var(--md-surface-2)",
                   color: isActive ? "var(--md-on-primary)" : "var(--md-on-surface)",
                   borderRadius: 999,
-                  padding: "6px 14px",
+                  padding: "7px 16px",
                   fontSize: 12,
-                  fontWeight: 800,
+                  fontWeight: 900,
                   whiteSpace: "nowrap",
                   cursor: "pointer",
                   transition: "all 0.16s ease",
                   boxShadow: isActive ? "0 4px 12px var(--theme-glow)" : "none",
                 }}
               >
-                Semester {semester} {count > 0 ? `(${count})` : ""}
+                SEMESTER {semester} {count > 0 ? `(${count})` : ""}
               </button>
             );
           })}
         </div>
 
         {/* Table Container */}
-        <div style={{ padding: 18 }}>
+        <div style={{ padding: "18px 20px" }}>
           <div style={{ overflow: "hidden", borderRadius: 14, border: "1px solid var(--md-outline-variant)", background: "var(--md-surface-1)" }}>
+            {/* Table Toolbar */}
             <div
               style={{
                 background: "var(--md-surface-2)",
@@ -280,41 +331,63 @@ export default function FormF02Client({
                 alignItems: "center",
                 justifyContent: "space-between",
                 gap: 12,
-                borderBottom: "1px solid var(--md-outline-variant)",
+                borderBottom: "1.5px solid var(--md-outline-variant)",
               }}
             >
-              <span style={{ fontSize: 12, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--md-on-surface)" }}>
-                Daftar Mata Kuliah Semester {activeSemester}
-              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--md-primary)" }}>
+                  DAFTAR MATA KULIAH SEMESTER {activeSemester}
+                </span>
+                <span
+                  style={{
+                    fontSize: 10.5,
+                    fontWeight: 800,
+                    borderRadius: 999,
+                    padding: "2px 8px",
+                    background: "var(--md-surface-1)",
+                    border: "1px solid var(--md-outline-variant)",
+                    color: "var(--md-on-surface-variant)",
+                  }}
+                >
+                  {activeMatkul.length} MATA KULIAH
+                </span>
+              </div>
+
               <button
                 type="button"
                 onClick={() => handlePilihSemua(activeSemester)}
                 style={{
-                  border: "1px solid var(--md-outline)",
+                  border: "1px solid var(--md-outline-variant)",
                   background: "var(--md-surface-1)",
-                  color: "var(--md-on-surface)",
+                  color: "var(--md-primary)",
                   borderRadius: 999,
-                  padding: "5px 12px",
+                  padding: "5px 14px",
                   fontSize: 11,
-                  fontWeight: 800,
+                  fontWeight: 900,
                   cursor: "pointer",
                   textTransform: "uppercase",
+                  letterSpacing: "0.04em",
+                  transition: "all 0.15s ease",
                 }}
               >
-                Pilih Semua Semester {activeSemester}
+                {activeMatkul.filter((mk) => mk.isRpl !== false).length > 0 &&
+                activeMatkul.filter((mk) => mk.isRpl !== false).every((mk) => selections[mk.id])
+                  ? `BATAL PILIH SEMUA`
+                  : `PILIH SEMUA SEMESTER ${activeSemester}`}
               </button>
             </div>
 
+            {/* Table */}
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", minWidth: 840, borderCollapse: "collapse" }}>
                 <thead>
-                  <tr style={{ background: "var(--md-surface-2)", borderBottom: "1px solid var(--md-outline-variant)" }}>
-                    <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 50, color: "var(--md-on-surface-variant)" }}>No</th>
-                    <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 100, color: "var(--md-on-surface-variant)" }}>Kode</th>
-                    <th style={{ padding: "10px 14px", fontSize: 11, fontWeight: 900, textAlign: "left", color: "var(--md-on-surface-variant)" }}>Nama Mata Kuliah</th>
-                    <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 64, color: "var(--md-on-surface-variant)" }}>SKS</th>
-                    <th style={{ padding: "10px 12px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 80, color: "var(--md-on-surface-variant)" }}>Klaim</th>
-                    <th style={{ padding: "10px 14px", fontSize: 11, fontWeight: 900, textAlign: "center", width: 220, color: "var(--md-on-surface-variant)" }}>Jenis Pengajuan RPL</th>
+                  <tr style={{ background: "var(--md-surface-2)", borderBottom: "1.5px solid var(--md-outline-variant)" }}>
+                    <th style={{ padding: "10px 12px", fontSize: 10.5, fontWeight: 900, textAlign: "center", width: 50, color: "var(--md-on-surface)", letterSpacing: "0.06em" }}>NO</th>
+                    <th style={{ padding: "10px 12px", fontSize: 10.5, fontWeight: 900, textAlign: "center", width: 110, color: "var(--md-on-surface)", letterSpacing: "0.06em" }}>KODE MK</th>
+                    <th style={{ padding: "10px 16px", fontSize: 10.5, fontWeight: 900, textAlign: "left", color: "var(--md-on-surface)", letterSpacing: "0.06em" }}>NAMA MATA KULIAH</th>
+                    <th style={{ padding: "10px 12px", fontSize: 10.5, fontWeight: 900, textAlign: "center", width: 70, color: "var(--md-on-surface)", letterSpacing: "0.06em" }}>BOBOT</th>
+                    <th style={{ padding: "10px 12px", fontSize: 10.5, fontWeight: 900, textAlign: "center", width: 80, color: "var(--md-on-surface)", letterSpacing: "0.06em" }}>KLAIM</th>
+                    <th style={{ padding: "10px 16px", fontSize: 10.5, fontWeight: 900, textAlign: "center", width: 270, color: "var(--md-on-surface)", letterSpacing: "0.06em" }}>JALUR PENGAJUAN RPL</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -337,49 +410,56 @@ export default function FormF02Client({
                             background: !isSelectable
                               ? "var(--md-surface-2)"
                               : isSelected
-                              ? "var(--md-primary-container)"
+                              ? "rgba(14, 165, 164, 0.08)"
                               : "var(--md-surface-1)",
                             color: !isSelectable ? "var(--md-on-surface-variant)" : "var(--md-on-surface)",
                             transition: "background 0.15s ease",
                           }}
                         >
-                          <td style={{ padding: "12px", textAlign: "center", fontSize: 12, fontWeight: 700 }}>{idx + 1}</td>
-                          <td style={{ padding: "12px", textAlign: "center", fontSize: 12, fontWeight: 800, fontFamily: "monospace" }}>{mk.kode}</td>
-                          <td style={{ padding: "12px 14px", fontSize: 13, fontWeight: 800 }}>
-                            {mk.namaMatkul}
-                            {!isSelectable && (
-                              <span
-                                style={{
-                                  marginLeft: 8,
-                                  borderRadius: 999,
-                                  padding: "2px 8px",
-                                  background: "var(--md-surface-2)",
-                                  color: "var(--md-on-surface-variant)",
-                                  fontSize: 9.5,
-                                  fontWeight: 800,
-                                  border: "1px solid var(--md-outline-variant)",
-                                  textTransform: "uppercase",
-                                }}
-                              >
-                                Wajib Kuliah Reguler
-                              </span>
-                            )}
+                          <td style={{ padding: "10px 12px", textAlign: "center", fontSize: 12, fontWeight: 700, color: "var(--md-on-surface-variant)" }}>
+                            {idx + 1}
                           </td>
-                          <td style={{ padding: "12px", textAlign: "center", fontWeight: 900, color: "var(--md-primary)" }}>{mk.sks}</td>
-                          <td style={{ padding: "12px", textAlign: "center" }}>
+                          <td style={{ padding: "10px 12px", textAlign: "center", fontSize: 12, fontWeight: 900, fontFamily: "monospace", color: "var(--md-on-surface)" }}>
+                            {mk.kode}
+                          </td>
+                          <td style={{ padding: "10px 16px", fontSize: 13, fontWeight: 800 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <span>{(mk.namaMatkul || (mk as any).nama || mk.kode || "Mata Kuliah").toUpperCase()}</span>
+                              {!isSelectable && (
+                                <span
+                                  style={{
+                                    borderRadius: 999,
+                                    padding: "2px 8px",
+                                    background: "var(--md-surface-2)",
+                                    color: "var(--md-on-surface-variant)",
+                                    fontSize: 9.5,
+                                    fontWeight: 900,
+                                    border: "1px solid var(--md-outline-variant)",
+                                    textTransform: "uppercase",
+                                  }}
+                                >
+                                  Wajib Kuliah Reguler
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td style={{ padding: "10px 12px", textAlign: "center", fontWeight: 900, color: "var(--md-primary)", fontSize: 13 }}>
+                            {mk.sks} SKS
+                          </td>
+                          <td style={{ padding: "10px 12px", textAlign: "center" }}>
                             {isSelectable ? (
                               <input
                                 type="checkbox"
                                 checked={isSelected}
                                 onChange={(e) => handleToggleMatkul(mk.id, e.target.checked)}
-                                style={{ width: 18, height: 18, cursor: "pointer", accentColor: "var(--md-primary)" }}
-                                aria-label={`Pilih ${mk.namaMatkul}`}
+                                style={{ width: 19, height: 19, cursor: "pointer", accentColor: "var(--md-primary)" }}
+                                aria-label={`Pilih ${mk.namaMatkul || "Mata Kuliah"}`}
                               />
                             ) : (
-                              <span style={{ color: "var(--md-on-surface-variant)" }}>-</span>
+                              <span style={{ color: "var(--md-on-surface-variant)", fontWeight: 700 }}>-</span>
                             )}
                           </td>
-                          <td style={{ padding: "12px 14px", textAlign: "center" }}>
+                          <td style={{ padding: "10px 16px", textAlign: "center" }}>
                             {isSelectable ? (
                               <select
                                 value={selections[mk.id] || "Perolehan"}
@@ -387,24 +467,24 @@ export default function FormF02Client({
                                 onChange={(e) => handleJenisChange(mk.id, e.target.value)}
                                 style={{
                                   width: "100%",
-                                  minHeight: 34,
-                                  borderRadius: 8,
-                                  border: "1px solid var(--md-outline)",
-                                  background: "var(--md-surface-1)",
+                                  minHeight: 38,
+                                  borderRadius: 10,
+                                  border: isSelected ? "1px solid var(--md-primary)" : "1px solid var(--md-outline-variant)",
+                                  background: isSelected ? "var(--md-surface-2)" : "var(--md-surface-1)",
                                   color: "var(--md-on-surface)",
-                                  padding: "4px 8px",
+                                  padding: "0 10px",
                                   fontSize: 12,
-                                  fontWeight: 700,
+                                  fontWeight: 800,
                                   outline: "none",
                                   opacity: isSelected ? 1 : 0.45,
                                   cursor: isSelected ? "pointer" : "not-allowed",
                                 }}
                               >
-                                <option value="Perolehan">Perolehan (Pengalaman Kerja)</option>
-                                <option value="Transfer">Transfer (Pernah Kuliah/D3/S1)</option>
+                                <option value="Perolehan">PEROLEHAN (PENGALAMAN KERJA)</option>
+                                <option value="Transfer">TRANSFER (KULIAH / DIPLOMA / SARJANA)</option>
                               </select>
                             ) : (
-                              <span style={{ color: "var(--md-on-surface-variant)" }}>-</span>
+                              <span style={{ color: "var(--md-on-surface-variant)", fontSize: 11, fontWeight: 700 }}>-</span>
                             )}
                           </td>
                         </tr>
@@ -418,17 +498,17 @@ export default function FormF02Client({
         </div>
       </section>
 
-      {/* Save Message Toast */}
-      {saveMessage && (
+      {/* Error Message Toast if save failed */}
+      {saveMessage && saveMessage.type === "error" && (
         <div
           style={{
             padding: "14px 18px",
             borderRadius: 14,
             fontWeight: 800,
             fontSize: 13,
-            background: saveMessage.type === "success" ? "var(--md-success-container)" : "var(--md-error-container)",
-            color: saveMessage.type === "success" ? "var(--md-success)" : "var(--md-error)",
-            border: `1.5px solid ${saveMessage.type === "success" ? "var(--md-success)" : "var(--md-error)"}`,
+            background: "var(--md-error-container)",
+            color: "var(--md-error)",
+            border: "1.5px solid var(--md-error)",
           }}
         >
           {saveMessage.text}
@@ -439,47 +519,131 @@ export default function FormF02Client({
       <div
         style={{
           position: "sticky",
-          bottom: 14,
+          bottom: 16,
           zIndex: 20,
-          padding: "14px 20px",
+          padding: "16px 24px",
           border: "1px solid var(--md-outline-variant)",
           borderRadius: 20,
           background: "var(--md-surface-1)",
-          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.12)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 14,
+          gap: 16,
           flexWrap: "wrap",
         }}
       >
         <div>
-          <p style={{ margin: 0, fontSize: 13, color: "var(--md-on-surface)", fontWeight: 900 }}>
-            Total Klaim Terpilih: <span style={{ color: "var(--md-primary)" }}>{totalSks} SKS</span> ({selectedItems.length} Mata Kuliah)
-          </p>
-          <p style={{ margin: "2px 0 0", fontSize: 11.5, color: "var(--md-on-surface-variant)", fontWeight: 600 }}>
-            Maksimal rekomendasi RPL Tipe A adalah 100 SKS. Klik simpan untuk merekam pengajuan ke sistem.
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <p style={{ margin: 0, fontSize: 14, color: "var(--md-on-surface)", fontWeight: 900 }}>
+              TOTAL KLAIM TERPILIH: <span style={{ color: "var(--md-primary)", fontSize: 16 }}>{totalSks} SKS</span>
+            </p>
+            <span
+              style={{
+                borderRadius: 999,
+                padding: "3px 10px",
+                background: totalSks > 100 ? "var(--md-error-container)" : "var(--md-surface-2)",
+                color: totalSks > 100 ? "var(--md-error)" : "var(--md-primary)",
+                fontSize: 11,
+                fontWeight: 900,
+                border: "1px solid var(--md-outline-variant)",
+              }}
+            >
+              {selectedItems.length} MATA KULIAH {totalSks > 100 ? "(Maks 100 SKS)" : ""}
+            </span>
+          </div>
+          <p style={{ margin: "3px 0 0", fontSize: 11.5, color: "var(--md-on-surface-variant)", fontWeight: 600 }}>
+            Maksimal rekomendasi konversi RPL Tipe A adalah 100 SKS. Pengajuan ini akan menjadi acuan Test Asesmen Mandiri.
           </p>
         </div>
 
-        <button
-          type="submit"
-          disabled={isSaving}
-          style={{
-            background: isSaving ? "var(--md-surface-2)" : "var(--md-primary)",
-            color: isSaving ? "var(--md-on-surface-variant)" : "var(--md-on-primary)",
-            border: "none",
-            borderRadius: 999,
-            padding: "12px 26px",
-            fontSize: 13.5,
-            fontWeight: 800,
-            cursor: isSaving ? "not-allowed" : "pointer",
-            boxShadow: isSaving ? "none" : "0 4px 14px var(--theme-glow)",
-            transition: "all 0.18s ease",
-          }}
-        >
-          {isSaving ? "Menyimpan Data..." : "Simpan Formulir F02 →"}
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {hasSaved ? (
+            <>
+              <div
+                style={{
+                  background: "#059669",
+                  color: "#ffffff",
+                  borderRadius: 999,
+                  padding: "12px 24px",
+                  fontSize: 13,
+                  fontWeight: 900,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  boxShadow: "0 4px 14px rgba(5, 150, 105, 0.25)",
+                  letterSpacing: "0.04em",
+                }}
+              >
+                <span>✓</span>
+                <span>FORMULIR APLIKASI F-02 BERHASIL TERSIMPAN</span>
+              </div>
+              <Link
+                href="/dashboard/mahasiswa/asesmen"
+                style={{
+                  background: "var(--md-primary)",
+                  color: "var(--md-on-primary)",
+                  borderRadius: 999,
+                  padding: "12px 26px",
+                  fontSize: 13,
+                  fontWeight: 900,
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  boxShadow: "0 4px 16px var(--theme-glow)",
+                  letterSpacing: "0.02em",
+                  transition: "all 0.18s ease",
+                }}
+              >
+                <span>Lanjut ke Test Kompetensi RPL →</span>
+              </Link>
+            </>
+          ) : (
+            <>
+              <button
+                type="submit"
+                disabled={isSaving}
+                style={{
+                  background: isSaving ? "var(--md-surface-2)" : "var(--md-primary)",
+                  color: isSaving ? "var(--md-on-surface-variant)" : "var(--md-on-primary)",
+                  border: "none",
+                  borderRadius: 999,
+                  padding: "12px 28px",
+                  fontSize: 13.5,
+                  fontWeight: 900,
+                  cursor: isSaving ? "not-allowed" : "pointer",
+                  boxShadow: isSaving ? "none" : "0 4px 16px var(--theme-glow)",
+                  transition: "all 0.18s ease",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {isSaving ? "Menyimpan Data..." : "Simpan Formulir F02 →"}
+              </button>
+
+              {pilihanUser && Object.keys(pilihanUser).length > 0 && (
+                <Link
+                  href="/dashboard/mahasiswa/asesmen"
+                  style={{
+                    background: "var(--md-surface-2)",
+                    color: "var(--md-on-surface)",
+                    border: "1px solid var(--md-outline-variant)",
+                    borderRadius: 999,
+                    padding: "12px 22px",
+                    fontSize: 13,
+                    fontWeight: 800,
+                    textDecoration: "none",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  <span>Lanjut ke Asesmen →</span>
+                </Link>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </form>
   );
@@ -488,18 +652,32 @@ export default function FormF02Client({
 function ReadOnlyField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <label style={{ display: "block", marginBottom: 4, fontSize: 10.5, fontWeight: 800, color: "var(--md-on-surface-variant)", textTransform: "uppercase" }}>
+      <label
+        style={{
+          display: "block",
+          marginBottom: 6,
+          fontSize: 10.5,
+          fontWeight: 900,
+          color: "var(--md-on-surface-variant)",
+          textTransform: "uppercase",
+          letterSpacing: "0.06em",
+        }}
+      >
         {label}
       </label>
       <div
         style={{
           background: "var(--md-surface-2)",
           border: "1px solid var(--md-outline-variant)",
-          borderRadius: 10,
-          padding: "8px 12px",
-          fontSize: 12.5,
-          fontWeight: 700,
+          borderRadius: 12,
+          minHeight: 44,
+          display: "flex",
+          alignItems: "center",
+          padding: "0 13px",
+          fontSize: 13,
+          fontWeight: 800,
           color: "var(--md-on-surface)",
+          textTransform: "uppercase",
         }}
       >
         {value || "-"}
@@ -513,18 +691,21 @@ function SummaryPill({ label, value, highlight = false }: { label: string; value
     <div
       style={{
         border: highlight ? "1px solid var(--md-primary)" : "1px solid var(--md-outline-variant)",
-        background: highlight ? "var(--md-primary-container)" : "var(--md-surface-1)",
+        background: highlight ? "var(--md-surface-2)" : "var(--md-surface-1)",
         color: highlight ? "var(--md-primary)" : "var(--md-on-surface)",
         borderRadius: 999,
-        padding: "6px 12px",
+        padding: "5px 12px",
         display: "inline-flex",
         alignItems: "center",
         gap: 6,
         whiteSpace: "nowrap",
+        fontSize: 11,
       }}
     >
-      <span style={{ fontSize: 9.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em", opacity: 0.8 }}>{label}:</span>
-      <strong style={{ fontSize: 12, fontWeight: 900 }}>{value}</strong>
+      <span style={{ fontSize: 10, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.8 }}>
+        {label}:
+      </span>
+      <strong style={{ fontSize: 11.5, fontWeight: 900 }}>{value}</strong>
     </div>
   );
 }

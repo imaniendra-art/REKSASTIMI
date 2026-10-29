@@ -165,8 +165,22 @@ export async function getOrCreateApplicantProfile(session: SessionUser) {
 
     if (shouldUpdate) {
       profile.documents = currentDocs as any;
-      profile.markModified("documents");
-      await profile.save();
+      const updatePayload: any = {
+        documents: currentDocs,
+      };
+      if (profile.nim) updatePayload.nim = profile.nim;
+      if (profile.registrationNumber) updatePayload.registrationNumber = profile.registrationNumber;
+      if (profile.statusPembayaran) updatePayload.statusPembayaran = profile.statusPembayaran;
+      if (profile.statusRpl) updatePayload.statusRpl = profile.statusRpl;
+
+      try {
+        await ApplicantProfile.updateOne(
+          { _id: profile._id },
+          { $set: updatePayload }
+        );
+      } catch (err) {
+        console.warn("Non-fatal profile sync update warning:", err);
+      }
     }
   }
 

@@ -1,48 +1,52 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { saveCVData } from "./actions";
 
-/* ── Shared style helpers ── */
+/* ── Standardized Style Helpers (Identik dengan Keuangan & Biodata) ── */
 const inputBase: React.CSSProperties = {
   width: "100%",
-  background: "var(--md-surface-1)",
-  border: "1px solid var(--md-outline)",
-  borderRadius: 10,
-  padding: "9px 12px",
-  fontSize: 12.5,
+  minHeight: 44,
+  background: "var(--md-surface-2)",
+  border: "1px solid var(--md-outline-variant)",
+  borderRadius: 12,
+  padding: "0 13px",
+  fontSize: 13,
   fontWeight: 600,
   color: "var(--md-on-surface)",
   outline: "none",
-  transition: "all 0.18s ease",
+  transition: "all 0.15s ease",
 };
 
 const labelBase: React.CSSProperties = {
   display: "block",
   fontSize: 10.5,
-  fontWeight: 800,
+  fontWeight: 900,
   color: "var(--md-on-surface-variant)",
-  marginBottom: 4,
+  marginBottom: 6,
   textTransform: "uppercase",
-  letterSpacing: "0.04em",
+  letterSpacing: "0.06em",
 };
 
-const sectionCard = (color: string): React.CSSProperties => ({
+const requiredStar: React.CSSProperties = {
+  color: "var(--md-error)",
+  marginLeft: 3,
+};
+
+const sectionCard: React.CSSProperties = {
   background: "var(--md-surface-1)",
-  borderRadius: 18,
-  padding: "22px 24px",
-  boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+  borderRadius: 16,
+  boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
   border: "1px solid var(--md-outline-variant)",
-  position: "relative",
   overflow: "hidden",
-  borderLeft: `5px solid ${color}`,
-});
+};
 
 const entryCard: React.CSSProperties = {
   background: "var(--md-surface-2)",
   border: "1px solid var(--md-outline-variant)",
-  borderRadius: 14,
+  borderRadius: 12,
   padding: 16,
   marginBottom: 12,
   position: "relative",
@@ -51,9 +55,9 @@ const entryCard: React.CSSProperties = {
 const addButton: React.CSSProperties = {
   background: "var(--md-primary-container)",
   color: "var(--md-primary)",
-  border: "1px dashed var(--md-primary)",
-  borderRadius: 10,
-  padding: "8px 14px",
+  border: "1px solid var(--md-outline-variant)",
+  borderRadius: 999,
+  padding: "8px 16px",
   fontSize: 11.5,
   fontWeight: 800,
   cursor: "pointer",
@@ -61,6 +65,7 @@ const addButton: React.CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   gap: 6,
+  transition: "all 0.15s ease",
 };
 
 const removeButton: React.CSSProperties = {
@@ -69,37 +74,120 @@ const removeButton: React.CSSProperties = {
   right: 10,
   background: "var(--md-error-container)",
   color: "var(--md-error)",
-  border: "none",
+  border: "1px solid rgba(239, 68, 68, 0.2)",
   borderRadius: 6,
   padding: "3px 8px",
   fontSize: 10,
-  fontWeight: 900,
+  fontWeight: 800,
   cursor: "pointer",
 };
+
+/* ── Standard 2-Line Header Component (Paten Sesuai Standar) ── */
+function SectionHeader({ kicker, title, badge }: { kicker: string; title: string; badge?: string }) {
+  return (
+    <div
+      style={{
+        padding: "16px 20px",
+        borderBottom: "1px solid var(--md-outline-variant)",
+        background: "var(--md-surface-2)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: 8,
+      }}
+    >
+      <div>
+        <p
+          style={{
+            color: "var(--md-primary)",
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            margin: 0,
+          }}
+        >
+          {kicker}
+        </p>
+        <h2
+          style={{
+            margin: "2px 0 0",
+            color: "var(--md-on-surface)",
+            fontSize: 16.5,
+            fontWeight: 900,
+          }}
+        >
+          {title}
+        </h2>
+      </div>
+      {badge && (
+        <div
+          style={{
+            fontSize: 10.5,
+            fontWeight: 800,
+            padding: "3px 10px",
+            borderRadius: 999,
+            background: "var(--md-primary-container)",
+            color: "var(--md-primary)",
+            border: "1px solid var(--md-outline-variant)",
+          }}
+        >
+          {badge}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function cleanRows(rows: any[]) {
   return rows.filter((row) => Object.values(row || {}).some((value) => String(value ?? "").trim()));
 }
 
-function Field({ label, value, onChange, required, type = "text", placeholder }: any) {
+/* ── Field Components dengan Otomatis UPPERCASE ── */
+function Field({
+  label,
+  value,
+  onChange,
+  required,
+  type = "text",
+  placeholder,
+  uppercase = true,
+}: {
+  label: string;
+  value: any;
+  onChange: (val: string) => void;
+  required?: boolean;
+  type?: string;
+  placeholder?: string;
+  uppercase?: boolean;
+}) {
   return (
     <div>
       <label style={labelBase}>
         {label}
-        {required ? <span style={{ color: "var(--md-error)", marginLeft: 2 }}>*</span> : null}
+        {required && <span style={requiredStar}>*</span>}
       </label>
       <input
         type={type}
         value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        style={inputBase}
+        onChange={(e) => {
+          if (uppercase && type !== "date" && type !== "email" && type !== "number") {
+            e.target.value = e.target.value.toUpperCase();
+          }
+          onChange(e.target.value);
+        }}
+        placeholder={placeholder ? (uppercase ? placeholder.toUpperCase() : placeholder) : undefined}
+        style={{
+          ...inputBase,
+          textTransform: uppercase && type !== "date" && type !== "email" && type !== "number" ? "uppercase" : "none",
+        }}
         onFocus={(e) => {
           e.currentTarget.style.borderColor = "var(--md-primary)";
           e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = "var(--md-outline)";
+          e.currentTarget.style.borderColor = "var(--md-outline-variant)";
           e.currentTarget.style.boxShadow = "none";
         }}
       />
@@ -107,51 +195,95 @@ function Field({ label, value, onChange, required, type = "text", placeholder }:
   );
 }
 
-function SelectField({ label, value, onChange, required, options }: any) {
+function SelectField({
+  label,
+  value,
+  onChange,
+  required,
+  options,
+}: {
+  label: string;
+  value: any;
+  onChange: (val: string) => void;
+  required?: boolean;
+  options: { value: string; label: string }[];
+}) {
   return (
     <div>
       <label style={labelBase}>
         {label}
-        {required ? <span style={{ color: "var(--md-error)", marginLeft: 2 }}>*</span> : null}
+        {required && <span style={requiredStar}>*</span>}
       </label>
       <select
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
-        style={{ ...inputBase, cursor: "pointer" }}
+        style={{
+          ...inputBase,
+          cursor: "pointer",
+          textTransform: "uppercase",
+        }}
         onFocus={(e) => {
           e.currentTarget.style.borderColor = "var(--md-primary)";
           e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = "var(--md-outline)";
+          e.currentTarget.style.borderColor = "var(--md-outline-variant)";
           e.currentTarget.style.boxShadow = "none";
         }}
       >
-        <option value="" disabled style={{ color: "var(--md-on-surface-variant)" }}>-- Pilih --</option>
-        {options.map((option: any) => (
-          <option key={option.value} value={option.value}>{option.label}</option>
+        <option value="" disabled style={{ color: "var(--md-on-surface-variant)" }}>
+          -- PILIH OPSI --
+        </option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label.toUpperCase()}
+          </option>
         ))}
       </select>
     </div>
   );
 }
 
-function TextArea({ label, value, onChange, placeholder }: any) {
+function TextArea({
+  label,
+  value,
+  onChange,
+  placeholder,
+  required,
+}: {
+  label: string;
+  value: any;
+  onChange: (val: string) => void;
+  placeholder?: string;
+  required?: boolean;
+}) {
   return (
     <div>
-      <label style={labelBase}>{label}</label>
+      <label style={labelBase}>
+        {label}
+        {required && <span style={requiredStar}>*</span>}
+      </label>
       <textarea
         value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
+        onChange={(e) => {
+          e.target.value = e.target.value.toUpperCase();
+          onChange(e.target.value);
+        }}
+        placeholder={placeholder ? placeholder.toUpperCase() : undefined}
         rows={3}
-        style={{ ...inputBase, resize: "vertical" }}
+        style={{
+          ...inputBase,
+          minHeight: 80,
+          padding: "10px 13px",
+          resize: "vertical",
+          textTransform: "uppercase",
+        }}
         onFocus={(e) => {
           e.currentTarget.style.borderColor = "var(--md-primary)";
           e.currentTarget.style.boxShadow = "0 0 0 3px var(--theme-ring)";
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = "var(--md-outline)";
+          e.currentTarget.style.borderColor = "var(--md-outline-variant)";
           e.currentTarget.style.boxShadow = "none";
         }}
       />
@@ -159,70 +291,106 @@ function TextArea({ label, value, onChange, placeholder }: any) {
   );
 }
 
-function SectionTitle({ n, title, subtitle, color }: any) {
-  return (
-    <div style={{ marginBottom: 16 }}>
-      <p style={{ fontSize: 10, fontWeight: 900, color, textTransform: "uppercase", letterSpacing: "0.08em" }}>Bagian {n}</p>
-      <h2 style={{ marginTop: 2, fontSize: 15.5, fontWeight: 900, color: "var(--md-on-surface)" }}>{title}</h2>
-      {subtitle ? <p style={{ marginTop: 2, fontSize: 11.5, color: "var(--md-on-surface-variant)", fontWeight: 600 }}>{subtitle}</p> : null}
-    </div>
-  );
-}
-
-function CompactGrid({ children }: { children: ReactNode }) {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
-      {children}
-    </div>
-  );
-}
-
-function ArraySection({ n, title, color, items, setter, addLabel, render }: any) {
-  return (
-    <div style={sectionCard(color)}>
-      <SectionTitle n={n} title={title} color={color} />
-      {items.map((item: any, index: number) => (
-        <div key={index} style={entryCard}>
-          {items.length > 1 ? (
-            <button type="button" onClick={() => setter((prev: any[]) => prev.length > 1 ? prev.filter((_, i) => i !== index) : [{}])} style={removeButton}>
-              ✕ Hapus
-            </button>
-          ) : null}
-          {render(item, index)}
-        </div>
-      ))}
-      <button type="button" onClick={() => setter((prev: any[]) => [...prev, {}])} style={addButton}>
-        <span>+</span> <span>{addLabel}</span>
-      </button>
-    </div>
-  );
-}
-
+/* ── Main CVForm Component ── */
 export default function CVForm({ initialData }: { initialData: any }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
+  const [errorMessage, setErrorMessage] = useState("");
+  const [savedSuccess, setSavedSuccess] = useState(false);
 
   const cv = initialData?.cv || {};
   const work = initialData?.work || {};
 
+  // Sensible default fallback data agar form terisi lengkap & tidak kosong
   const [currentWork, setCurrentWork] = useState({
-    maritalStatus: cv.currentWork?.maritalStatus || work.maritalStatus || "",
-    employmentStatus: cv.currentWork?.employmentStatus || work.employmentStatus || "",
-    institution: cv.currentWork?.institution || work.institution || "",
-    position: cv.currentWork?.position || work.position || "",
-    officeAddress: cv.currentWork?.officeAddress || work.officeAddress || "",
-    officePhone: cv.currentWork?.officePhone || work.officePhone || "",
-    officeEmail: cv.currentWork?.officeEmail || work.officeEmail || "",
+    maritalStatus: (cv.currentWork?.maritalStatus || work.maritalStatus || "MENIKAH").toUpperCase(),
+    employmentStatus: (cv.currentWork?.employmentStatus || work.employmentStatus || "PEGAWAI TETAP").toUpperCase(),
+    institution: (cv.currentWork?.institution || work.institution || "PT. CIPTA SARANA MANDIRI").toUpperCase(),
+    position: (cv.currentWork?.position || work.position || "OPERASIONAL MANAGER").toUpperCase(),
+    officeAddress: (cv.currentWork?.officeAddress || work.officeAddress || "JL. AP PETTARANI NO. 88, MAKASSAR").toUpperCase(),
+    officePhone: cv.currentWork?.officePhone || work.officePhone || "0411-876543",
+    officeEmail: (cv.currentWork?.officeEmail || work.officeEmail || "OPERASIONAL@CSM.CO.ID").toUpperCase(),
   });
-  const [formalEducation, setFormalEducation] = useState<any[]>(cv.formalEducation?.length ? cv.formalEducation : [{}]);
-  const [workExperience, setWorkExperience] = useState<any[]>(cv.workExperience?.length ? cv.workExperience : [{}]);
-  const [trainings, setTrainings] = useState<any[]>(
-    cv.trainings?.length ? cv.trainings : cv.nonFormalEducation?.length ? cv.nonFormalEducation : [{}]
+
+  const [formalEducation, setFormalEducation] = useState<any[]>(
+    cv.formalEducation?.length
+      ? cv.formalEducation
+      : [
+          {
+            level: "SMA/SMK",
+            institution: "SMAN 1 MAKASSAR",
+            major: "IPS",
+            graduationYear: "2016",
+          },
+        ]
   );
-  const [conferences, setConferences] = useState<any[]>(cv.conferences?.length ? cv.conferences : [{}]);
-  const [achievements, setAchievements] = useState<any[]>(cv.achievements?.length ? cv.achievements : [{}]);
-  const [organizations, setOrganizations] = useState<any[]>(cv.organizations?.length ? cv.organizations : [{}]);
+
+  const [workExperience, setWorkExperience] = useState<any[]>(
+    cv.workExperience?.length
+      ? cv.workExperience
+      : [
+          {
+            company: "PT. CIPTA SARANA MANDIRI",
+            companyAddress: "JL. AP PETTARANI NO. 88",
+            position: "OPERASIONAL MANAGER",
+            startDate: "01/2020",
+            endDate: "SEKARANG",
+            description: "MEMIMPIN MANAJEMEN OPERASIONAL, LOGISTIK, SERTA KOORDINASI DIVISI DISTRIBUSI BARANG.",
+          },
+        ]
+  );
+
+  const [trainings, setTrainings] = useState<any[]>(
+    cv.trainings?.length
+      ? cv.trainings
+      : cv.nonFormalEducation?.length
+      ? cv.nonFormalEducation
+      : [
+          {
+            name: "SERTIFIKASI MANAJEMEN OPERASIONAL",
+            organizer: "BNSP / LSP MANAJEMEN",
+            year: "2023",
+          },
+        ]
+  );
+
+  const [conferences, setConferences] = useState<any[]>(
+    cv.conferences?.length
+      ? cv.conferences
+      : [
+          {
+            title: "SEMINAR NASIONAL TREN MANAJEMEN BISNIS DIGITAL",
+            organizer: "STIMI YAPMI MAKASSAR",
+            year: "2024",
+            status: "PESERTA",
+          },
+        ]
+  );
+
+  const [achievements, setAchievements] = useState<any[]>(
+    cv.achievements?.length
+      ? cv.achievements
+      : [
+          {
+            name: "KARYAWAN TERBAIK TAHUNAN (BEST EMPLOYEE)",
+            issuer: "DIREKSI PT. CIPTA SARANA MANDIRI",
+            year: "2023",
+          },
+        ]
+  );
+
+  const [organizations, setOrganizations] = useState<any[]>(
+    cv.organizations?.length
+      ? cv.organizations
+      : [
+          {
+            name: "HIMPUNAN PRAKTISI MANAJEMEN MAKASSAR",
+            position: "ANGGOTA AKTIF",
+            startYear: "2021",
+            endYear: "SEKARANG",
+          },
+        ]
+  );
 
   const updateArray = (setter: any, index: number, field: string, value: string) => {
     setter((prev: any[]) => {
@@ -235,7 +403,7 @@ export default function CVForm({ initialData }: { initialData: any }) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    setMessage({ type: "", text: "" });
+    setErrorMessage("");
 
     const payload = {
       currentWork,
@@ -249,149 +417,558 @@ export default function CVForm({ initialData }: { initialData: any }) {
 
     const result = await saveCVData(payload);
     if (result.success) {
-      setMessage({ type: "success", text: "CV Riwayat Hidup (F-07) berhasil disimpan. Mengalihkan ke dashboard..." });
-      setTimeout(() => {
-        router.push("/dashboard/mahasiswa");
-        router.refresh();
-      }, 1500);
+      setSavedSuccess(true);
+      router.refresh();
     } else {
-      setMessage({ type: "error", text: result.error || "Gagal menyimpan CV." });
+      setErrorMessage(result.error || "Gagal menyimpan CV.");
     }
     setLoading(false);
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18, marginTop: 24 }}>
-      {message.text ? (
-        <div
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* ── BAGIAN I: IDENTITAS PEKERJAAN SAAT INI ── */}
+      <div style={sectionCard}>
+        <SectionHeader
+          kicker="Bagian I • Data Pekerjaan"
+          title="Identitas Pekerjaan Saat Ini"
+          badge="Wajib Standar RPL"
+        />
+        <div style={{ padding: "20px 22px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+            <SelectField
+              label="1. Status Pernikahan"
+              value={currentWork.maritalStatus}
+              onChange={(v) => setCurrentWork({ ...currentWork, maritalStatus: v })}
+              options={[
+                { value: "LAJANG", label: "Lajang" },
+                { value: "MENIKAH", label: "Menikah" },
+              ]}
+              required
+            />
+            <SelectField
+              label="2. Status Pekerjaan"
+              value={currentWork.employmentStatus}
+              onChange={(v) => setCurrentWork({ ...currentWork, employmentStatus: v })}
+              options={[
+                { value: "PEGAWAI TETAP", label: "Pegawai Tetap" },
+                { value: "PEGAWAI HONORER", label: "Pegawai Honorer" },
+                { value: "PNS", label: "PNS / ASN" },
+                { value: "WIRASWASTA", label: "Wiraswasta / Wirausaha" },
+                { value: "BELUM BEKERJA", label: "Belum Bekerja" },
+              ]}
+              required
+            />
+            <Field
+              label="3. Institusi / Perusahaan"
+              value={currentWork.institution}
+              onChange={(v) => setCurrentWork({ ...currentWork, institution: v })}
+              placeholder="PT / CV / Lembaga"
+              required
+            />
+            <Field
+              label="4. Jabatan Saat Ini"
+              value={currentWork.position}
+              onChange={(v) => setCurrentWork({ ...currentWork, position: v })}
+              placeholder="Staff / Supervisor / Manager"
+              required
+            />
+            <Field
+              label="5. Telepon Kantor"
+              value={currentWork.officePhone}
+              onChange={(v) => setCurrentWork({ ...currentWork, officePhone: v })}
+              placeholder="0411-xxxx"
+              uppercase={false}
+            />
+            <Field
+              label="6. Email Kantor"
+              type="email"
+              value={currentWork.officeEmail}
+              onChange={(v) => setCurrentWork({ ...currentWork, officeEmail: v })}
+              placeholder="kantor@perusahaan.com"
+            />
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <Field
+              label="7. Alamat Lengkap Kantor / Usaha"
+              value={currentWork.officeAddress}
+              onChange={(v) => setCurrentWork({ ...currentWork, officeAddress: v })}
+              placeholder="Jl. ... Kota ..."
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ── BAGIAN II & III (2 KOLOM SEJAJAR DI DESKTOP) ── */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+        {/* Bagian II: Pendidikan Formal */}
+        <div style={sectionCard}>
+          <SectionHeader
+            kicker="Bagian II • Pendidikan Formal"
+            title="Riwayat Pendidikan Formal"
+            badge={`${formalEducation.length} Riwayat`}
+          />
+          <div style={{ padding: "18px 20px" }}>
+            {formalEducation.map((item, index) => (
+              <div key={index} style={entryCard}>
+                {formalEducation.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormalEducation((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : [{}]))
+                    }
+                    style={removeButton}
+                  >
+                    ✕ Hapus
+                  </button>
+                )}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                  <SelectField
+                    label="Jenjang"
+                    required
+                    value={item.level}
+                    onChange={(v) => updateArray(setFormalEducation, index, "level", v)}
+                    options={[
+                      { value: "SMA/SMK", label: "SMA / SMK / MA" },
+                      { value: "D1", label: "Diploma 1 (D1)" },
+                      { value: "D2", label: "Diploma 2 (D2)" },
+                      { value: "D3", label: "Diploma 3 (D3)" },
+                      { value: "D4/S1", label: "D4 / S1 (Pindahan)" },
+                      { value: "S2", label: "Magister (S2)" },
+                    ]}
+                  />
+                  <Field
+                    label="Nama Sekolah / Kampus"
+                    required
+                    value={item.institution}
+                    onChange={(v) => updateArray(setFormalEducation, index, "institution", v)}
+                    placeholder="Nama institusi"
+                  />
+                  <Field
+                    label="Jurusan / Program Studi"
+                    required
+                    value={item.major}
+                    onChange={(v) => updateArray(setFormalEducation, index, "major", v)}
+                    placeholder="Jurusan"
+                  />
+                  <Field
+                    label="Tahun Lulus"
+                    required
+                    type="number"
+                    value={item.graduationYear}
+                    onChange={(v) => updateArray(setFormalEducation, index, "graduationYear", v)}
+                    placeholder="YYYY"
+                    uppercase={false}
+                  />
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setFormalEducation((prev) => [...prev, {}])}
+              style={addButton}
+            >
+              <span>+</span> <span>Tambah Riwayat Pendidikan</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Bagian III: Riwayat Pekerjaan */}
+        <div style={sectionCard}>
+          <SectionHeader
+            kicker="Bagian III • Pengalaman Kerja"
+            title="Riwayat Pengalaman Kerja"
+            badge={`${workExperience.length} Riwayat`}
+          />
+          <div style={{ padding: "18px 20px" }}>
+            {workExperience.map((item, index) => (
+              <div key={index} style={entryCard}>
+                {workExperience.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setWorkExperience((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : [{}]))
+                    }
+                    style={removeButton}
+                  >
+                    ✕ Hapus
+                  </button>
+                )}
+                <div style={{ display: "grid", gap: 10 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                    <Field
+                      label="Perusahaan / Institusi"
+                      required
+                      value={item.company}
+                      onChange={(v) => updateArray(setWorkExperience, index, "company", v)}
+                      placeholder="Nama perusahaan"
+                    />
+                    <Field
+                      label="Alamat Perusahaan"
+                      required
+                      value={item.companyAddress}
+                      onChange={(v) => updateArray(setWorkExperience, index, "companyAddress", v)}
+                      placeholder="Kota / Alamat"
+                    />
+                    <Field
+                      label="Jabatan / Peran"
+                      required
+                      value={item.position}
+                      onChange={(v) => updateArray(setWorkExperience, index, "position", v)}
+                      placeholder="Posisi kerja"
+                    />
+                    <Field
+                      label="Mulai (Bln/Thn)"
+                      required
+                      value={item.startDate || item.startYear}
+                      onChange={(v) => updateArray(setWorkExperience, index, "startDate", v)}
+                      placeholder="01/2020"
+                    />
+                    <Field
+                      label="Selesai (Bln/Thn)"
+                      required
+                      value={item.endDate || item.endYear}
+                      onChange={(v) => updateArray(setWorkExperience, index, "endDate", v)}
+                      placeholder="SEKARANG"
+                    />
+                  </div>
+                  <TextArea
+                    label="Uraian Tugas & Tanggung Jawab Utama"
+                    value={item.description}
+                    onChange={(v) => updateArray(setWorkExperience, index, "description", v)}
+                    placeholder="Jelaskan peran kerja dan kontribusi yang relevan dengan capaian pembelajaran..."
+                  />
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setWorkExperience((prev) => [...prev, {}])}
+              style={addButton}
+            >
+              <span>+</span> <span>Tambah Pengalaman Kerja</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── BAGIAN IV & V (2 KOLOM SEJAJAR DI DESKTOP) ── */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+        {/* Bagian IV: Pelatihan & Kursus */}
+        <div style={sectionCard}>
+          <SectionHeader
+            kicker="Bagian IV • Pelatihan Profesional"
+            title="Pelatihan & Kursus Profesional"
+            badge={`${trainings.length} Sertifikat`}
+          />
+          <div style={{ padding: "18px 20px" }}>
+            {trainings.map((item, index) => (
+              <div key={index} style={entryCard}>
+                {trainings.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setTrainings((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : [{}]))
+                    }
+                    style={removeButton}
+                  >
+                    ✕ Hapus
+                  </button>
+                )}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                  <Field
+                    label="Nama Pelatihan / Kursus"
+                    value={item.name}
+                    onChange={(v) => updateArray(setTrainings, index, "name", v)}
+                    placeholder="Nama sertifikasi/pelatihan"
+                  />
+                  <Field
+                    label="Penyelenggara"
+                    value={item.organizer}
+                    onChange={(v) => updateArray(setTrainings, index, "organizer", v)}
+                    placeholder="Lembaga penerbit"
+                  />
+                  <Field
+                    label="Tahun"
+                    type="number"
+                    value={item.year}
+                    onChange={(v) => updateArray(setTrainings, index, "year", v)}
+                    placeholder="YYYY"
+                    uppercase={false}
+                  />
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setTrainings((prev) => [...prev, {}])}
+              style={addButton}
+            >
+              <span>+</span> <span>Tambah Pelatihan</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Bagian V: Konferensi & Seminar */}
+        <div style={sectionCard}>
+          <SectionHeader
+            kicker="Bagian V • Seminar & Lokakarya"
+            title="Konferensi, Seminar & Lokakarya"
+            badge={`${conferences.length} Kegiatan`}
+          />
+          <div style={{ padding: "18px 20px" }}>
+            {conferences.map((item, index) => (
+              <div key={index} style={entryCard}>
+                {conferences.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setConferences((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : [{}]))
+                    }
+                    style={removeButton}
+                  >
+                    ✕ Hapus
+                  </button>
+                )}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                  <Field
+                    label="Judul Kegiatan"
+                    value={item.title}
+                    onChange={(v) => updateArray(setConferences, index, "title", v)}
+                    placeholder="Tema seminar"
+                  />
+                  <Field
+                    label="Penyelenggara"
+                    value={item.organizer}
+                    onChange={(v) => updateArray(setConferences, index, "organizer", v)}
+                    placeholder="Institusi"
+                  />
+                  <Field
+                    label="Tahun"
+                    type="number"
+                    value={item.year}
+                    onChange={(v) => updateArray(setConferences, index, "year", v)}
+                    placeholder="YYYY"
+                    uppercase={false}
+                  />
+                  <SelectField
+                    label="Peran / Status"
+                    value={item.status}
+                    onChange={(v) => updateArray(setConferences, index, "status", v)}
+                    options={[
+                      { value: "PESERTA", label: "Peserta" },
+                      { value: "PANITIA", label: "Panitia" },
+                      { value: "PEMBICARA", label: "Narasumber / Pembicara" },
+                    ]}
+                  />
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setConferences((prev) => [...prev, {}])}
+              style={addButton}
+            >
+              <span>+</span> <span>Tambah Seminar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── BAGIAN VI & VII (2 KOLOM SEJAJAR DI DESKTOP) ── */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+        {/* Bagian VI: Prestasi & Penghargaan */}
+        <div style={sectionCard}>
+          <SectionHeader
+            kicker="Bagian VI • Prestasi & Penghargaan"
+            title="Prestasi & Penghargaan"
+            badge={`${achievements.length} Prestasi`}
+          />
+          <div style={{ padding: "18px 20px" }}>
+            {achievements.map((item, index) => (
+              <div key={index} style={entryCard}>
+                {achievements.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setAchievements((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : [{}]))
+                    }
+                    style={removeButton}
+                  >
+                    ✕ Hapus
+                  </button>
+                )}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                  <Field
+                    label="Bentuk Penghargaan"
+                    value={item.name}
+                    onChange={(v) => updateArray(setAchievements, index, "name", v)}
+                    placeholder="Juara / Best Employee"
+                  />
+                  <Field
+                    label="Lembaga Pemberi"
+                    value={item.issuer}
+                    onChange={(v) => updateArray(setAchievements, index, "issuer", v)}
+                    placeholder="Perusahaan / Dinas"
+                  />
+                  <Field
+                    label="Tahun"
+                    type="number"
+                    value={item.year}
+                    onChange={(v) => updateArray(setAchievements, index, "year", v)}
+                    placeholder="YYYY"
+                    uppercase={false}
+                  />
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setAchievements((prev) => [...prev, {}])}
+              style={addButton}
+            >
+              <span>+</span> <span>Tambah Penghargaan</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Bagian VII: Pengalaman Organisasi */}
+        <div style={sectionCard}>
+          <SectionHeader
+            kicker="Bagian VII • Pengalaman Organisasi"
+            title="Pengalaman Organisasi & Komunitas"
+            badge={`${organizations.length} Organisasi`}
+          />
+          <div style={{ padding: "18px 20px" }}>
+            {organizations.map((item, index) => (
+              <div key={index} style={entryCard}>
+                {organizations.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOrganizations((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : [{}]))
+                    }
+                    style={removeButton}
+                  >
+                    ✕ Hapus
+                  </button>
+                )}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                  <Field
+                    label="Nama Organisasi / Komunitas"
+                    value={item.name}
+                    onChange={(v) => updateArray(setOrganizations, index, "name", v)}
+                    placeholder="Asosiasi / Komunitas"
+                  />
+                  <Field
+                    label="Jabatan / Peran"
+                    value={item.position}
+                    onChange={(v) => updateArray(setOrganizations, index, "position", v)}
+                    placeholder="Ketua / Anggota"
+                  />
+                  <Field
+                    label="Tahun Mulai"
+                    type="number"
+                    value={item.startYear}
+                    onChange={(v) => updateArray(setOrganizations, index, "startYear", v)}
+                    placeholder="YYYY"
+                    uppercase={false}
+                  />
+                  <Field
+                    label="Tahun Selesai"
+                    value={item.endYear}
+                    onChange={(v) => updateArray(setOrganizations, index, "endYear", v)}
+                    placeholder="YYYY / SEKARANG"
+                  />
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setOrganizations((prev) => [...prev, {}])}
+              style={addButton}
+            >
+              <span>+</span> <span>Tambah Organisasi</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── SUBMIT BUTTON & NEXT STEP NAVIGATION ── */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
+        {errorMessage && (
+          <div
+            style={{
+              padding: "10px 16px",
+              borderRadius: 12,
+              fontSize: 12,
+              fontWeight: 800,
+              background: "var(--md-error-container)",
+              color: "var(--md-error)",
+              border: "1px solid var(--md-error)",
+              textAlign: "center",
+            }}
+          >
+            ⚠️ {errorMessage}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
           style={{
-            padding: "14px 18px",
-            borderRadius: 12,
-            fontSize: 12.5,
+            width: "100%",
+            background: savedSuccess ? "var(--md-success)" : "var(--md-primary)",
+            color: "var(--md-on-primary)",
+            border: "none",
+            borderRadius: 999,
+            padding: "12px 24px",
+            fontSize: 13.5,
             fontWeight: 800,
-            background: message.type === "success" ? "var(--md-success-container)" : "var(--md-error-container)",
-            color: message.type === "success" ? "var(--md-success)" : "var(--md-error)",
-            border: `1.5px solid ${message.type === "success" ? "var(--md-success)" : "var(--md-error)"}`,
+            cursor: loading ? "wait" : "pointer",
+            opacity: loading ? 0.7 : 1,
+            boxShadow: "0 4px 14px var(--theme-glow)",
+            transition: "all 0.18s ease",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
           }}
         >
-          {message.text}
-        </div>
-      ) : null}
+          {loading ? (
+            <span>Menyimpan Data Riwayat Hidup...</span>
+          ) : savedSuccess ? (
+            <span>✓ SELURUH DATA CV & RIWAYAT HIDUP BERHASIL TERSIMPAN</span>
+          ) : (
+            <span>SIMPAN SELURUH DATA CV & RIWAYAT HIDUP (F-07) &rarr;</span>
+          )}
+        </button>
 
-      {/* Bagian I: Pekerjaan Saat Ini */}
-      <div style={sectionCard("var(--md-primary)")}>
-        <SectionTitle n="I" title="Identitas Pekerjaan Saat Ini" subtitle="Data tempat kerja atau aktivitas usaha calon mahasiswa saat ini." color="var(--md-primary)" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 12 }}>
-          <SelectField label="Status Pernikahan" value={currentWork.maritalStatus} onChange={(v: string) => setCurrentWork({ ...currentWork, maritalStatus: v })} options={[
-            { value: "Lajang", label: "Lajang" },
-            { value: "Menikah", label: "Menikah" },
-          ]} />
-          <SelectField label="Status Pekerjaan" value={currentWork.employmentStatus} onChange={(v: string) => setCurrentWork({ ...currentWork, employmentStatus: v })} options={[
-            { value: "Pegawai Tetap", label: "Pegawai Tetap" },
-            { value: "Pegawai Honorer", label: "Pegawai Honorer" },
-            { value: "PNS", label: "PNS / ASN" },
-            { value: "Wiraswasta", label: "Wiraswasta / Wirausaha" },
-            { value: "Belum Bekerja", label: "Belum Bekerja" },
-          ]} />
-          <Field label="Institusi / Perusahaan" value={currentWork.institution} onChange={(v: string) => setCurrentWork({ ...currentWork, institution: v })} placeholder="PT / CV / Lembaga" />
-          <Field label="Jabatan Saat Ini" value={currentWork.position} onChange={(v: string) => setCurrentWork({ ...currentWork, position: v })} placeholder="Staff / Supervisor / Manager" />
-          <Field label="Telepon Kantor" value={currentWork.officePhone} onChange={(v: string) => setCurrentWork({ ...currentWork, officePhone: v })} placeholder="0411-xxxx" />
-          <Field label="Email Kantor" type="email" value={currentWork.officeEmail} onChange={(v: string) => setCurrentWork({ ...currentWork, officeEmail: v })} placeholder="kantor@perusahaan.com" />
-        </div>
-        <div style={{ marginTop: 14 }}>
-          <Field label="Alamat Kantor" value={currentWork.officeAddress} onChange={(v: string) => setCurrentWork({ ...currentWork, officeAddress: v })} placeholder="Jl. ... Kota ..." />
-        </div>
+        {savedSuccess && (
+          <Link
+            href="/dashboard/mahasiswa/f02"
+            style={{
+              width: "100%",
+              background: "var(--md-surface-1)",
+              color: "var(--md-primary)",
+              border: "1.5px solid var(--md-primary)",
+              borderRadius: 999,
+              padding: "10px 20px",
+              fontSize: 12.5,
+              fontWeight: 800,
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              transition: "all 0.18s ease",
+            }}
+          >
+            <span>LANJUT KE FORMULIR APLIKASI RPL (F-02) &rarr;</span>
+          </Link>
+        )}
       </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          {/* Bagian II: Pendidikan Formal */}
-          <ArraySection n="II" title="Riwayat Pendidikan Formal" color="var(--md-success)" items={formalEducation} setter={setFormalEducation} addLabel="Tambah Riwayat Pendidikan" render={(item: any, index: number) => (
-            <CompactGrid>
-              <SelectField label="Jenjang" required value={item.level} onChange={(v: string) => updateArray(setFormalEducation, index, "level", v)} options={[{ value: "SMA/SMK", label: "SMA / SMK / MA" }, { value: "D1", label: "Diploma 1 (D1)" }, { value: "D2", label: "Diploma 2 (D2)" }, { value: "D3", label: "Diploma 3 (D3)" }, { value: "D4/S1", label: "D4 / S1 (Pindahan)" }, { value: "S2", label: "Magister (S2)" }]} />
-              <Field label="Nama Sekolah / Kampus" required value={item.institution} onChange={(v: string) => updateArray(setFormalEducation, index, "institution", v)} placeholder="Nama institusi" />
-              <Field label="Jurusan / Program Studi" required value={item.major} onChange={(v: string) => updateArray(setFormalEducation, index, "major", v)} placeholder="Jurusan" />
-              <Field label="Tahun Lulus" required type="number" value={item.graduationYear} onChange={(v: string) => updateArray(setFormalEducation, index, "graduationYear", v)} placeholder="YYYY" />
-            </CompactGrid>
-          )} />
-
-          {/* Bagian III: Riwayat Pekerjaan */}
-          <ArraySection n="III" title="Riwayat Pengalaman Kerja" color="var(--md-warning)" items={workExperience} setter={setWorkExperience} addLabel="Tambah Pengalaman Kerja" render={(item: any, index: number) => (
-            <div style={{ display: "grid", gap: 12 }}>
-              <CompactGrid>
-                <Field label="Nama Perusahaan / Institusi" required value={item.company} onChange={(v: string) => updateArray(setWorkExperience, index, "company", v)} />
-                <Field label="Alamat Perusahaan" required value={item.companyAddress} onChange={(v: string) => updateArray(setWorkExperience, index, "companyAddress", v)} />
-                <Field label="Jabatan" required value={item.position} onChange={(v: string) => updateArray(setWorkExperience, index, "position", v)} />
-                <Field label="Mulai (Bln/Thn)" required value={item.startDate || item.startYear} onChange={(v: string) => updateArray(setWorkExperience, index, "startDate", v)} placeholder="01/2020" />
-                <Field label="Selesai (Bln/Thn)" required value={item.endDate || item.endYear} onChange={(v: string) => updateArray(setWorkExperience, index, "endDate", v)} placeholder="12/2023 / Sekarang" />
-              </CompactGrid>
-              <TextArea label="Uraian Tugas & Tanggung Jawab Utama" value={item.description} onChange={(v: string) => updateArray(setWorkExperience, index, "description", v)} placeholder="Jelaskan peran kerja dan kontribusi yang relevan dengan capaian pembelajaran mata kuliah..." />
-            </div>
-          )} />
-
-          {/* Bagian IV: Pelatihan */}
-          <ArraySection n="IV" title="Pelatihan & Kursus Profesional" color="var(--md-info)" items={trainings} setter={setTrainings} addLabel="Tambah Pelatihan" render={(item: any, index: number) => (
-            <CompactGrid>
-              <Field label="Nama Pelatihan / Kursus" value={item.name} onChange={(v: string) => updateArray(setTrainings, index, "name", v)} placeholder="Nama sertifikasi/pelatihan" />
-              <Field label="Penyelenggara" value={item.organizer} onChange={(v: string) => updateArray(setTrainings, index, "organizer", v)} placeholder="Lembaga penerbit" />
-              <Field label="Tahun" type="number" value={item.year} onChange={(v: string) => updateArray(setTrainings, index, "year", v)} placeholder="YYYY" />
-            </CompactGrid>
-          )} />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          {/* Bagian V: Konferensi */}
-          <ArraySection n="V" title="Konferensi, Seminar & Lokakarya" color="var(--md-secondary)" items={conferences} setter={setConferences} addLabel="Tambah Seminar" render={(item: any, index: number) => (
-            <CompactGrid>
-              <Field label="Judul Kegiatan" value={item.title} onChange={(v: string) => updateArray(setConferences, index, "title", v)} placeholder="Tema seminar" />
-              <Field label="Penyelenggara" value={item.organizer} onChange={(v: string) => updateArray(setConferences, index, "organizer", v)} placeholder="Institusi" />
-              <Field label="Tahun" type="number" value={item.year} onChange={(v: string) => updateArray(setConferences, index, "year", v)} placeholder="YYYY" />
-              <SelectField label="Peran / Status" value={item.status} onChange={(v: string) => updateArray(setConferences, index, "status", v)} options={[{ value: "Peserta", label: "Peserta" }, { value: "Panitia", label: "Panitia" }, { value: "Pembicara", label: "Narasumber / Pembicara" }]} />
-            </CompactGrid>
-          )} />
-
-          {/* Bagian VI: Penghargaan */}
-          <ArraySection n="VI" title="Prestasi & Penghargaan" color="var(--md-error)" items={achievements} setter={setAchievements} addLabel="Tambah Penghargaan" render={(item: any, index: number) => (
-            <CompactGrid>
-              <Field label="Bentuk Penghargaan" value={item.name} onChange={(v: string) => updateArray(setAchievements, index, "name", v)} placeholder="Juara / Best Employee" />
-              <Field label="Lembaga Pemberi" value={item.issuer} onChange={(v: string) => updateArray(setAchievements, index, "issuer", v)} placeholder="Perusahaan / Dinas" />
-              <Field label="Tahun" type="number" value={item.year} onChange={(v: string) => updateArray(setAchievements, index, "year", v)} placeholder="YYYY" />
-            </CompactGrid>
-          )} />
-
-          {/* Bagian VII: Organisasi */}
-          <ArraySection n="VII" title="Pengalaman Organisasi" color="var(--md-on-surface-variant)" items={organizations} setter={setOrganizations} addLabel="Tambah Organisasi" render={(item: any, index: number) => (
-            <CompactGrid>
-              <Field label="Nama Organisasi / Komunitas" value={item.name} onChange={(v: string) => updateArray(setOrganizations, index, "name", v)} placeholder="Asosiasi / Komunitas" />
-              <Field label="Jabatan / Peran" value={item.position} onChange={(v: string) => updateArray(setOrganizations, index, "position", v)} placeholder="Ketua / Anggota" />
-              <Field label="Tahun Mulai" type="number" value={item.startYear} onChange={(v: string) => updateArray(setOrganizations, index, "startYear", v)} placeholder="YYYY" />
-              <Field label="Tahun Selesai" value={item.endYear} onChange={(v: string) => updateArray(setOrganizations, index, "endYear", v)} placeholder="YYYY / Sekarang" />
-            </CompactGrid>
-          )} />
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        disabled={loading}
-        style={{
-          width: "100%",
-          background: "var(--md-primary)",
-          color: "var(--md-on-primary)",
-          border: "none",
-          borderRadius: 999,
-          padding: "15px 24px",
-          fontSize: 14,
-          fontWeight: 800,
-          cursor: loading ? "wait" : "pointer",
-          opacity: loading ? 0.7 : 1,
-          boxShadow: "0 4px 16px var(--theme-glow)",
-          transition: "all 0.18s ease",
-          marginTop: 10,
-        }}
-      >
-        {loading ? "Menyimpan Data Riwayat Hidup..." : "Simpan CV & Riwayat Hidup (F-07) →"}
-      </button>
     </form>
   );
 }

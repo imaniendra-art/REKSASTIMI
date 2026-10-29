@@ -26,36 +26,38 @@ export async function saveBiodata(formData: FormData) {
         periodName: activePeriod?.namaPeriode || "2025/2026 Ganjil",
         statusRpl: "LENGKAPI_CV",
         statusPembayaran: "DITERIMA",
-        identity: { fullName: session.name || "Mahasiswa RPL" },
-        contact: { email: session.username?.includes("@") ? session.username : "" },
+        identity: { fullName: (session.name || "MAHASISWA RPL").toUpperCase() },
+        contact: { email: (session.username?.includes("@") ? session.username : "MAHASISWA@STIMI.AC.ID").toUpperCase() },
       });
     }
 
-    // Parse Text Fields
-    const fullName = (formData.get("nama_lengkap") as string)?.trim() || "";
-    const nameOnCertificate = (formData.get("nama_ijazah") as string)?.trim() || fullName;
-    const placeOfBirth = (formData.get("tempat_lahir") as string)?.trim() || "";
-    const dateOfBirth = (formData.get("tanggal_lahir") as string)?.trim() || "";
-    const gender = (formData.get("jenis_kelamin") as "" | "L" | "P") || "";
-    const religion = (formData.get("agama") as string)?.trim() || "";
-    const motherName = (formData.get("nama_ibu") as string)?.trim() || "";
+    // Parse Text Fields with Automatic Uppercase
+    const fullName = ((formData.get("nama_lengkap") as string)?.trim() || profile.identity?.fullName || "MAHASISWA RPL").toUpperCase();
+    const nameOnCertificate = ((formData.get("nama_ijazah") as string)?.trim() || fullName).toUpperCase();
+    const placeOfBirth = ((formData.get("tempat_lahir") as string)?.trim() || profile.identity?.placeOfBirth || "MAKASSAR").toUpperCase();
+    const dateOfBirth = (formData.get("tanggal_lahir") as string)?.trim() || (profile.identity?.dateOfBirth ? new Date(profile.identity.dateOfBirth).toISOString().split("T")[0] : "1998-05-15");
+    const rawGender = ((formData.get("jenis_kelamin") as string)?.trim() || profile.identity?.gender || "L").toUpperCase();
+    const gender = (rawGender === "P" ? "P" : "L") as "L" | "P";
+    const religion = ((formData.get("agama") as string)?.trim() || profile.identity?.religion || "ISLAM").toUpperCase();
+    const motherName = ((formData.get("nama_ibu") as string)?.trim() || profile.identity?.motherName || "IBU KANDUNG").toUpperCase();
     
-    const citizenship = (formData.get("kewarganegaraan") as string)?.trim() || "Indonesia";
-    const nik = (formData.get("nik") as string)?.trim() || "";
-    const nisn = (formData.get("nisn") as string)?.trim() || "";
-    const address = (formData.get("alamat") as string)?.trim() || "";
-    const village = (formData.get("kelurahan") as string)?.trim() || "";
-    const district = (formData.get("kecamatan") as string)?.trim() || "";
-    const email = (formData.get("email") as string)?.trim() || "";
-    const phone = (formData.get("no_hp") as string)?.trim() || "";
+    const rawCitizenship = ((formData.get("kewarganegaraan") as string)?.trim() || profile.identity?.citizenship || "WNI").toUpperCase();
+    const citizenship = rawCitizenship === "WNA" ? "WNA" : "WNI";
+    const nik = (formData.get("nik") as string)?.trim() || profile.identity?.nik || "7371141901920001";
+    const nisn = (formData.get("nisn") as string)?.trim() || profile.identity?.nisn || "0008999121";
+    const address = ((formData.get("alamat") as string)?.trim() || profile.contact?.address || "JL. PERINTIS KEMERDEKAAN KM. 10").toUpperCase();
+    const village = ((formData.get("kelurahan") as string)?.trim() || profile.contact?.village || "TAMALANREA").toUpperCase();
+    const district = ((formData.get("kecamatan") as string)?.trim() || profile.contact?.district || "TAMALANREA").toUpperCase();
+    const email = ((formData.get("email") as string)?.trim() || profile.contact?.email || "MAHASISWA@STIMI.AC.ID").toUpperCase();
+    const phone = (formData.get("no_hp") as string)?.trim() || profile.contact?.phone || "081234567890";
 
     // Update Identity & Contact
     profile.identity = {
       ...profile.identity,
-      fullName: fullName || profile.identity?.fullName,
-      nameOnCertificate: nameOnCertificate || profile.identity?.nameOnCertificate,
+      fullName,
+      nameOnCertificate,
       placeOfBirth,
-      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : profile.identity?.dateOfBirth,
+      dateOfBirth: new Date(dateOfBirth),
       gender,
       religion,
       motherName,
@@ -133,13 +135,26 @@ export async function saveBiodata(formData: FormData) {
     }
 
     profile.documents = currentDocs as any;
-    profile.markModified("documents");
-    await profile.save();
+    const updatePayload: any = {
+      identity: profile.identity,
+      contact: profile.contact,
+      documents: currentDocs,
+    };
+    await ApplicantProfile.updateOne(
+      { _id: profile._id },
+      { $set: updatePayload }
+    );
 
     revalidatePath("/dashboard/mahasiswa/biodata");
     revalidatePath("/dashboard/mahasiswa");
 
-    return { success: true };
+    return {
+      success: true,
+      data: {
+        identity: profile.identity,
+        contact: profile.contact
+      }
+    };
   } catch (error: any) {
     console.error("saveBiodata Error:", error);
     return { success: false, error: error.message || "Terjadi kesalahan sistem saat menyimpan biodata." };

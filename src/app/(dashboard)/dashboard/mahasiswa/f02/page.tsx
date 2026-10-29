@@ -5,9 +5,7 @@ import { MataKuliah } from "@/models/MataKuliah";
 import { ApplicantProfile } from "@/models/ApplicantProfile";
 import { F02Pengajuan } from "@/models/F02Pengajuan";
 import { redirect } from "next/navigation";
-import { PageHero } from "@/components/dashboard/UIComponents";
 import FormF02Client from "./FormF02Client";
-import Link from "next/link";
 
 export const metadata = {
   title: "F02 Formulir Aplikasi RPL - REKSA STIMI",
@@ -26,18 +24,18 @@ export default async function F02Page() {
   // 1. Fetch Profile for biodata card
   const profileDoc = await ApplicantProfile.findOne({ userId: session.id }).lean();
   const rawDob = profileDoc?.identity?.dateOfBirth;
-  const dobString = rawDob instanceof Date ? rawDob.toISOString().split('T')[0] : String(rawDob || "-");
+  const dobString = rawDob instanceof Date ? rawDob.toISOString().split("T")[0] : String(rawDob || "-");
 
   const profile = profileDoc
     ? {
-        name: profileDoc.identity?.fullName || session.name,
+        name: (profileDoc.identity?.fullName || session.name || "MAHASISWA RPL").toUpperCase(),
         nik: profileDoc.identity?.nik || "-",
-        pob: profileDoc.identity?.placeOfBirth || "-",
+        pob: (profileDoc.identity?.placeOfBirth || "-").toUpperCase(),
         dob: dobString,
-        gender: profileDoc.identity?.gender || "-",
+        gender: profileDoc.identity?.gender === "L" ? "LAKI-LAKI" : profileDoc.identity?.gender === "P" ? "PEREMPUAN" : profileDoc.identity?.gender || "-",
       }
     : {
-        name: session.name,
+        name: (session.name || "MAHASISWA RPL").toUpperCase(),
         nik: "-",
         pob: "-",
         dob: "-",
@@ -53,20 +51,21 @@ export default async function F02Page() {
         .filter(Boolean)
     )
   ).sort((a, b) => a.localeCompare(b));
-  
+
   // Group by semester
   const matkulPerSemester: Record<number, any[]> = {};
   mkDocs.forEach((mk) => {
-    const sem = mk.semester || 0;
+    const sem = mk.semester || 1;
     if (!matkulPerSemester[sem]) {
       matkulPerSemester[sem] = [];
     }
+    const resolvedNama = String(mk.namaMatkul || (mk as any).nama || mk.kode || "Mata Kuliah").trim();
     matkulPerSemester[sem].push({
       id: mk._id.toString(),
-      kode: mk.kode,
-      namaMatkul: mk.namaMatkul,
-      sks: mk.sks,
-      semester: mk.semester,
+      kode: mk.kode || "-",
+      namaMatkul: resolvedNama,
+      sks: Number(mk.sks) || 0,
+      semester: sem,
       isRpl: mk.isRpl !== false,
     });
   });
@@ -80,17 +79,10 @@ export default async function F02Page() {
 
   return (
     <div style={{ width: "100%", margin: "0 auto", paddingBottom: 40 }}>
-
-      <PageHero
-        title="Pemilihan Mata Kuliah Konversi"
-        subtitle="Pilih mata kuliah yang ingin direkognisi berdasarkan rekam jejak kerja (Perolehan) atau pendidikan tinggi sebelumnya (Transfer)."
-        tone="success"
-      />
-
-      <FormF02Client 
-        profile={profile} 
-        matkulPerSemester={matkulPerSemester} 
-        pilihanUser={pilihanUser} 
+      <FormF02Client
+        profile={profile}
+        matkulPerSemester={matkulPerSemester}
+        pilihanUser={pilihanUser}
         initialConcentration={profileDoc?.concentration || "-"}
         concentrationOptions={concentrationOptions}
       />

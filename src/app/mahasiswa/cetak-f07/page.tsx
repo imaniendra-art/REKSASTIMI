@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { connectMongoDB } from "@/lib/mongodb";
 import { ApplicantProfile } from "@/models/ApplicantProfile";
 import Link from "next/link";
+import { DocumentPreviewBar } from "@/components/document/DocumentPreviewBar";
 
 export async function generateMetadata() {
   const session = await getSession();
@@ -44,12 +45,12 @@ export default async function CetakF07Page() {
   return (
     <>
       <style>{printCss}</style>
-      <div className="print-controls no-print">
-        <button type="button" className="btn-print-action btn-primary" dangerouslySetInnerHTML={{ __html: `<span onclick="window.print()">Cetak Dokumen</span>` }} />
-        <Link href="/dashboard/mahasiswa/download" className="btn-print-action btn-secondary">
-          Tutup
-        </Link>
-      </div>
+      <DocumentPreviewBar
+        code="F-07"
+        title="Daftar Riwayat Hidup / CV Pemohon"
+        studentName={mhs.nama}
+        registrationNumber={mhs.noReg}
+      />
 
       <div className="document-container">
         {/* Cover Page */}
@@ -322,19 +323,21 @@ function formatDate(value: unknown) {
 
 const printCss = `
 :root {
-  --blue-header: #e0f2fe;
-  --blue-dark: #0369a1;
+  --blue-header: #f0fdfa;
+  --blue-dark: #0f766e;
   --slate-border: #1e293b;
   --ghost-white: #f8fafc;
 }
 
-html, body {
+html, body, body:not(.dark), .dark body, [data-mode="dark"] body {
   margin: 0 !important;
   padding: 0 !important;
-  background-color: #0369a1; /* STIMI BLUE */
+  background: #334155 !important;
+  background-color: #334155 !important;
+  background-image: none !important;
   min-height: 100vh;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #1e293b;
+  color: #0f172a;
   line-height: 1.5;
   font-size: 10.5pt;
   display: flex;
@@ -347,16 +350,17 @@ html, body {
 }
 
 .document-container {
-  background: white;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
   width: 100%;
   max-width: 210mm;
   min-height: 297mm;
-  margin: 40px auto;
+  margin: 28px auto 48px auto !important;
   padding: 0.75in;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 4px;
   box-sizing: border-box;
   position: relative;
-  z-index: 1;
   overflow: hidden;
   display: block;
 }
@@ -452,12 +456,12 @@ html, body {
 }
 
 .section-title {
-  background: linear-gradient(to right, #bae6fd, #e0f2fe) !important;
-  color: #0369a1;
+  background: linear-gradient(to right, #ccfbf1, #f0fdfa) !important;
+  color: #0f766e;
   font-weight: 900;
   padding: 10px 18px;
-  border-left: 5px solid #0369a1;
-  border-bottom: 2px solid #0369a1;
+  border-left: 5px solid #0d9488;
+  border-bottom: 2px solid #0d9488;
   font-size: 11.5pt;
   margin-top: 30px;
   margin-bottom: 15px;
@@ -513,7 +517,7 @@ table {
 
 .table-data th {
   background-color: #f0f9ff !important;
-  color: #0369a1;
+  color: #0f766e;
   text-align: center;
   font-weight: 800;
   font-size: 9pt;
@@ -597,19 +601,24 @@ table {
 .btn-secondary { background: #64748b !important; color: white !important; }
 
 @media print {
-  html, body {
-      background: white !important;
-      padding: 0 !important;
-      margin: 0 !important;
+  html, body, body:not(.dark), .dark body, [data-mode="dark"] body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .document-container {
-      box-shadow: none !important;
-      width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: none !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
   }
   .no-print, .print-controls { display: none !important; }
-  * { -webkit-print-color-adjust: exact !important; }
 }
 `;
