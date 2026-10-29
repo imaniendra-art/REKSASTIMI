@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-export type ColorTheme = "teal" | "burgundy" | "dusty-rose" | "charcoal" | "orange-burn" | "deep-blue";
+export type ColorTheme = "teal" | "burgundy" | "plum" | "dusty-rose" | "charcoal" | "orange-burn" | "deep-blue";
 export type ModeTheme = "light" | "dark";
 
 interface ThemeContextType {
@@ -16,6 +16,7 @@ interface ThemeContextType {
 export const THEME_PALETTES: { id: ColorTheme; name: string; hex: string; bgClass: string }[] = [
   { id: "teal", name: "Teal (Toska)", hex: "#0d9488", bgClass: "bg-teal-600" },
   { id: "burgundy", name: "Burgundy (Marun)", hex: "#9f1239", bgClass: "bg-rose-900" },
+  { id: "plum", name: "Plum (Ungu)", hex: "#7e22ce", bgClass: "bg-purple-700" },
   { id: "dusty-rose", name: "Dusty Rose (Pink)", hex: "#be185d", bgClass: "bg-pink-700" },
   { id: "charcoal", name: "Charcoal (Arang)", hex: "#334155", bgClass: "bg-slate-700" },
   { id: "orange-burn", name: "Orange Burn (Bata)", hex: "#c2410c", bgClass: "bg-orange-700" },

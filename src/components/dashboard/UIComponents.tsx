@@ -10,6 +10,7 @@ type PageHeroProps = {
   rightContent?: React.ReactNode;
   tone?: "primary" | "success" | "warning" | "danger" | "info" | "dark" | "secondary" | "maroon";
   withSparkles?: boolean;
+  style?: React.CSSProperties;
 };
 
 export function PageHero({
@@ -20,6 +21,7 @@ export function PageHero({
   rightContent,
   tone = "primary",
   withSparkles = false,
+  style,
 }: PageHeroProps) {
   const heroGradient = {
     primary: "linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary, var(--md-primary)) 100%)",
@@ -38,12 +40,13 @@ export function PageHero({
       style={{
         background: heroGradient,
         borderRadius: 24,
-        padding: "36px 40px",
-        marginBottom: 28,
+        padding: "30px 36px",
+        marginBottom: 20,
         color: "#fff",
         position: "relative",
         overflow: "hidden",
         boxShadow: "0 12px 36px var(--theme-glow, rgba(0,0,0,0.15))",
+        ...style,
       }}
     >
       {/* Decorative orbs */}

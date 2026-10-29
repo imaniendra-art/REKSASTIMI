@@ -14,10 +14,10 @@ type PaymentValidationTableProps = {
 function StatusBadge({ status }: { status: FinancePaymentRow["statusVerifikasi"] }) {
   const style =
     status === "Diterima"
-      ? { background: "var(--md-success-container)", color: "var(--md-success)", border: "1px solid #a7f3d0" }
+      ? { background: "var(--md-success-container)", color: "var(--md-success)", border: "1px solid rgba(16, 185, 129, 0.3)" }
       : status === "Ditolak"
-        ? { background: "var(--md-error-container)", color: "var(--md-error)", border: "1px solid #fecaca" }
-        : { background: "var(--md-warning-container)", color: "var(--md-warning)", border: "1px solid #fde68a" };
+        ? { background: "var(--md-error-container)", color: "var(--md-error)", border: "1px solid rgba(239, 68, 68, 0.3)" }
+        : { background: "var(--md-warning-container)", color: "var(--md-warning)", border: "1px solid rgba(245, 158, 11, 0.3)" };
 
   return (
     <span style={{ ...style, display: "inline-flex", alignItems: "center", gap: 5, borderRadius: 999, padding: "5px 12px", fontSize: 11, fontWeight: 900 }}>

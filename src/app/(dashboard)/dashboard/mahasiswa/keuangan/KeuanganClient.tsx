@@ -28,10 +28,10 @@ type KeuanganClientProps = {
 function StatusBadge({ status }: { status: PaymentHistory["statusVerifikasi"] }) {
   const style =
     status === "Diterima"
-      ? { background: "var(--md-success-container)", color: "var(--md-success)", border: "1px solid #a7f3d0" }
+      ? { background: "var(--md-success-container)", color: "var(--md-success)", border: "1px solid rgba(16, 185, 129, 0.3)" }
       : status === "Ditolak"
-        ? { background: "var(--md-error-container)", color: "var(--md-error)", border: "1px solid #fecaca" }
-        : { background: "var(--md-warning-container)", color: "var(--md-warning)", border: "1px solid #fde68a" };
+        ? { background: "var(--md-error-container)", color: "var(--md-error)", border: "1px solid rgba(239, 68, 68, 0.3)" }
+        : { background: "var(--md-warning-container)", color: "var(--md-warning)", border: "1px solid rgba(245, 158, 11, 0.3)" };
 
   return (
     <span style={{ ...style, display: "inline-flex", alignItems: "center", gap: 4, borderRadius: 999, padding: "5px 12px", fontSize: 11, fontWeight: 800 }}>
@@ -87,6 +87,7 @@ export default function KeuanganClient({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setMessage({ type: "", text: "" });
 
     // Client-side validations
@@ -164,7 +165,7 @@ export default function KeuanganClient({
           text: "Foto berhasil dioptimalkan dan berkas pendaftaran berhasil dikirim. Menunggu verifikasi tim keuangan.",
         });
         setTimeout(() => setMessage({ type: "", text: "" }), 6000);
-        e.currentTarget.reset();
+        form?.reset();
         setFileBukti(null);
         setFileKtp(null);
         setFileKk(null);
@@ -194,41 +195,56 @@ export default function KeuanganClient({
           {/* Peringatan Status Gated Funnel Sebelum Pendaftaran Diterima */}
           {!isRegistrationAccepted && (
             <div
+              className="md-card"
               style={{
                 borderRadius: 16,
-                padding: "16px 20px",
-                background: pendingRegistrationPayment
-                  ? "var(--md-warning-container)"
+                padding: "18px 20px",
+                background: "var(--md-surface-1)",
+                border: "1px solid var(--md-outline-variant)",
+                borderLeft: pendingRegistrationPayment
+                  ? "5px solid var(--md-warning)"
                   : rejectedRegistrationPayment
-                  ? "var(--md-error-container)"
-                  : "var(--md-surface-2)",
-                border: pendingRegistrationPayment
-                  ? "1.5px solid var(--md-warning)"
-                  : rejectedRegistrationPayment
-                  ? "1.5px solid var(--md-error)"
-                  : "1.5px solid var(--md-primary)",
-                color: pendingRegistrationPayment
-                  ? "var(--md-warning)"
-                  : rejectedRegistrationPayment
-                  ? "var(--md-error)"
-                  : "var(--md-on-surface)",
+                  ? "5px solid var(--md-error)"
+                  : "5px solid var(--md-primary)",
                 display: "flex",
                 alignItems: "flex-start",
                 gap: 14,
               }}
             >
-              <span style={{ fontSize: 24, lineHeight: 1 }}>
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  background: pendingRegistrationPayment
+                    ? "var(--md-warning-container)"
+                    : rejectedRegistrationPayment
+                    ? "var(--md-error-container)"
+                    : "var(--md-primary-container)",
+                  color: pendingRegistrationPayment
+                    ? "var(--md-warning)"
+                    : rejectedRegistrationPayment
+                    ? "var(--md-error)"
+                    : "var(--md-primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 20,
+                  fontWeight: 900,
+                  flexShrink: 0,
+                }}
+              >
                 {pendingRegistrationPayment ? "⏳" : rejectedRegistrationPayment ? "⚠️" : "🔒"}
-              </span>
-              <div>
-                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 900 }}>
+              </div>
+              <div style={{ flex: 1 }}>
+                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 900, color: "var(--md-on-surface)" }}>
                   {pendingRegistrationPayment
                     ? "Pembayaran Pendaftaran Sedang Diverifikasi"
                     : rejectedRegistrationPayment
                     ? "Pembayaran Pendaftaran Ditolak"
                     : "Langkah Wajib: Selesaikan Pembayaran Pendaftaran"}
                 </h4>
-                <p style={{ margin: "5px 0 0", fontSize: 12.5, lineHeight: 1.5, opacity: 0.9 }}>
+                <p style={{ margin: "5px 0 0", fontSize: 12.5, lineHeight: 1.5, color: "var(--md-on-surface-variant)" }}>
                   {pendingRegistrationPayment
                     ? "Bukti transfer dan 4 berkas pendaftaran Anda telah diterima sistem dan sedang dalam antrean verifikasi Tim Keuangan (Pak Riswan). Seluruh menu akademik akan otomatis terbuka setelah diverifikasi."
                     : rejectedRegistrationPayment
@@ -241,26 +257,61 @@ export default function KeuanganClient({
 
           {isRegistrationAccepted && (
             <div
+              className="md-card"
               style={{
                 borderRadius: 16,
-                padding: "14px 18px",
-                background: "var(--md-success-container)",
-                border: "1.5px solid var(--md-success)",
-                color: "var(--md-success)",
+                padding: "16px 20px",
+                background: "var(--md-surface-1)",
+                border: "1px solid var(--md-outline-variant)",
+                borderLeft: "5px solid var(--md-success)",
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
+                gap: 14,
               }}
             >
-              <span style={{ fontSize: 22 }}>✅</span>
-              <div>
-                <h4 style={{ margin: 0, fontSize: 13.5, fontWeight: 900 }}>
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  background: "var(--md-success-container)",
+                  color: "var(--md-success)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 20,
+                  fontWeight: 900,
+                  flexShrink: 0,
+                }}
+              >
+                ✓
+              </div>
+              <div style={{ flex: 1 }}>
+                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 900, color: "var(--md-on-surface)" }}>
                   Pembayaran Pendaftaran RPL Terverifikasi
                 </h4>
-                <p style={{ margin: "2px 0 0", fontSize: 12, opacity: 0.9 }}>
+                <p style={{ margin: "3px 0 0", fontSize: 12, color: "var(--md-on-surface-variant)", lineHeight: 1.5 }}>
                   Seluruh akses akademik Anda telah aktif. Form di bawah ini dapat digunakan jika ada tagihan administrasi lanjutan.
                 </p>
               </div>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 800,
+                  padding: "4px 12px",
+                  borderRadius: 999,
+                  background: "var(--md-success-container)",
+                  color: "var(--md-success)",
+                  border: "1px solid rgba(16, 185, 129, 0.25)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 5,
+                  flexShrink: 0,
+                }}
+              >
+                <span>✓</span>
+                <span>Aktif</span>
+              </span>
             </div>
           )}
 

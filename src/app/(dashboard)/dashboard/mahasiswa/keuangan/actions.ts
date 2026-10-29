@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { connectMongoDB } from "@/lib/mongodb";
 import { Payment } from "@/models/Payment";
 import { ApplicantProfile } from "@/models/ApplicantProfile";
+import { Period } from "@/models/Period";
 import { revalidatePath } from "next/cache";
 import fs from "fs";
 import path from "path";
@@ -98,34 +99,40 @@ export async function submitPayment(formData: FormData) {
     };
 
     // 2. Save payment receipt file with standardized naming: pendaftaran_nama.ext
-    const buktiExt = extByType[fileBukti.type] ?? "jpg";
+    const receiptExt = extByType[fileBukti.type] ?? "jpg";
     const buktiFilename = isPendaftaran
-      ? `pendaftaran_${slugName}.${buktiExt}`
-      : `bayar_${slugName}_${Date.now()}.${buktiExt}`;
-
-    const buktiFilePath = path.join(keuanganUploadDir, buktiFilename);
+      ? `pendaftaran_${slugName}.${receiptExt}`
+      : `transfer_${session.id.slice(-6)}_${Date.now()}.${receiptExt}`;
+    const buktiPath = path.join(keuanganUploadDir, buktiFilename);
     const buktiBuffer = Buffer.from(await fileBukti.arrayBuffer());
-    // Safely write / overwrite
-    fs.writeFileSync(buktiFilePath, buktiBuffer);
+    fs.writeFileSync(buktiPath, buktiBuffer);
     const buktiUrl = `/uploads/keuangan/${buktiFilename}`;
 
-    // 3. Save mandatory student registration documents with standardized naming:
-    // ktp_nama.ext, kk_nama.ext, akta_nama.ext, ijazah_nama.ext
-    const currentDocs: any[] = ((profile?.documents || []) as any[]).map((d) => ({
-      type: d.type,
-      fileName: d.fileName,
-      fileUrl: d.fileUrl,
-      validationStatus: d.validationStatus,
-      note: d.note,
-      uploadedAt: d.uploadedAt,
-    }));
-
+    // 3. Process the 4 mandatory legal documents if registration
     const docItems = [
       { key: "ktp", file: fileKtp },
       { key: "kk", file: fileKk },
       { key: "akta", file: fileAkta },
       { key: "ijazah", file: fileIjazah },
     ];
+
+    const currentDocs: Array<{
+      type: string;
+      fileName: string;
+      fileUrl: string;
+      validationStatus: string;
+      note?: string;
+      uploadedAt: Date;
+    }> = profile && profile.documents
+      ? ((profile.documents as any[]).map((d) => ({
+          type: d.type,
+          fileName: d.fileName,
+          fileUrl: d.fileUrl,
+          validationStatus: d.validationStatus,
+          note: d.note,
+          uploadedAt: d.uploadedAt,
+        })))
+      : [];
 
     for (const item of docItems) {
       if (item.file && item.file.size > 0) {
@@ -160,7 +167,6 @@ export async function submitPayment(formData: FormData) {
     }
 
     // 4. Create or update Payment document
-    // If registration payment is being re-submitted, update existing or create new
     await Payment.create({
       userId: session.id,
       jenisPembayaran: jenis,
@@ -183,6 +189,27 @@ export async function submitPayment(formData: FormData) {
         };
       }
       await profile.save();
+    } else {
+      const activePeriod = await Period.findOne({ isActive: true }).lean();
+      await ApplicantProfile.create({
+        userId: session.id,
+        periodId: activePeriod?._id,
+        periodName: activePeriod?.namaPeriode || "2025/2026 Ganjil",
+        program: "S1 Manajemen",
+        concentration: "Manajemen",
+        statusRpl: "PENDAFTARAN",
+        statusPembayaran: "PROSES",
+        identity: {
+          fullName: session.name || session.username || "Mahasiswa RPL",
+        },
+        contact: {
+          email: session.username?.includes("@") ? session.username : "",
+        },
+        documents: currentDocs,
+        progress: {
+          paymentStatus: "PROSES",
+        },
+      });
     }
 
     revalidatePath("/dashboard/mahasiswa/keuangan");

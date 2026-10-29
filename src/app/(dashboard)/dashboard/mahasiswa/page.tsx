@@ -7,134 +7,69 @@ import { workflowSteps } from "@/lib/dashboard-data";
 import Link from "next/link";
 import { formatRplRegistrationNumber, generateRplIdentityNumber } from "@/lib/rpl-registration";
 import { syncProfileToF03WhenAssessmentsComplete, syncProfileToEvaluasiAsesorWhenF03Complete } from "@/lib/assessment-progress";
+import { getOrCreateApplicantProfile } from "@/lib/applicant-profile";
+import { redirect } from "next/navigation";
 
 export default async function MahasiswaDashboardPage() {
   await connectMongoDB();
   const session = await getSession();
 
-  let currentStatus = "PENDAFTARAN";
-  let registrationNumber = "Belum Ada";
-  let periodName = "2025/2026 Ganjil";
-  let concentration = "Belum Dipilih";
-  let studentName = session?.name || session?.username || "Mahasiswa RPL";
-  let isBiodataComplete = false;
+  if (!session || session.role !== "mahasiswa") {
+    redirect("/login");
+  }
 
-  let hasAcceptedPayment = false;
-  let hasPendingPayment = false;
+  // 1. Fetch or auto-initialize applicant profile and live payment state
+  const { profile, hasAcceptedPayment, hasPendingPayment } = await getOrCreateApplicantProfile(session);
 
-  if (session?.id) {
-    const profile = await ApplicantProfile.findOne({ userId: session.id }).lean();
-    if (profile) {
-      if ((profile as any).identity?.fullName) {
-        studentName = (profile as any).identity.fullName;
-      }
+  let currentStatus = profile.statusRpl || (hasAcceptedPayment ? "LENGKAPI_CV" : "PENDAFTARAN");
+  let registrationNumber = profile.registrationNumber || profile.noPendaftar || "Belum Ada";
+  let periodName = profile.periodName || profile.periode || "2025/2026 Ganjil";
+  let concentration = profile.concentration || "Manajemen";
+  let studentName = profile.identity?.fullName || session?.name || session?.username || "Mahasiswa RPL";
 
-      if (profile.statusRpl) {
-        currentStatus = profile.statusRpl;
-        registrationNumber = profile.registrationNumber || profile.noPendaftar || "Belum Ada";
-        periodName = profile.periodName || profile.periode || "2025/2026 Ganjil";
-      }
+  // 2. Evaluate Biodata completeness based on core required fields & uploaded files
+  const identity = (profile.identity || {}) as any;
+  const contact = (profile.contact || {}) as any;
+  const documents = (profile.documents || []) as any[];
 
-      if ((profile as any).concentration) {
-        concentration = (profile as any).concentration;
-      }
+  const requiredIdentityFilled = 
+    Boolean(identity.fullName?.trim()) &&
+    Boolean(identity.placeOfBirth?.trim()) &&
+    Boolean(identity.dateOfBirth) &&
+    Boolean(identity.gender) &&
+    Boolean(identity.religion?.trim()) &&
+    Boolean(identity.motherName?.trim()) &&
+    Boolean(identity.citizenship?.trim()) &&
+    Boolean(identity.nik?.trim() && identity.nik.trim().length === 16) &&
+    Boolean(identity.nisn?.trim() && identity.nisn.trim().length === 10);
 
-      if (["ASESMEN_KOMPETENSI", "ASESMEN_F02"].includes(currentStatus)) {
-        const advancedToF03 = await syncProfileToF03WhenAssessmentsComplete(session.id);
-        if (advancedToF03) {
-          currentStatus = "EVALUASI_F03";
-        }
-      }
+  const requiredContactFilled =
+    Boolean(contact.address?.trim()) &&
+    Boolean(contact.village?.trim()) &&
+    Boolean(contact.district?.trim()) &&
+    Boolean(contact.email?.trim()) &&
+    Boolean(contact.phone?.trim());
 
-      if (currentStatus === "EVALUASI_F03") {
-        const advancedToAsesor = await syncProfileToEvaluasiAsesorWhenF03Complete(session.id);
-        if (advancedToAsesor) {
-          currentStatus = "EVALUASI_ASESOR";
-        }
-      }
+  const uploadedDocTypes = documents
+    .filter((d: any) => d.fileUrl && d.fileUrl.trim().length > 0)
+    .map((d: any) => d.type);
 
-      const acceptedRegistrationPayment = await Payment.exists({
-        userId: session.id,
-        statusVerifikasi: "Diterima",
-        jenisPembayaran: /^Biaya Pendaftaran RPL$/i,
-      });
+  // Core registration legal docs: KTP, KK, Akta, and Ijazah
+  const hasCoreLegalDocs = ["ktp", "kk", "akta", "ijazah"].every((type) => uploadedDocTypes.includes(type));
+  const isBiodataComplete = requiredIdentityFilled && requiredContactFilled && hasCoreLegalDocs;
 
-      if (acceptedRegistrationPayment) {
-        hasAcceptedPayment = true;
-        const canAdvanceToF02 = ["PENDAFTARAN", "LENGKAPI_CV", "PEMBAYARAN"].includes(currentStatus);
-        const profileUpdate: Record<string, string> = {
-          "progress.paymentStatus": "DITERIMA",
-          statusPembayaran: "DITERIMA",
-        };
+  // 3. Status progression checks
+  if (["ASESMEN_KOMPETENSI", "ASESMEN_F02"].includes(currentStatus)) {
+    const advancedToF03 = await syncProfileToF03WhenAssessmentsComplete(session.id);
+    if (advancedToF03) {
+      currentStatus = "EVALUASI_F03";
+    }
+  }
 
-        if (canAdvanceToF02) {
-          currentStatus = "ASESMEN_F02";
-          profileUpdate.statusRpl = "ASESMEN_F02";
-        }
-
-        if (!profile.nim) {
-          const activePeriod = profile.periodId
-            ? await Period.findById(profile.periodId).lean()
-            : await Period.findOne({ isActive: true }).lean();
-          const nim = await generateRplIdentityNumber(activePeriod);
-
-          profileUpdate.nim = nim;
-          profileUpdate.registrationNumber = formatRplRegistrationNumber(nim);
-          registrationNumber = profileUpdate.registrationNumber;
-        } else if (!profile.registrationNumber || !profile.registrationNumber.startsWith("RPL-")) {
-          profileUpdate.registrationNumber = formatRplRegistrationNumber(profile.nim);
-          registrationNumber = profileUpdate.registrationNumber;
-        }
-
-        if (Object.keys(profileUpdate).length > 0) {
-          await ApplicantProfile.updateOne(
-            { userId: session.id },
-            { $set: profileUpdate }
-          );
-        }
-      } else {
-        const pendingPayment = await Payment.findOne({
-          userId: session.id,
-          jenisPembayaran: /^Biaya Pendaftaran RPL$/i,
-          statusVerifikasi: "Proses",
-        }).lean();
-
-        if (pendingPayment) {
-          hasPendingPayment = true;
-        }
-      }
-
-      const identity = (profile.identity || {}) as any;
-      const contact = (profile.contact || {}) as any;
-      const documents = (profile.documents || []) as any[];
-
-      const requiredIdentityFilled = 
-        !!identity.fullName?.trim() &&
-        !!identity.placeOfBirth?.trim() &&
-        !!identity.dateOfBirth &&
-        !!identity.gender &&
-        !!identity.religion?.trim() &&
-        !!identity.motherName?.trim() &&
-        !!identity.citizenship?.trim() &&
-        !!identity.nik?.trim() &&
-        identity.nik.trim().length === 16 &&
-        !!identity.nisn?.trim() &&
-        identity.nisn.trim().length === 10;
-
-      const requiredContactFilled =
-        !!contact.address?.trim() &&
-        !!contact.village?.trim() &&
-        !!contact.district?.trim() &&
-        !!contact.email?.trim() &&
-        !!contact.phone?.trim();
-
-      const requiredDocTypes = ["kk", "ktp", "ijazah", "pendukung", "ttd"];
-      const uploadedDocTypes = documents
-        .filter((d: any) => d.fileUrl && d.fileUrl.trim().length > 0)
-        .map((d: any) => d.type);
-
-      const allDocsUploaded = requiredDocTypes.every((type) => uploadedDocTypes.includes(type));
-      isBiodataComplete = requiredIdentityFilled && requiredContactFilled && allDocsUploaded;
+  if (currentStatus === "EVALUASI_F03") {
+    const advancedToAsesor = await syncProfileToEvaluasiAsesorWhenF03Complete(session.id);
+    if (advancedToAsesor) {
+      currentStatus = "EVALUASI_ASESOR";
     }
   }
 
@@ -305,6 +240,59 @@ export default async function MahasiswaDashboardPage() {
       </section>
 
       {/* ── 2. Payment Notification / Waiting Room ── */}
+      {hasAcceptedPayment && !isBiodataComplete && (
+        <section
+          style={{
+            borderRadius: 20,
+            background: "var(--md-surface-1)",
+            border: "1.5px solid var(--md-primary)",
+            boxShadow: "0 4px 18px var(--theme-glow)",
+            padding: "22px 26px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 16,
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 280 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <span style={{ fontSize: 16 }}>📋</span>
+              <span style={{ fontSize: 11, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--md-primary)" }}>
+                Tahapan Utama Anda Saat Ini
+              </span>
+            </div>
+            <h3 style={{ fontSize: 18, fontWeight: 900, color: "var(--md-on-surface)", margin: 0 }}>
+              Pembayaran Pendaftaran Terverifikasi — Lengkapi Formulir Biodata Resmi
+            </h3>
+            <p style={{ fontSize: 13, color: "var(--md-on-surface-variant)", marginTop: 6, lineHeight: 1.55 }}>
+              Pembayaran Anda telah disetujui. Silakan lengkapi data diri pokok (NIK, NISN, alamat domisili) dan berkas pendukung untuk membuka modul CV Riwayat Hidup (F-07).
+            </p>
+          </div>
+
+          <Link
+            href="/dashboard/mahasiswa/biodata"
+            style={{
+              padding: "12px 24px",
+              borderRadius: 999,
+              background: "var(--md-primary)",
+              color: "var(--md-on-primary)",
+              fontSize: 13.5,
+              fontWeight: 800,
+              textDecoration: "none",
+              boxShadow: "0 4px 16px var(--theme-glow)",
+              whiteSpace: "nowrap",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <span>Isi Biodata Sekarang</span>
+            <span>→</span>
+          </Link>
+        </section>
+      )}
+
       {!hasAcceptedPayment && (
         <section>
           {hasPendingPayment ? (
@@ -662,7 +650,7 @@ export default async function MahasiswaDashboardPage() {
                 boxShadow: "0 4px 14px var(--theme-glow)",
               }}
             >
-              <span>Buka Menu Terkait</span>
+              <span>{!hasAcceptedPayment ? "Buka Keuangan" : !isBiodataComplete ? "Lengkapi Biodata Diri" : currentIndex === 1 ? "Lanjut ke CV (F-07)" : "Buka Menu Terkait"}</span>
               <span>→</span>
             </Link>
           </div>
@@ -733,13 +721,13 @@ export default async function MahasiswaDashboardPage() {
                   {item.title}
                 </h3>
                 <p style={{ fontSize: 12.5, color: "var(--md-on-surface-variant)", lineHeight: 1.5, margin: 0 }}>
-                  {item.lock ? "Terkunci. Selesaikan pembayaran pendaftaran terlebih dahulu." : item.desc}
+                  {item.lock ? (!hasAcceptedPayment ? "Terkunci. Selesaikan pembayaran pendaftaran terlebih dahulu." : "Terkunci. Selesaikan pengisian Biodata Pribadi terlebih dahulu.") : item.desc}
                 </p>
               </div>
 
               <div style={{ marginTop: 20, paddingTop: 14, borderTop: "1px solid var(--md-outline-variant)" }}>
                 <Link
-                  href={item.lock ? "/dashboard/mahasiswa/keuangan" : item.href}
+                  href={item.lock ? (!hasAcceptedPayment ? "/dashboard/mahasiswa/keuangan" : "/dashboard/mahasiswa/biodata") : item.href}
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -750,7 +738,7 @@ export default async function MahasiswaDashboardPage() {
                     textDecoration: "none",
                   }}
                 >
-                  <span>{item.lock ? "Buka Administrasi Keuangan" : "Akses Layanan"}</span>
+                  <span>{item.lock ? (!hasAcceptedPayment ? "Buka Administrasi Keuangan" : "Isi Biodata Dulu") : "Akses Layanan"}</span>
                   <span>→</span>
                 </Link>
               </div>

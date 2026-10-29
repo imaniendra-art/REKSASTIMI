@@ -77,6 +77,7 @@ export default async function MahasiswaKeuanganPage() {
             : "Langkah wajib pertama: Selesaikan pembayaran pendaftaran RPL & unggah 4 berkas legalitas untuk membuka seluruh akses akademik."
         }
         tone="primary"
+        style={{ marginBottom: 0 }}
         rightContent={
           <div style={{ minWidth: 260 }}>
             <div style={{ border: "1px solid rgba(255,255,255,0.22)", borderRadius: 16, background: "rgba(255,255,255,0.12)", padding: 18 }}>
@@ -87,7 +88,7 @@ export default async function MahasiswaKeuanganPage() {
                 {isRegistrationAccepted ? "✓ Terverifikasi" : prosesCount > 0 ? "⏳ Sedang Diproses" : "Belum Lunas"}
               </p>
               <div style={{ marginTop: 10, display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 999, background: isRegistrationAccepted ? "rgba(16, 185, 129, 0.25)" : "rgba(255,255,255,0.18)", fontSize: 11, fontWeight: 800 }}>
-                <span>Total Dana Diterima: Rp {totalDana.toLocaleString("id-ID")}</span>
+                <span>Total Dana Diterima Kampus: Rp {totalDana.toLocaleString("id-ID")}</span>
               </div>
             </div>
           </div>

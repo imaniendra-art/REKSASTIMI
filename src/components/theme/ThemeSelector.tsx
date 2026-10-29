@@ -67,9 +67,10 @@ export function ThemeSelector() {
         <button
           onClick={() => setDropdownOpen((prev) => !prev)}
           title={`Tema Warna: ${activePalette.name}`}
+          aria-label="Pilih Tema Warna"
           style={{
             height: 38,
-            padding: "0 12px",
+            padding: "0 10px",
             borderRadius: 999,
             border: "1px solid var(--md-outline-variant)",
             background: "var(--md-surface-1)",
@@ -77,27 +78,36 @@ export function ThemeSelector() {
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
-            gap: 8,
-            fontSize: 13,
-            fontWeight: 600,
+            gap: 6,
             boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
             transition: "all 0.2s ease",
           }}
         >
           <span
             style={{
-              width: 14,
-              height: 14,
+              width: 16,
+              height: 16,
               borderRadius: "50%",
               backgroundColor: activePalette.hex,
               boxShadow: `0 0 8px ${activePalette.hex}80`,
               display: "inline-block",
             }}
           />
-          <span style={{ display: "none" }} className="sm:inline-block">
-            {activePalette.name.split(" ")[0]}
-          </span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              opacity: 0.7,
+              transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s ease",
+            }}
+          >
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
@@ -108,21 +118,19 @@ export function ThemeSelector() {
               position: "absolute",
               top: "calc(100% + 8px)",
               right: 0,
-              width: 210,
               backgroundColor: "var(--md-surface-1)",
-              borderRadius: 16,
+              borderRadius: 20,
               border: "1px solid var(--md-outline-variant)",
               boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
-              padding: 8,
+              padding: "10px 14px",
               zIndex: 1050,
               display: "flex",
-              flexDirection: "column",
-              gap: 4,
+              alignItems: "center",
+              gap: 8,
+              maxWidth: "calc(100vw - 24px)",
+              flexWrap: "wrap",
             }}
           >
-            <div style={{ padding: "6px 10px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--md-on-surface-variant)" }}>
-              Pilih Aksen Warna
-            </div>
             {THEME_PALETTES.map((palette) => {
               const isSelected = colorTheme === palette.id;
               return (
@@ -132,35 +140,37 @@ export function ThemeSelector() {
                     setColorTheme(palette.id);
                     setDropdownOpen(false);
                   }}
+                  title={palette.name}
+                  aria-label={palette.name}
                   style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: "50%",
+                    border: isSelected ? "2.5px solid var(--md-surface-1)" : "2px solid transparent",
+                    background: palette.hex,
+                    cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: 10,
-                    padding: "8px 12px",
-                    borderRadius: 10,
-                    border: "none",
-                    background: isSelected ? "var(--md-primary-container)" : "transparent",
-                    color: isSelected ? "var(--md-on-primary-container)" : "var(--md-on-surface)",
-                    cursor: "pointer",
-                    fontSize: 13,
-                    fontWeight: isSelected ? 700 : 500,
-                    textAlign: "left",
+                    justifyContent: "center",
+                    boxShadow: isSelected
+                      ? `0 0 0 2px ${palette.hex}, 0 2px 8px ${palette.hex}80`
+                      : "0 2px 4px rgba(0,0,0,0.12)",
                     transition: "all 0.15s ease",
+                    transform: isSelected ? "scale(1.15)" : "scale(1)",
+                    padding: 0,
                   }}
                 >
-                  <span
-                    style={{
-                      width: 14,
-                      height: 14,
-                      borderRadius: "50%",
-                      backgroundColor: palette.hex,
-                      boxShadow: isSelected ? `0 0 8px ${palette.hex}` : "none",
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span style={{ flex: 1 }}>{palette.name}</span>
                   {isSelected && (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#ffffff"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                   )}

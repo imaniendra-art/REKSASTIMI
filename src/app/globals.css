@@ -121,6 +121,29 @@
   --theme-glow: rgba(159, 18, 57, 0.22);
 }
 
+[data-theme="plum"] {
+  --md-surface: #faf5ff;
+  --md-surface-1: #ffffff;
+  --md-surface-2: #f3e8ff;
+  --md-on-surface: #3b0764;
+  --md-on-surface-variant: #581c87;
+  --md-outline: #d8b4fe;
+  --md-outline-variant: #e9d5ff;
+  --sidebar-bg: #f3e8ff;
+  --sidebar-border: #c084fc;
+  --header-bg: #fbf7ff;
+  --header-border: #c084fc;
+  --md-primary: #7e22ce;
+  --md-primary-container: #f3e8ff;
+  --md-on-primary: #ffffff;
+  --md-on-primary-container: #581c87;
+  --md-secondary: #9333ea;
+  --md-secondary-container: #e9d5ff;
+  --md-on-secondary: #ffffff;
+  --theme-ring: rgba(126, 34, 206, 0.35);
+  --theme-glow: rgba(126, 34, 206, 0.22);
+}
+
 [data-theme="dusty-rose"] {
   --md-surface: #fdf2f8;
   --md-surface-1: #ffffff;
@@ -209,6 +232,15 @@
   --md-shadow-1: 0 1px 3px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
   --md-shadow-2: 0 4px 12px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.2);
   --md-shadow-3: 0 12px 28px rgba(0,0,0,0.6), 0 4px 10px rgba(0,0,0,0.3);
+
+  --md-success: #34d399;
+  --md-success-container: rgba(16, 185, 129, 0.18);
+  --md-warning: #fbbf24;
+  --md-warning-container: rgba(245, 158, 11, 0.18);
+  --md-error: #f87171;
+  --md-error-container: rgba(239, 68, 68, 0.18);
+  --md-info: #38bdf8;
+  --md-info-container: rgba(14, 165, 233, 0.18);
 }
 
 /* ─── 6 Color Palettes (Dark Mode) ─── */
@@ -282,6 +314,30 @@
   --md-on-secondary: #4c0519;
   --theme-ring: rgba(251, 113, 133, 0.4);
   --theme-glow: rgba(251, 113, 133, 0.3);
+}
+
+[data-mode="dark"][data-theme="plum"],
+.dark[data-theme="plum"] {
+  --md-surface: #0e0514;
+  --md-surface-1: #1a0b26;
+  --md-surface-2: #28113b;
+  --md-on-surface: #faf5ff;
+  --md-on-surface-variant: #e9d5ff;
+  --md-outline: rgba(192, 132, 252, 0.3);
+  --md-outline-variant: rgba(192, 132, 252, 0.15);
+  --sidebar-bg: #220e33;
+  --sidebar-border: rgba(192, 132, 252, 0.4);
+  --header-bg: #2d1344;
+  --header-border: rgba(192, 132, 252, 0.4);
+  --md-primary: #c084fc;
+  --md-primary-container: #3b0764;
+  --md-on-primary: #3b0764;
+  --md-on-primary-container: #e9d5ff;
+  --md-secondary: #a855f7;
+  --md-secondary-container: #581c87;
+  --md-on-secondary: #3b0764;
+  --theme-ring: rgba(192, 132, 252, 0.4);
+  --theme-glow: rgba(192, 132, 252, 0.3);
 }
 
 [data-mode="dark"][data-theme="dusty-rose"],

@@ -57,10 +57,10 @@ export async function verifyPayment(formData: FormData) {
       .select("statusRpl registrationNumber nim periodId")
       .lean();
     const currentStatus = profile?.statusRpl || "PENDAFTARAN";
-    const canAdvanceToF02 = ["PENDAFTARAN", "LENGKAPI_CV", "PEMBAYARAN"].includes(currentStatus);
+    const canAdvanceToCv = ["PENDAFTARAN", "PEMBAYARAN"].includes(currentStatus);
 
-    if (canAdvanceToF02) {
-      profileUpdate.statusRpl = "ASESMEN_F02";
+    if (canAdvanceToCv) {
+      profileUpdate.statusRpl = "LENGKAPI_CV";
     }
 
     if (!profile?.nim) {
@@ -76,7 +76,7 @@ export async function verifyPayment(formData: FormData) {
     }
   }
 
-  await ApplicantProfile.updateOne({ userId: payment.userId }, { $set: profileUpdate });
+  await ApplicantProfile.updateOne({ userId: payment.userId }, { $set: profileUpdate }, { upsert: true });
 
   revalidatePath("/dashboard/keuangan");
   revalidatePath("/dashboard/keuangan/validasi");

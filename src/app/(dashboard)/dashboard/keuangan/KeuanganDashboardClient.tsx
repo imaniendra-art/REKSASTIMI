@@ -286,7 +286,7 @@ export function KeuanganDashboardClient({
               fontWeight: 900,
               background: pendingPayments.length > 0 ? "var(--md-warning-container)" : "var(--md-success-container)",
               color: pendingPayments.length > 0 ? "var(--md-warning)" : "var(--md-success)",
-              border: pendingPayments.length > 0 ? "1px solid #fde68a" : "1px solid #a7f3d0",
+              border: pendingPayments.length > 0 ? "1px solid rgba(245, 158, 11, 0.3)" : "1px solid rgba(16, 185, 129, 0.3)",
             }}
           >
             {pendingPayments.length > 0 ? `⚠️ ${pendingPayments.length} Menunggu Diproses` : "✓ Antrean Kosong"}
@@ -301,16 +301,60 @@ export function KeuanganDashboardClient({
             emptyMessage="Semua bukti transfer mahasiswa telah selesai diperiksa."
           />
         ) : (
-          <div className="md-card" style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: 14, background: "var(--md-success-container)", border: "1px solid #a7f3d0" }}>
-            <span style={{ fontSize: 26 }}>✅</span>
-            <div>
-              <p style={{ margin: 0, fontSize: 14, fontWeight: 900, color: "var(--md-success)" }}>
+          <div
+            className="md-card"
+            style={{
+              padding: "20px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              background: "var(--md-surface-1)",
+              border: "1px solid var(--md-outline-variant)",
+              borderLeft: "5px solid var(--md-success)",
+            }}
+          >
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 14,
+                background: "var(--md-success-container)",
+                color: "var(--md-success)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 22,
+                fontWeight: 900,
+                flexShrink: 0,
+              }}
+            >
+              ✓
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: 0, fontSize: 14.5, fontWeight: 900, color: "var(--md-on-surface)" }}>
                 Semua Pembayaran Beres Terverifikasi
               </p>
-              <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--md-on-surface-variant)" }}>
+              <p style={{ margin: "3px 0 0", fontSize: 12, color: "var(--md-on-surface-variant)", lineHeight: 1.5 }}>
                 Tidak ada pembayaran yang tertahan di antrean. Mahasiswa yang baru mentransfer uang akan otomatis muncul di baris ini.
               </p>
             </div>
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                padding: "4px 12px",
+                borderRadius: 999,
+                background: "var(--md-success-container)",
+                color: "var(--md-success)",
+                border: "1px solid rgba(16, 185, 129, 0.25)",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
+              <span>✓</span>
+              <span>Tuntas</span>
+            </span>
           </div>
         )}
       </div>

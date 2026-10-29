@@ -1,4 +1,3 @@
-import { ensureRegistrationPayment } from "@/lib/payment-guard";
 "use client";
 
 import React, { useEffect, useState } from "react";
